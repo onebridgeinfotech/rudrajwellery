@@ -264,7 +264,9 @@ function jwellery_home_popular_tabs() {
 				)
 				: array();
 		}
-		$panels[ $key ] = $products;
+		$panels[ $key ] = function_exists( 'jwellery_supplement_products_for_grid' )
+			? jwellery_supplement_products_for_grid( $products, 4, 2, $tab['args'] )
+			: $products;
 	}
 
 	if ( empty( $panels['featured'] ) && empty( $panels['new'] ) && empty( $panels['sale'] ) ) {

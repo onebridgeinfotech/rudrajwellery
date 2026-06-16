@@ -518,12 +518,20 @@
 	object-fit: cover;
 }
 
-/* ——— Follow Our Journey: 4×2 desktop ——— */
-@media (min-width: 1025px) {
+/* ——— Follow Our Journey: 4×2 from tablet up ——— */
+@media (min-width: 769px) {
 	.jwellery-follow-grid--cols-4,
 	.jwellery-home-section--follow-our-journey .jwellery-follow-grid {
 		grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
 		gap: 20px;
+	}
+}
+
+@media (min-width: 1025px) {
+	.jwellery-home-section--steal-deals .jwellery-product-grid--deals,
+	.jwellery-home-section--steal-deals .jwellery-product-grid--cols-4,
+	.jwellery-home-section--popular-tabs .jwellery-product-grid--cols-4 {
+		grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
 	}
 }
 

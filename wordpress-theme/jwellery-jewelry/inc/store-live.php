@@ -25,3 +25,35 @@ function jwellery_maybe_force_store_live() {
 	jwellery_force_store_live();
 }
 add_action( 'after_switch_theme', 'jwellery_maybe_force_store_live', 20 );
+
+/**
+ * Purge LiteSpeed / Hostinger page cache when theme version changes after deploy.
+ */
+function jwellery_purge_hosting_cache() {
+	if ( class_exists( 'LiteSpeed_Cache_API' ) ) {
+		LiteSpeed_Cache_API::purge_all();
+		return;
+	}
+	if ( function_exists( 'litespeed_purge_all' ) ) {
+		litespeed_purge_all();
+	}
+	if ( function_exists( 'wp_cache_clear_cache' ) ) {
+		wp_cache_clear_cache();
+	}
+}
+
+/**
+ * Auto-purge cache once per theme version so FTP deploys show on the live site.
+ */
+function jwellery_maybe_purge_cache_on_version_bump() {
+	if ( is_admin() && ! wp_doing_ajax() ) {
+		return;
+	}
+	$stored = get_option( 'jwellery_theme_deploy_version', '' );
+	if ( $stored === JWELLERY_THEME_VERSION ) {
+		return;
+	}
+	jwellery_purge_hosting_cache();
+	update_option( 'jwellery_theme_deploy_version', JWELLERY_THEME_VERSION, false );
+}
+add_action( 'init', 'jwellery_maybe_purge_cache_on_version_bump', 1 );

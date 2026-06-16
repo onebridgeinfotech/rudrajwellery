@@ -146,6 +146,61 @@ function jwellery_get_products_for_display( $args = array(), $cols = null, $rows
 }
 
 /**
+ * Top up a product list to full grid rows using additional catalog items.
+ *
+ * @param WC_Product[] $products   Existing products.
+ * @param int|null     $cols       Columns per row.
+ * @param int|null     $rows       Row count.
+ * @param array        $extra_args Extra wc_get_products args for supplements.
+ * @return WC_Product[]
+ */
+function jwellery_supplement_products_for_grid( $products, $cols = null, $rows = null, $extra_args = array() ) {
+	$cols = $cols ? (int) $cols : jwellery_home_grid_columns();
+	$rows = $rows ? (int) $rows : jwellery_home_grid_rows();
+	$need = $cols * $rows;
+
+	$products = is_array( $products ) ? $products : array();
+	if ( function_exists( 'jwellery_filter_products_with_images' ) ) {
+		$products = jwellery_filter_products_with_images( $products );
+	}
+
+	if ( count( $products ) >= $need ) {
+		return jwellery_trim_products_to_full_rows( $products, $cols, $rows );
+	}
+
+	$seen = array();
+	foreach ( $products as $product ) {
+		$seen[ $product->get_id() ] = true;
+	}
+
+	$more = jwellery_get_products_for_display(
+		array_merge(
+			array(
+				'orderby' => 'date',
+				'order'   => 'DESC',
+			),
+			$extra_args
+		),
+		$cols,
+		$rows
+	);
+
+	foreach ( $more as $product ) {
+		$pid = $product->get_id();
+		if ( isset( $seen[ $pid ] ) ) {
+			continue;
+		}
+		$seen[ $pid ] = true;
+		$products[]   = $product;
+		if ( count( $products ) >= $need ) {
+			break;
+		}
+	}
+
+	return jwellery_trim_products_to_full_rows( $products, $cols, $rows );
+}
+
+/**
  * Hide catalog products that have no featured image.
  *
  * @param bool       $visible Visible.
