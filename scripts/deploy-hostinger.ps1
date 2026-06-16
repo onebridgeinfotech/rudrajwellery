@@ -1,9 +1,9 @@
-# Upload theme + plugin to Hostinger via SFTP (reads .env.deploy). Runs from YOUR PC network.
+# Upload theme + plugin to Hostinger via FTP/SFTP (reads .env.deploy).
 $root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 $envFile = Join-Path $root ".env.deploy"
 
 if (-not (Test-Path $envFile)) {
-    Write-Host "Missing .env.deploy — copy deploy.env.example to .env.deploy" -ForegroundColor Red
+    Write-Host "Missing .env.deploy - copy deploy.env.example to .env.deploy" -ForegroundColor Red
     exit 1
 }
 
@@ -23,19 +23,39 @@ foreach ($key in $required) {
     }
 }
 
-$keyPath = $config['SFTP_PRIVATE_KEY_PATH']
-if (-not $keyPath) {
-    $defaultKey = Join-Path $root "scripts\.deploy-keys\github_deploy"
-    if (Test-Path $defaultKey) { $keyPath = $defaultKey }
-}
-
-if (-not $keyPath -and -not $config['FTP_PASSWORD']) {
-    Write-Host "Missing FTP_PASSWORD or SFTP_PRIVATE_KEY_PATH in .env.deploy" -ForegroundColor Red
+if (-not $config['FTP_PASSWORD']) {
+    Write-Host "Missing FTP_PASSWORD in .env.deploy" -ForegroundColor Red
     exit 1
 }
 
-$port = if ($config['FTP_PORT']) { [int]$config['FTP_PORT'] } else { 65002 }
-$protocol = if ($config['FTP_PROTOCOL']) { $config['FTP_PROTOCOL'].ToLower() } elseif ($port -eq 65002) { 'sftp' } else { 'ftp' }
+$port = if ($config['FTP_PORT']) { [int]$config['FTP_PORT'] } else { 21 }
+$protocol = if ($config['FTP_PROTOCOL']) { $config['FTP_PROTOCOL'].ToLower() } else { 'ftp' }
+
+$winScp = Get-Command winscp.com -ErrorAction SilentlyContinue
+
+function Deploy-Folder-Curl {
+    param(
+        [string]$LocalDir,
+        [string]$RemoteDir,
+        [string]$Label
+    )
+
+    $curl = Get-Command curl.exe -ErrorAction SilentlyContinue
+    if (-not $curl) {
+        Write-Host "Install WinSCP (https://winscp.net/) or ensure curl.exe is available." -ForegroundColor Red
+        exit 1
+    }
+
+    Write-Host "Deploying $Label via curl FTP..." -ForegroundColor Cyan
+    Get-ChildItem -Path $LocalDir -Recurse -File | ForEach-Object {
+        $relative = $_.FullName.Substring($LocalDir.Length).TrimStart('\').Replace('\', '/')
+        $remoteUrl = "ftp://$($config['FTP_SERVER'])$($RemoteDir.TrimEnd('/'))/$relative"
+        & curl.exe --silent --show-error --ftp-create-dirs `
+            --user "$($config['FTP_USERNAME']):$($config['FTP_PASSWORD'])" `
+            -T $_.FullName $remoteUrl
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+    }
+}
 
 function Deploy-Folder {
     param(
@@ -45,7 +65,7 @@ function Deploy-Folder {
     )
 
     if (-not (Test-Path $LocalDir)) {
-        Write-Host "Skip $Label — folder not found: $LocalDir" -ForegroundColor Yellow
+        Write-Host "Skip $Label - folder not found: $LocalDir" -ForegroundColor Yellow
         return
     }
 
@@ -53,17 +73,13 @@ function Deploy-Folder {
     Write-Host "  Local:  $LocalDir" -ForegroundColor Gray
     Write-Host "  Remote: $RemoteDir" -ForegroundColor Gray
 
-    $winScp = Get-Command winscp.com -ErrorAction SilentlyContinue
     if (-not $winScp) {
-        Write-Host "Install WinSCP and add winscp.com to PATH: https://winscp.net/" -ForegroundColor Red
-        exit 1
+        Deploy-Folder-Curl -LocalDir $LocalDir -RemoteDir $RemoteDir -Label $Label
+        return
     }
 
-    if ($keyPath -and (Test-Path $keyPath)) {
-        $openLine = "open ${protocol}://${config['FTP_USERNAME']}@${config['FTP_SERVER']}:$port/ -privatekey=`"$keyPath`" -hostkey=*"
-    } else {
-        $openLine = "open ${protocol}://${config['FTP_USERNAME']}:$([Uri]::EscapeDataString($config['FTP_PASSWORD']))@${config['FTP_SERVER']}:$port/ -hostkey=*"
-    }
+    $escapedPass = [Uri]::EscapeDataString($config['FTP_PASSWORD'])
+    $openLine = "open ${protocol}://$($config['FTP_USERNAME']):${escapedPass}@$($config['FTP_SERVER']):$port/ -hostkey=*"
 
     $script = @"
 option batch abort
