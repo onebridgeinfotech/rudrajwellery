@@ -8,37 +8,39 @@ on:
 env:
   FTP_SERVER: 82.180.143.137
   FTP_USERNAME: u956615329.rudrajewellery.co.in
-  FTP_PORT: 65002
-  FTP_REMOTE_THEME: /public_html/wp-content/themes/jwellery-jewelry/
-  FTP_REMOTE_PLUGIN: /public_html/wp-content/plugins/jewelry-upi-store/
+  FTP_PORT: 21
 
 jobs:
-  deploy:
+  deploy-theme:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Deploy theme (SFTP)
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
+      - name: Deploy theme (FTP)
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
           server: ${{ env.FTP_SERVER }}
           username: ${{ env.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
           port: ${{ env.FTP_PORT }}
-          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          local_path: ./wordpress-theme/jwellery-jewelry/*
-          remote_path: ${{ env.FTP_REMOTE_THEME }}
-          sftp_only: true
-          sftpArgs: '-o ConnectTimeout=60 -o StrictHostKeyChecking=no'
+          protocol: ftp
+          local-dir: ./wordpress-theme/jwellery-jewelry/
+          server-dir: /public_html/wp-content/themes/jwellery-jewelry/
 
-      - name: Deploy plugin (SFTP)
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
+  deploy-plugin:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy plugin (FTP)
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
           server: ${{ env.FTP_SERVER }}
           username: ${{ env.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
           port: ${{ env.FTP_PORT }}
-          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          local_path: ./wordpress-plugin/jewelry-upi-store/*
-          remote_path: ${{ env.FTP_REMOTE_PLUGIN }}
-          sftp_only: true
-          sftpArgs: '-o ConnectTimeout=60 -o StrictHostKeyChecking=no'
+          protocol: ftp
+          local-dir: ./wordpress-plugin/jewelry-upi-store/
+          server-dir: /public_html/wp-content/plugins/jewelry-upi-store/
