@@ -102,5 +102,10 @@ $pluginLocal = Join-Path $root "wordpress-plugin\jewelry-upi-store"
 Deploy-Folder -LocalDir $themeLocal -RemoteDir $config['FTP_REMOTE_THEME'] -Label "theme"
 Deploy-Folder -LocalDir $pluginLocal -RemoteDir $config['FTP_REMOTE_PLUGIN'] -Label "plugin"
 
+$purgeScript = Join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) "purge-live-cache.ps1"
+if (Test-Path $purgeScript) {
+    & $purgeScript -Config $config
+}
+
 Write-Host ""
-Write-Host "Deploy complete. Purge LiteSpeed cache in wp-admin if changes do not show." -ForegroundColor Green
+Write-Host "Deploy complete." -ForegroundColor Green
