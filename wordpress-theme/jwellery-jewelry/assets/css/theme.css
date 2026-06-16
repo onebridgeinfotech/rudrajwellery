@@ -147,6 +147,13 @@ body {
 	min-height: 72px;
 }
 
+@media (min-width: 1025px) {
+	.jwellery-header-inner {
+		min-height: 84px;
+		gap: 12px 24px;
+	}
+}
+
 .jwellery-branding {
 	grid-area: brand;
 	min-width: 0;
@@ -190,8 +197,14 @@ body {
 	.jwellery-site-logo--rudra,
 	.jwellery-site-logo--kalpana,
 	.jwellery-site-logo--custom {
-		height: 64px;
-		max-width: 72px;
+		height: 72px;
+		max-width: 128px;
+	}
+
+	.jwellery-site-logo,
+	.jwellery-branding .custom-logo {
+		max-height: 60px;
+		max-width: min(280px, 28vw);
 	}
 }
 
