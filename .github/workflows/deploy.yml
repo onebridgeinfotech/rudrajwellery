@@ -3,11 +3,14 @@ name: Deploy to Hostinger
 on:
   push:
     branches: [main]
-    paths:
-      - 'wordpress-theme/jwellery-jewelry/**'
-      - 'wordpress-plugin/jewelry-upi-store/**'
-      - '.github/workflows/deploy.yml'
   workflow_dispatch:
+
+env:
+  FTP_SERVER: 82.180.143.137
+  FTP_USERNAME: u956615329.rudrajewellery.co.in
+  FTP_PORT: 65002
+  FTP_REMOTE_THEME: /public_html/wp-content/themes/jwellery-jewelry/
+  FTP_REMOTE_PLUGIN: /public_html/wp-content/plugins/jewelry-upi-store/
 
 jobs:
   deploy:
@@ -16,22 +19,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Deploy theme
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: Deploy theme (SFTP)
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
+          server: ${{ env.FTP_SERVER }}
+          username: ${{ env.FTP_USERNAME }}
+          port: ${{ env.FTP_PORT }}
           password: ${{ secrets.FTP_PASSWORD }}
-          port: 21
-          local-dir: wordpress-theme/jwellery-jewelry/
-          server-dir: ${{ secrets.FTP_REMOTE_THEME }}
+          local_path: ./wordpress-theme/jwellery-jewelry/*
+          remote_path: ${{ env.FTP_REMOTE_THEME }}
+          sftp_only: true
+          sftpArgs: '-o ConnectTimeout=60 -o StrictHostKeyChecking=no'
 
-      - name: Deploy plugin
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: Deploy plugin (SFTP)
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
+          server: ${{ env.FTP_SERVER }}
+          username: ${{ env.FTP_USERNAME }}
+          port: ${{ env.FTP_PORT }}
           password: ${{ secrets.FTP_PASSWORD }}
-          port: 21
-          local-dir: wordpress-plugin/jewelry-upi-store/
-          server-dir: ${{ secrets.FTP_REMOTE_PLUGIN }}
+          local_path: ./wordpress-plugin/jewelry-upi-store/*
+          remote_path: ${{ env.FTP_REMOTE_PLUGIN }}
+          sftp_only: true
+          sftpArgs: '-o ConnectTimeout=60 -o StrictHostKeyChecking=no'
