@@ -1,4 +1,4 @@
-# Auto-deploy to Hostinger (rudrajewellery.in)
+# Auto-deploy to Hostinger (rudrajewellery.co.in)
 
 ## Your FTP details (local)
 
@@ -7,7 +7,7 @@ Stored in **`.env.deploy`** (gitignored). Template: `deploy.env.example`.
 | Setting | Value |
 |---------|--------|
 | Server | `82.180.143.137` |
-| Username | `u956615329.rudrajewellery.in` |
+| Username | `u956615329.rudrajewellery.co.in` |
 | Port | `21` |
 | Theme path | `/public_html/wp-content/themes/jwellery-jewelry/` |
 | Plugin path | `/public_html/wp-content/plugins/jewelry-upi-store/` |

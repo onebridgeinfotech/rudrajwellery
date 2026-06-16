@@ -1,9 +1,9 @@
-# Upload theme + plugin folders to Hostinger via FTP (reads .env.deploy)
+# Upload theme + plugin to Hostinger via SFTP (reads .env.deploy). Runs from YOUR PC network.
 $root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 $envFile = Join-Path $root ".env.deploy"
 
 if (-not (Test-Path $envFile)) {
-    Write-Host "Missing .env.deploy — copy deploy.env.example to .env.deploy and add FTP details." -ForegroundColor Red
+    Write-Host "Missing .env.deploy — copy deploy.env.example to .env.deploy" -ForegroundColor Red
     exit 1
 }
 
@@ -15,12 +15,23 @@ Get-Content $envFile | ForEach-Object {
     }
 }
 
-$required = @('FTP_SERVER', 'FTP_USERNAME', 'FTP_PASSWORD', 'FTP_REMOTE_THEME', 'FTP_REMOTE_PLUGIN')
+$required = @('FTP_SERVER', 'FTP_USERNAME', 'FTP_REMOTE_THEME', 'FTP_REMOTE_PLUGIN')
 foreach ($key in $required) {
     if (-not $config[$key]) {
         Write-Host "Missing $key in .env.deploy" -ForegroundColor Red
         exit 1
     }
+}
+
+$keyPath = $config['SFTP_PRIVATE_KEY_PATH']
+if (-not $keyPath) {
+    $defaultKey = Join-Path $root "scripts\.deploy-keys\github_deploy"
+    if (Test-Path $defaultKey) { $keyPath = $defaultKey }
+}
+
+if (-not $keyPath -and -not $config['FTP_PASSWORD']) {
+    Write-Host "Missing FTP_PASSWORD or SFTP_PRIVATE_KEY_PATH in .env.deploy" -ForegroundColor Red
+    exit 1
 }
 
 $port = if ($config['FTP_PORT']) { [int]$config['FTP_PORT'] } else { 65002 }
@@ -43,37 +54,30 @@ function Deploy-Folder {
     Write-Host "  Remote: $RemoteDir" -ForegroundColor Gray
 
     $winScp = Get-Command winscp.com -ErrorAction SilentlyContinue
-    if ($winScp) {
-        $script = @"
-option batch abort
-option confirm off
-open ${protocol}://${config['FTP_USERNAME']}:$([Uri]::EscapeDataString($config['FTP_PASSWORD']))@${config['FTP_SERVER']}:$port/ -hostkey=*
-synchronize remote -mirror -criteria=time "$LocalDir" "$RemoteDir"
-exit
-"@
-        $tempScript = Join-Path $env:TEMP "jwellery-deploy-$(Get-Random).txt"
-        Set-Content -Path $tempScript -Value $script -Encoding UTF8
-        & winscp.com /script=$tempScript
-        Remove-Item $tempScript -Force -ErrorAction SilentlyContinue
-        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-        return
-    }
-
-    $curl = Get-Command curl.exe -ErrorAction SilentlyContinue
-    if (-not $curl) {
-        Write-Host "Install WinSCP (winscp.com in PATH) or use GitHub Actions deploy." -ForegroundColor Red
-        Write-Host "GitHub: add secrets from deploy.env.example, then push to main." -ForegroundColor Yellow
+    if (-not $winScp) {
+        Write-Host "Install WinSCP and add winscp.com to PATH: https://winscp.net/" -ForegroundColor Red
         exit 1
     }
 
-    Get-ChildItem -Path $LocalDir -Recurse -File | ForEach-Object {
-        $relative = $_.FullName.Substring($LocalDir.Length).TrimStart('\').Replace('\', '/')
-        $remoteUrl = "ftp://$($config['FTP_SERVER'])$($RemoteDir.TrimEnd('/'))/$relative"
-        & curl.exe --silent --show-error --ftp-create-dirs `
-            --user "$($config['FTP_USERNAME']):$($config['FTP_PASSWORD'])" `
-            -T $_.FullName $remoteUrl
-        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+    if ($keyPath -and (Test-Path $keyPath)) {
+        $openLine = "open ${protocol}://${config['FTP_USERNAME']}@${config['FTP_SERVER']}:$port/ -privatekey=`"$keyPath`" -hostkey=*"
+    } else {
+        $openLine = "open ${protocol}://${config['FTP_USERNAME']}:$([Uri]::EscapeDataString($config['FTP_PASSWORD']))@${config['FTP_SERVER']}:$port/ -hostkey=*"
     }
+
+    $script = @"
+option batch abort
+option confirm off
+$openLine
+synchronize remote -mirror -criteria=time "$LocalDir" "$RemoteDir"
+exit
+"@
+    $tempScript = Join-Path $env:TEMP "jwellery-deploy-$(Get-Random).txt"
+    Set-Content -Path $tempScript -Value $script -Encoding UTF8
+    & winscp.com /script=$tempScript
+    $code = $LASTEXITCODE
+    Remove-Item $tempScript -Force -ErrorAction SilentlyContinue
+    if ($code -ne 0) { exit $code }
 }
 
 $themeLocal = Join-Path $root "wordpress-theme\jwellery-jewelry"

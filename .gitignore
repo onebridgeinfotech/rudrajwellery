@@ -17,3 +17,9 @@ wp-config.php
 .env
 .env.deploy
 deploy.local.json
+
+# Deploy keys (never commit)
+scripts/.deploy-keys/
+
+# Local WordPress paths (never commit)
+local.env
