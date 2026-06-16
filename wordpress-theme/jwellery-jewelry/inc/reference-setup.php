@@ -406,7 +406,7 @@ function jwellery_run_reference_setup() {
 		jwellery_create_demo_products();
 	}
 	if ( function_exists( 'jwellery_import_demo_product_images' ) ) {
-		jwellery_import_demo_product_images();
+		jwellery_import_demo_product_images( true );
 	}
 	if ( function_exists( 'jwellery_create_default_coupons' ) ) {
 		jwellery_create_default_coupons();
@@ -509,8 +509,8 @@ function jwellery_store_setup_page() {
 		echo '<div class="notice notice-success"><p>' . esc_html( sprintf( __( 'Demo products ready (%d new items).', 'jwellery-jewelry' ), (int) $n ) ) . '</p></div>';
 	}
 	if ( isset( $_POST['jwellery_import_images'] ) && check_admin_referer( 'jwellery_setup' ) ) {
-		$n = function_exists( 'jwellery_import_demo_product_images' ) ? jwellery_import_demo_product_images() : 0;
-		echo '<div class="notice notice-success"><p>' . esc_html( sprintf( __( 'Product images attached (%d products).', 'jwellery-jewelry' ), (int) $n ) ) . '</p></div>';
+		$n = function_exists( 'jwellery_import_demo_product_images' ) ? jwellery_import_demo_product_images( true ) : 0;
+		echo '<div class="notice notice-success"><p>' . esc_html( sprintf( __( 'Product images replaced (%d products).', 'jwellery-jewelry' ), (int) $n ) ) . '</p></div>';
 	}
 	if ( isset( $_POST['jwellery_update_pages'] ) && check_admin_referer( 'jwellery_setup' ) ) {
 		if ( function_exists( 'jwellery_maintain_store' ) ) {
@@ -560,7 +560,7 @@ function jwellery_store_setup_page() {
 		</form>
 		<form method="post" style="margin-bottom:12px;">
 			<?php wp_nonce_field( 'jwellery_setup' ); ?>
-			<button type="submit" name="jwellery_import_images" class="button"><?php esc_html_e( 'Import product images only', 'jwellery-jewelry' ); ?></button>
+			<button type="submit" name="jwellery_import_images" class="button"><?php esc_html_e( 'Replace & import product images', 'jwellery-jewelry' ); ?></button>
 		</form>
 		<form method="post" style="margin-bottom:12px;">
 			<?php wp_nonce_field( 'jwellery_setup' ); ?>

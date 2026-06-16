@@ -1,0 +1,75 @@
+{
+  "sourceDir": "C:\\Users\\HP\\.cursor\\projects\\d-jwellery-ecommerce\\assets",
+  "skippedDuplicates": [
+    "2026-06-15_at_9.59.52_PM__1_",
+    "2026-06-15_at_9.59.52_PM__2_",
+    "2026-06-15_at_9.59.53_PM",
+    "2026-06-15_at_9.59.53_PM__1_"
+  ],
+  "skippedNearDuplicates": [
+    "2026-06-13_at_12.15.12_PM",
+    "2026-06-13_at_12.16.29_PM",
+    "2026-06-13_at_12.17.11_PM",
+    "2026-06-15_at_9.48.11_PM",
+    "2026-06-15_at_9.47.56_PM",
+    "2026-06-15_at_9.59.53_PM__2_",
+    "2026-06-16_at_2.27.56_PM__1_",
+    "2026-06-16_at_2.27.57_PM",
+    "2026-06-16_at_2.28.57_PM",
+    "2026-06-16_at_2.28.58_PM",
+    "2026-06-16_at_2.28.59_PM",
+    "2026-06-16_at_2.28.59_PM__1_",
+    "2026-06-16_at_2.29.00_PM",
+    "2026-06-16_at_2.29.00_PM__1_",
+    "2026-06-16_at_2.29.11_PM",
+    "2026-06-16_at_2.29.35_PM__1_",
+    "2026-06-16_at_2.29.58_PM",
+    "2026-06-16_at_3.40.02_PM"
+  ],
+  "products": {
+    "ER-001": {
+      "title": "Changeable studs",
+      "images": ["2026-06-15_at_9.49.36_PM", "2026-06-16_at_2.29.35_PM"]
+    },
+    "ER-002": {
+      "title": "Flower Stud with string earrings",
+      "images": ["2026-06-16_at_2.27.56_PM"]
+    },
+    "NK-001": {
+      "title": "5 lines Chandraharam",
+      "images": ["2026-06-16_at_3.36.08_PM"]
+    },
+    "NK-003": {
+      "title": "Short black beads",
+      "images": ["2026-06-16_at_1.58.05_PM"]
+    },
+    "CK-001": {
+      "title": "Mini chocker",
+      "images": ["2026-06-16_at_3.36.41_PM"]
+    },
+    "BG-001": {
+      "title": "Gold kada",
+      "images": ["2026-06-15_at_9.50.08_PM"]
+    },
+    "LH-001": {
+      "title": "Thali chain (GJ-1)",
+      "images": ["2026-06-16_at_1.53.10_PM"]
+    },
+    "HM-001": {
+      "title": "Offer champaswaralu",
+      "images": ["2026-06-16_at_3.32.03_PM"]
+    },
+    "HM-003": {
+      "title": "Gold matilu",
+      "images": ["2026-06-15_at_9.49.18_PM", "2026-06-13_at_12.18.08_PM"]
+    },
+    "IG-002": {
+      "title": "Green butta",
+      "images": ["2026-06-15_at_9.59.52_PM"]
+    },
+    "CB-001": {
+      "title": "BB COMBO",
+      "images": ["2026-06-16_at_2.27.33_PM", "2026-06-16_at_3.38.46_PM"]
+    }
+  }
+}

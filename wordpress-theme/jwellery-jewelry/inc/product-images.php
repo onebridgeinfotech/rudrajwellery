@@ -33,20 +33,75 @@ function jwellery_get_product_image_map() {
 }
 
 /**
+ * Bundled image paths for a SKU (primary first, then gallery -2, -3, …).
+ *
+ * @param string $sku Product SKU.
+ * @return string[]
+ */
+function jwellery_get_bundled_image_paths( $sku ) {
+	$paths = array();
+	$dir   = JWELLERY_THEME_DIR . '/assets/demo-products/';
+
+	foreach ( array( 'jpg', 'jpeg', 'png', 'webp' ) as $ext ) {
+		$path = $dir . $sku . '.' . $ext;
+		if ( is_readable( $path ) ) {
+			$paths[] = $path;
+			break;
+		}
+	}
+
+	for ( $i = 2; $i <= 5; $i++ ) {
+		foreach ( array( 'jpg', 'jpeg', 'png', 'webp' ) as $ext ) {
+			$path = $dir . $sku . '-' . $i . '.' . $ext;
+			if ( is_readable( $path ) ) {
+				$paths[] = $path;
+				break;
+			}
+		}
+	}
+
+	return $paths;
+}
+
+/**
  * Local image path for SKU if bundled in theme.
  *
  * @param string $sku Product SKU.
  * @return string|false
  */
 function jwellery_get_bundled_image_path( $sku ) {
-	$dir = JWELLERY_THEME_DIR . '/assets/demo-products/';
-	foreach ( array( 'jpg', 'jpeg', 'png', 'webp' ) as $ext ) {
-		$path = $dir . $sku . '.' . $ext;
-		if ( is_readable( $path ) ) {
-			return $path;
-		}
+	$paths = jwellery_get_bundled_image_paths( $sku );
+	return $paths ? $paths[0] : false;
+}
+
+/**
+ * Remove product featured image and gallery attachments.
+ *
+ * @param int $product_id Product ID.
+ */
+function jwellery_clear_product_images( $product_id ) {
+	$product_id = (int) $product_id;
+	if ( $product_id <= 0 ) {
+		return;
 	}
-	return false;
+
+	$thumb_id = (int) get_post_thumbnail_id( $product_id );
+	if ( $thumb_id ) {
+		wp_delete_attachment( $thumb_id, true );
+		delete_post_thumbnail( $product_id );
+	}
+
+	$product = wc_get_product( $product_id );
+	if ( ! $product ) {
+		return;
+	}
+
+	$gallery = $product->get_gallery_image_ids();
+	foreach ( $gallery as $attach_id ) {
+		wp_delete_attachment( (int) $attach_id, true );
+	}
+	$product->set_gallery_image_ids( array() );
+	$product->save();
 }
 
 /**
@@ -124,45 +179,81 @@ function jwellery_sideload_image_from_url( $url, $sku, $post_id = 0 ) {
 }
 
 /**
- * Set product featured image from bundle or remote URL.
+ * Set product featured image (and gallery) from bundle or remote URL.
  *
  * @param int    $product_id Product ID.
  * @param string $sku        Product SKU.
+ * @param bool   $force      Replace existing images when true.
  * @return bool
  */
-function jwellery_attach_demo_product_image( $product_id, $sku ) {
+function jwellery_attach_demo_product_image( $product_id, $sku, $force = false ) {
 	$product_id = (int) $product_id;
-	if ( $product_id <= 0 || has_post_thumbnail( $product_id ) ) {
-		return (bool) has_post_thumbnail( $product_id );
+	if ( $product_id <= 0 ) {
+		return false;
 	}
 
-	$attach_id = false;
-	$path      = jwellery_get_bundled_image_path( $sku );
-	if ( $path ) {
-		$attach_id = jwellery_upload_image_from_path( $path, $sku, $product_id );
-	}
-
-	if ( ! $attach_id ) {
-		$map = jwellery_get_product_image_map();
-		if ( ! empty( $map[ $sku ]['image'] ) ) {
-			$attach_id = jwellery_sideload_image_from_url( $map[ $sku ]['image'], $sku, $product_id );
-		}
-	}
-
-	if ( $attach_id ) {
-		set_post_thumbnail( $product_id, $attach_id );
+	$bundled = jwellery_get_bundled_image_paths( $sku );
+	if ( ! $bundled && ! $force && has_post_thumbnail( $product_id ) ) {
 		return true;
 	}
 
-	return false;
+	if ( $force && $bundled ) {
+		jwellery_clear_product_images( $product_id );
+	} elseif ( $force ) {
+		$map = jwellery_get_product_image_map();
+		if ( ! empty( $map[ $sku ]['image'] ) ) {
+			jwellery_clear_product_images( $product_id );
+		}
+	}
+
+	if ( ! $force && has_post_thumbnail( $product_id ) ) {
+		return true;
+	}
+
+	$attach_ids = array();
+	foreach ( $bundled as $index => $path ) {
+		$label = $index ? $sku . '-' . ( $index + 1 ) : $sku;
+		$id    = jwellery_upload_image_from_path( $path, $label, $product_id );
+		if ( $id ) {
+			$attach_ids[] = $id;
+		}
+	}
+
+	if ( ! $attach_ids ) {
+		$map = jwellery_get_product_image_map();
+		if ( ! empty( $map[ $sku ]['image'] ) ) {
+			$id = jwellery_sideload_image_from_url( $map[ $sku ]['image'], $sku, $product_id );
+			if ( $id ) {
+				$attach_ids[] = $id;
+			}
+		}
+	}
+
+	if ( ! $attach_ids ) {
+		return (bool) has_post_thumbnail( $product_id );
+	}
+
+	set_post_thumbnail( $product_id, $attach_ids[0] );
+
+	$gallery = array_slice( $attach_ids, 1 );
+	if ( $gallery ) {
+		$product = wc_get_product( $product_id );
+		if ( $product ) {
+			$product->set_gallery_image_ids( $gallery );
+			$product->save();
+		}
+	}
+
+	return true;
 }
 
 /**
  * Attach images to all demo SKUs (existing or new).
  *
+ * @param bool $force Replace existing product images.
  * @return int Number of products that received an image.
  */
-function jwellery_import_demo_product_images() {
+function jwellery_import_demo_product_images( $force = false ) {
 	if ( ! class_exists( 'WooCommerce' ) ) {
 		return 0;
 	}
@@ -174,7 +265,7 @@ function jwellery_import_demo_product_images() {
 		if ( ! $id ) {
 			continue;
 		}
-		if ( jwellery_attach_demo_product_image( $id, $sku ) ) {
+		if ( jwellery_attach_demo_product_image( $id, $sku, $force ) ) {
 			++$count;
 		}
 	}
