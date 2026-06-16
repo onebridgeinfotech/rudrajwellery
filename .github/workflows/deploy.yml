@@ -25,7 +25,7 @@ jobs:
           server: ${{ env.FTP_SERVER }}
           username: ${{ env.FTP_USERNAME }}
           port: ${{ env.FTP_PORT }}
-          password: ${{ secrets.FTP_PASSWORD }}
+          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
           local_path: ./wordpress-theme/jwellery-jewelry/*
           remote_path: ${{ env.FTP_REMOTE_THEME }}
           sftp_only: true
@@ -37,7 +37,7 @@ jobs:
           server: ${{ env.FTP_SERVER }}
           username: ${{ env.FTP_USERNAME }}
           port: ${{ env.FTP_PORT }}
-          password: ${{ secrets.FTP_PASSWORD }}
+          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
           local_path: ./wordpress-plugin/jewelry-upi-store/*
           remote_path: ${{ env.FTP_REMOTE_PLUGIN }}
           sftp_only: true
