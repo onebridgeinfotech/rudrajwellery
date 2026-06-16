@@ -19,14 +19,15 @@ if (-not $Config) {
 $siteUrl = if ($Config['SITE_URL']) { $Config['SITE_URL'].TrimEnd('/') } else { 'https://www.rudrajewellery.co.in' }
 $remoteTheme = $Config['FTP_REMOTE_THEME'].TrimEnd('/')
 $purgeKey = [guid]::NewGuid().ToString('N')
-$keyName = '.deploy-purge-key'
+$keyName = 'jwellery-deploy-purge.key'
+$remoteKey = ($remoteTheme -replace 'themes/[^/]+/?$', '') + "uploads/$keyName"
 $tempKey = Join-Path $env:TEMP "jwellery-deploy-purge-key-$purgeKey"
 Set-Content -Path $tempKey -Value $purgeKey -Encoding ASCII -NoNewline
 
 $server = $Config['FTP_SERVER']
 $user = $Config['FTP_USERNAME']
 $pass = $Config['FTP_PASSWORD']
-$keyRemoteUrl = "ftp://${server}${remoteTheme}/${keyName}"
+$keyRemoteUrl = "ftp://${server}${remoteKey}"
 
 Write-Host "Purging live cache via admin-ajax ..." -ForegroundColor Cyan
 & curl.exe --silent --show-error --ftp-create-dirs `
@@ -43,7 +44,7 @@ $ajaxUrl = "${siteUrl}/wp-admin/admin-ajax.php?action=jwellery_deploy_purge&key=
 $response = & curl.exe -sL -A "JwelleryDeploy/1.0" $ajaxUrl
 Write-Host "Purge response: $response" -ForegroundColor Gray
 
-& curl.exe --silent --user "${user}:${pass}" -Q "DELE ${remoteTheme}/${keyName}" "ftp://${server}/" 2>$null | Out-Null
+& curl.exe --silent --user "${user}:${pass}" -Q "DELE ${remoteKey}" "ftp://${server}/" 2>$null | Out-Null
 Remove-Item $tempKey -Force -ErrorAction SilentlyContinue
 
 if ($response -match '"success":true' -or $response -match 'purged') {
