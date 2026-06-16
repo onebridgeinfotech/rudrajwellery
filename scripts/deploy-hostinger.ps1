@@ -23,7 +23,8 @@ foreach ($key in $required) {
     }
 }
 
-$port = if ($config['FTP_PORT']) { [int]$config['FTP_PORT'] } else { 21 }
+$port = if ($config['FTP_PORT']) { [int]$config['FTP_PORT'] } else { 65002 }
+$protocol = if ($config['FTP_PROTOCOL']) { $config['FTP_PROTOCOL'].ToLower() } elseif ($port -eq 65002) { 'sftp' } else { 'ftp' }
 
 function Deploy-Folder {
     param(
@@ -46,7 +47,7 @@ function Deploy-Folder {
         $script = @"
 option batch abort
 option confirm off
-open ftp://${config['FTP_USERNAME']}:$([Uri]::EscapeDataString($config['FTP_PASSWORD']))@${config['FTP_SERVER']}:$port/
+open ${protocol}://${config['FTP_USERNAME']}:$([Uri]::EscapeDataString($config['FTP_PASSWORD']))@${config['FTP_SERVER']}:$port/ -hostkey=*
 synchronize remote -mirror -criteria=time "$LocalDir" "$RemoteDir"
 exit
 "@

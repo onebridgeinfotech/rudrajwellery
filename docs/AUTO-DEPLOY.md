@@ -54,28 +54,60 @@ Server, username, and paths are set in `.github/workflows/deploy.yml`.
 
 ---
 
-## Daily workflow (fully automatic)
+## Daily workflow (local first, then live)
 
-Every push to `main` triggers **Deploy to Hostinger** — no manual Run workflow needed.
+### 1. One-time: configure local WordPress
+
+Copy `local.env.example` to `local.env` and set paths to your **local** WordPress install (Local WP, XAMPP, Laragon, etc.):
+
+```powershell
+copy local.env.example local.env
+notepad local.env
+```
+
+Example (`local.env`):
+
+```
+LOCAL_SITE_URL=http://localhost:10008
+LOCAL_WP_THEME_PATH=C:\Users\HP\Local Sites\rudra\app\public\wp-content\themes\jwellery-jewelry
+LOCAL_WP_PLUGIN_PATH=C:\Users\HP\Local Sites\rudra\app\public\wp-content\plugins\jewelry-upi-store
+```
+
+Install WordPress + WooCommerce locally once, activate the theme and UPI plugin there.
+
+### 2. Ship when ready (preview -> confirm -> deploy)
 
 ```powershell
 cd "d:\jwellery ecommerce"
 .\scripts\ship.ps1 "Describe your change"
 ```
 
-Or manually:
+What happens:
+
+1. **Sync** theme/plugin to local WordPress and open browser
+2. **You review** locally — type `y` only if it looks correct
+3. **Commit + push** to GitHub
+4. **GitHub Actions** deploys to Hostinger automatically (no manual Run workflow)
+
+Skip local preview (already tested):
 
 ```powershell
-git add .
-git commit -m "Describe your change"
-git push origin main
+.\scripts\ship.ps1 "Hotfix" -SkipLocal
 ```
 
-Then open **Actions** tab only to **watch** progress (optional):  
-https://github.com/onebridgeinfotech/rudrajwellery/actions
+Preview locally anytime without deploying:
 
-**Required once:** GitHub secret `FTP_PASSWORD` = your Hostinger FTP password.  
-Server/username/paths are in `.github/workflows/deploy.yml`.
+```powershell
+.\scripts\sync-local.ps1
+```
+
+### GitHub secret (once)
+
+`FTP_PASSWORD` = your Hostinger FTP/SFTP password (same password for both).
+
+**hPanel:** Advanced → **Remote Access** → turn **SSH/SFTP ON** (required for GitHub deploy).
+
+**Port:** Hostinger shared hosting uses **SFTP port `65002`**, not FTP port 21. GitHub cannot reach port 21 (timeout).
 
 ---
 
