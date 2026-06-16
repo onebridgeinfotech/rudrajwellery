@@ -264,8 +264,14 @@ function jwellery_home_popular_tabs() {
 				)
 				: array();
 		}
+		$fill_args = array(
+			'status'       => 'publish',
+			'stock_status' => 'instock',
+			'orderby'      => 'date',
+			'order'        => 'DESC',
+		);
 		$panels[ $key ] = function_exists( 'jwellery_supplement_products_for_grid' )
-			? jwellery_supplement_products_for_grid( $products, 4, 2, $tab['args'] )
+			? jwellery_supplement_products_for_grid( $products, 4, 2, $fill_args )
 			: $products;
 	}
 
