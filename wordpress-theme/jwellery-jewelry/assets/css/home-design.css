@@ -499,9 +499,44 @@
 }
 
 /* ——— Steal Deal Offers: 4×2 desktop, 2-col tablet & mobile ——— */
-.jwellery-home-section--steal-deals .jwellery-product-grid--deals {
-	grid-template-columns: repeat(4, minmax(0, 1fr));
+.jwellery-home-section--steal-deals .jwellery-product-grid--deals,
+.jwellery-home-section--steal-deals .jwellery-product-grid--cols-4 {
+	display: grid !important;
+	grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
 	gap: 20px;
+}
+
+.jwellery-home-section--steal-deals .product-image-wrap {
+	aspect-ratio: 1;
+	overflow: hidden;
+	border-radius: 10px;
+}
+
+.jwellery-home-section--steal-deals .product-image-wrap img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+/* ——— Follow Our Journey: 4×2 desktop ——— */
+@media (min-width: 1025px) {
+	.jwellery-follow-grid--cols-4,
+	.jwellery-home-section--follow-our-journey .jwellery-follow-grid {
+		grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+		gap: 20px;
+	}
+}
+
+.jwellery-home-section--follow-our-journey .jwellery-follow-item {
+	aspect-ratio: 1;
+	background: #f5f0eb;
+}
+
+.jwellery-home-section--follow-our-journey .jwellery-follow-item img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
 }
 
 .jwellery-deals-scroll-hint {

@@ -137,9 +137,10 @@ function jwellery_home_shop_by_budget() {
  *
  * @param string $title Section title.
  * @param array  $args  wc_get_products args.
- * @param string $link  View all URL.
+ * @param string       $link     View all URL.
+ * @param WC_Product[] $products Optional pre-selected products.
  */
-function jwellery_home_product_grid( $title, $args, $link = '' ) {
+function jwellery_home_product_grid( $title, $args, $link = '', $products = null ) {
 	if ( ! function_exists( 'wc_get_products' ) ) {
 		return;
 	}
@@ -148,9 +149,19 @@ function jwellery_home_product_grid( $title, $args, $link = '' ) {
 		'status'       => 'publish',
 		'stock_status' => 'instock',
 	);
-	$products = function_exists( 'jwellery_get_products_for_display' )
-		? jwellery_get_products_for_display( array_merge( $base, $args ), 4, 2 )
-		: wc_get_products( array_merge( array( 'limit' => 8 ), $base, $args ) );
+	if ( null === $products ) {
+		$products = function_exists( 'jwellery_get_products_for_display' )
+			? jwellery_get_products_for_display( array_merge( $base, $args ), 4, 2 )
+			: wc_get_products( array_merge( array( 'limit' => 8 ), $base, $args ) );
+	} elseif ( function_exists( 'jwellery_trim_products_to_full_rows' ) ) {
+		$products = jwellery_trim_products_to_full_rows(
+			function_exists( 'jwellery_filter_products_with_images' )
+				? jwellery_filter_products_with_images( $products )
+				: $products,
+			4,
+			2
+		);
+	}
 	if ( empty( $products ) ) {
 		return;
 	}
@@ -186,7 +197,7 @@ function jwellery_home_product_grid( $title, $args, $link = '' ) {
 				);
 			}
 			?>
-			<ul class="products jwellery-product-grid jwellery-product-grid--static<?php echo $is_deals ? ' jwellery-product-grid--deals' : ''; ?>" data-animate="carousel">
+			<ul class="products jwellery-product-grid jwellery-product-grid--static jwellery-product-grid--cols-4<?php echo $is_deals ? ' jwellery-product-grid--deals' : ''; ?>" data-animate="carousel">
 				<?php
 				foreach ( $products as $product ) {
 					jwellery_render_product_card( $product );
@@ -407,21 +418,38 @@ function jwellery_home_category_stats() {
  * Steal deal offers (on-sale products).
  */
 function jwellery_home_steal_deals() {
-	$args = array( 'on_sale' => true, 'limit' => 8 );
-	if ( function_exists( 'wc_get_products' ) ) {
-		$check = wc_get_products( array_merge( $args, array( 'stock_status' => 'instock', 'status' => 'publish' ) ) );
-		if ( empty( $check ) ) {
-			$args = array(
-				'limit'   => 8,
-				'orderby' => 'price',
-				'order'   => 'ASC',
-			);
-		}
+	if ( ! function_exists( 'jwellery_get_products_for_display' ) ) {
+		return;
 	}
+
+	$base = array(
+		'status'       => 'publish',
+		'stock_status' => 'instock',
+	);
+
+	$products = jwellery_get_products_for_display( array_merge( $base, array( 'on_sale' => true ) ), 4, 2 );
+	if ( count( $products ) < 4 ) {
+		$products = jwellery_get_products_for_display(
+			array_merge(
+				$base,
+				array(
+					'orderby' => 'price',
+					'order'   => 'ASC',
+				)
+			),
+			4,
+			2
+		);
+	}
+	if ( empty( $products ) ) {
+		return;
+	}
+
 	jwellery_home_product_grid(
 		__( 'Steal Deal Offers', 'jwellery-jewelry' ),
-		$args,
-		jwellery_get_shop_url()
+		array(),
+		jwellery_get_shop_url(),
+		$products
 	);
 }
 
@@ -586,6 +614,10 @@ function jwellery_home_follow_journey() {
 		return;
 	}
 
+	if ( count( $products ) < 4 ) {
+		return;
+	}
+
 	$ig = get_theme_mod( 'jwellery_instagram', '' );
 	?>
 	<section class="jwellery-home-section jwellery-follow jwellery-home-section--follow-our-journey">
@@ -602,10 +634,13 @@ function jwellery_home_follow_journey() {
 				);
 			}
 			?>
-			<div class="jwellery-follow-grid" data-animate="carousel">
+			<div class="jwellery-follow-grid jwellery-follow-grid--cols-4" data-animate="carousel">
 				<?php foreach ( $products as $product ) : ?>
+					<?php if ( function_exists( 'jwellery_product_has_image' ) && ! jwellery_product_has_image( $product ) ) : ?>
+						<?php continue; ?>
+					<?php endif; ?>
 					<a class="jwellery-follow-item" href="<?php echo esc_url( $product->get_permalink() ); ?>">
-						<?php echo $product->get_image( 'medium' ); // phpcs:ignore ?>
+						<?php echo $product->get_image( 'woocommerce_thumbnail' ); // phpcs:ignore ?>
 					</a>
 				<?php endforeach; ?>
 			</div>

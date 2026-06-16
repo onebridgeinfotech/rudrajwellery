@@ -1944,8 +1944,8 @@ body.jwellery-keyboard-nav *:focus-visible {
 
 .jwellery-follow-grid {
 	display: grid;
-	grid-template-columns: repeat(6, 1fr);
-	gap: 12px;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 16px;
 }
 
 .jwellery-follow-item {
