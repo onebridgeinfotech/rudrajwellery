@@ -144,12 +144,12 @@ body {
 	grid-template-areas: "brand nav actions";
 	align-items: center;
 	gap: 12px 20px;
-	min-height: 72px;
+	min-height: 68px;
 }
 
 @media (min-width: 1025px) {
 	.jwellery-header-inner {
-		min-height: 84px;
+		min-height: 72px;
 		gap: 12px 24px;
 	}
 }
@@ -175,36 +175,53 @@ body {
 	display: block;
 	height: auto;
 	width: auto;
-	max-height: 56px;
-	max-width: min(220px, 45vw);
+	max-height: 48px;
+	max-width: min(200px, 40vw);
 	object-fit: contain;
 	object-position: left center;
 }
 
-/* Portrait marks (Rudra, custom uploads) — height drives width via aspect ratio */
+/* Portrait marks (Rudra, custom uploads) — logo only, header height unchanged */
 .jwellery-site-logo--rudra,
 .jwellery-site-logo--kalpana,
 .jwellery-site-logo--custom {
 	width: auto;
-	height: 56px;
-	max-height: none;
-	max-width: min(92px, 22vw);
+	height: 48px;
+	max-height: 48px;
+	max-width: min(86px, 20vw);
 	object-fit: contain;
 	object-position: left center;
+}
+
+@media (min-width: 769px) {
+	.jwellery-site-logo,
+	.jwellery-branding .custom-logo {
+		max-height: 52px;
+		max-width: min(220px, 32vw);
+	}
+
+	.jwellery-site-logo--rudra,
+	.jwellery-site-logo--kalpana,
+	.jwellery-site-logo--custom {
+		height: 52px;
+		max-height: 52px;
+		max-width: min(94px, 22vw);
+	}
 }
 
 @media (min-width: 1025px) {
 	.jwellery-site-logo--rudra,
 	.jwellery-site-logo--kalpana,
 	.jwellery-site-logo--custom {
-		height: 72px;
-		max-width: 128px;
+		height: 56px;
+		max-height: 56px;
+		max-width: 100px;
 	}
 
 	.jwellery-site-logo,
 	.jwellery-branding .custom-logo {
-		max-height: 60px;
-		max-width: min(280px, 28vw);
+		max-height: 56px;
+		max-width: min(260px, 24vw);
 	}
 }
 

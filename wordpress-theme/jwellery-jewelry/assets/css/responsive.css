@@ -27,15 +27,16 @@ body.jwellery-menu-open {
 
 	.jwellery-site-logo,
 	.jwellery-branding .custom-logo {
-		max-height: 52px;
-		max-width: min(220px, 50vw);
+		max-height: 50px;
+		max-width: min(200px, 42vw);
 	}
 
 	.jwellery-site-logo--rudra,
 	.jwellery-site-logo--kalpana,
 	.jwellery-site-logo--custom {
-		height: 68px;
-		max-width: min(104px, 26vw);
+		height: 50px;
+		max-height: 50px;
+		max-width: min(90px, 24vw);
 	}
 
 	.jwellery-footer-logo,
@@ -175,10 +176,10 @@ body.jwellery-menu-open {
 		grid-template-areas:
 			"toggle brand actions"
 			"nav nav nav";
-		gap: 8px 10px;
+		gap: 6px 10px;
 		align-items: center;
-		min-height: 72px;
-		padding: 10px 0;
+		min-height: 60px;
+		padding: 6px 0;
 	}
 
 	.jwellery-branding {
@@ -209,16 +210,17 @@ body.jwellery-menu-open {
 
 	.jwellery-site-logo,
 	.jwellery-branding .custom-logo {
-		max-height: 52px;
-		max-width: min(200px, 58vw);
+		max-height: 44px;
+		max-width: min(180px, 52vw);
+		margin: 0 auto;
 	}
 
 	.jwellery-site-logo--rudra,
 	.jwellery-site-logo--kalpana,
 	.jwellery-site-logo--custom {
-		height: 64px;
-		max-height: none;
-		max-width: min(96px, 30vw);
+		height: 44px;
+		max-height: 44px;
+		max-width: min(80px, 28vw);
 		object-position: center center;
 	}
 
@@ -703,10 +705,10 @@ body.jwellery-menu-open {
 /* ——— Small phones (max 480px) ——— */
 @media (max-width: 480px) {
 	.jwellery-header-inner {
-		min-height: 64px;
+		min-height: 56px;
 		grid-template-columns: 38px minmax(0, 1fr) auto;
-		gap: 6px 8px;
-		padding: 8px 0;
+		gap: 4px 8px;
+		padding: 5px 0;
 	}
 
 	.jwellery-header-icon,
@@ -722,15 +724,16 @@ body.jwellery-menu-open {
 
 	.jwellery-site-logo,
 	.jwellery-branding .custom-logo {
-		max-height: 48px;
-		max-width: min(180px, 62vw);
+		max-height: 40px;
+		max-width: min(160px, 56vw);
 	}
 
 	.jwellery-site-logo--rudra,
 	.jwellery-site-logo--kalpana,
 	.jwellery-site-logo--custom {
-		height: 58px;
-		max-width: min(88px, 34vw);
+		height: 40px;
+		max-height: 40px;
+		max-width: min(72px, 32vw);
 	}
 
 	.jwellery-footer-logo.jwellery-site-logo--rudra {
@@ -802,15 +805,16 @@ body.jwellery-menu-open {
 
 	.jwellery-site-logo,
 	.jwellery-branding .custom-logo {
-		max-height: 60px;
-		max-width: min(280px, 28vw);
+		max-height: 56px;
+		max-width: min(260px, 24vw);
 	}
 
 	.jwellery-site-logo--rudra,
 	.jwellery-site-logo--kalpana,
 	.jwellery-site-logo--custom {
-		height: 72px;
-		max-width: 128px;
+		height: 56px;
+		max-height: 56px;
+		max-width: 100px;
 	}
 
 	.jwellery-footer-logo,

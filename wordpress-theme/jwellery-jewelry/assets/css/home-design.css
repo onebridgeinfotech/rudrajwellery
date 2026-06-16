@@ -498,12 +498,35 @@
 	}
 }
 
-/* ——— Steal Deal Offers: 4×2 desktop, 2-col tablet & mobile ——— */
-.jwellery-home-section--steal-deals .jwellery-product-grid--deals,
-.jwellery-home-section--steal-deals .jwellery-product-grid--cols-4 {
-	display: grid !important;
-	grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-	gap: 20px;
+/* ——— Steal Deal Offers: 4×2 desktop, auto-scroll carousel tablet & mobile ——— */
+.jwellery-home-section--steal-deals .jwellery-carousel--deals {
+	position: relative;
+}
+
+.jwellery-home-section--steal-deals .jwellery-carousel--deals .jwellery-carousel-track {
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+	-webkit-overflow-scrolling: touch;
+}
+
+.jwellery-home-section--steal-deals .jwellery-carousel--deals .jwellery-carousel-track::-webkit-scrollbar {
+	display: none;
+}
+
+.jwellery-home-section--steal-deals .jwellery-carousel--deals .jwellery-product-grid--deals {
+	display: flex;
+	flex-wrap: nowrap;
+	gap: 16px;
+	list-style: none;
+	margin: 0;
+	padding: 0 2px 8px;
+}
+
+.jwellery-home-section--steal-deals .jwellery-carousel--deals .product {
+	flex: 0 0 min(82vw, 320px);
+	scroll-snap-align: start;
 }
 
 .jwellery-home-section--steal-deals .product-image-wrap {
@@ -518,6 +541,47 @@
 	object-fit: cover;
 }
 
+.jwellery-home-section--steal-deals .jwellery-deals-dots,
+.jwellery-home-section--steal-deals .jwellery-deals-counter {
+	display: flex;
+}
+
+.jwellery-home-section--steal-deals .jwellery-deals-counter {
+	display: block;
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+	.jwellery-home-section--steal-deals .jwellery-carousel--deals .product {
+		flex: 0 0 min(58vw, 340px);
+	}
+}
+
+@media (min-width: 1025px) {
+	.jwellery-home-section--steal-deals .jwellery-carousel--deals .jwellery-carousel-track {
+		overflow: visible;
+	}
+
+	.jwellery-home-section--steal-deals .jwellery-carousel--deals .jwellery-product-grid--deals,
+	.jwellery-home-section--steal-deals .jwellery-product-grid--cols-4 {
+		display: grid !important;
+		grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+		gap: 20px;
+		flex-wrap: wrap;
+		padding: 0;
+	}
+
+	.jwellery-home-section--steal-deals .jwellery-carousel--deals .product {
+		flex: none;
+		width: auto;
+	}
+
+	.jwellery-home-section--steal-deals .jwellery-carousel--deals .carousel-btn,
+	.jwellery-home-section--steal-deals .jwellery-deals-dots,
+	.jwellery-home-section--steal-deals .jwellery-deals-counter {
+		display: none !important;
+	}
+}
+
 /* ——— Follow Our Journey: 4×2 from tablet up ——— */
 @media (min-width: 769px) {
 	.jwellery-follow-grid--cols-4,
@@ -528,8 +592,12 @@
 }
 
 @media (min-width: 1025px) {
-	.jwellery-home-section--steal-deals .jwellery-product-grid--deals,
-	.jwellery-home-section--steal-deals .jwellery-product-grid--cols-4,
+	.jwellery-follow-grid--cols-4,
+	.jwellery-home-section--follow-our-journey .jwellery-follow-grid {
+		grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+		gap: 20px;
+	}
+
 	.jwellery-home-section--popular-tabs .jwellery-product-grid--cols-4 {
 		grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
 	}
@@ -687,10 +755,32 @@
 		margin-top: 16px;
 	}
 
-	/* Steal Deal Offers — 2-col grid */
-	.jwellery-home-section--steal-deals .jwellery-product-grid--deals {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 14px;
+	/* Steal Deal Offers — horizontal carousel (not 2-col grid) */
+	.jwellery-home-section--steal-deals .jwellery-carousel--deals .product {
+		padding: 12px;
+	}
+
+	.jwellery-home-section--steal-deals .jwellery-carousel--deals .product-image-wrap {
+		margin-bottom: 10px;
+		border-radius: 10px;
+		min-height: 0;
+	}
+
+	.jwellery-home-section--steal-deals .jwellery-carousel--deals .jwellery-product-title {
+		font-size: 0.92rem;
+	}
+
+	.jwellery-home-section--steal-deals .jwellery-carousel--deals .price {
+		font-size: 0.9rem;
+	}
+
+	.jwellery-home-section--steal-deals .jwellery-carousel--deals .carousel-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		font-size: 1.2rem;
 	}
 
 	/* Top Categories — 3-col tablet grid */
@@ -727,14 +817,17 @@
 		font-size: 0.78rem;
 	}
 
-	.jwellery-home-section--popular-tabs .jwellery-product-grid--static,
-	.jwellery-home-section--steal-deals .jwellery-product-grid--deals {
+	.jwellery-home-section--popular-tabs .jwellery-product-grid--static {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 10px;
 	}
 
-	.jwellery-home-section--popular-tabs .product,
-	.jwellery-home-section--steal-deals .product {
+	.jwellery-home-section--steal-deals .jwellery-carousel--deals .product {
+		flex: 0 0 min(86vw, 300px);
+		padding: 10px;
+	}
+
+	.jwellery-home-section--popular-tabs .product {
 		padding: 8px;
 	}
 

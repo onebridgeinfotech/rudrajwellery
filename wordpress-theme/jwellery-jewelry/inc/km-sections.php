@@ -197,13 +197,36 @@ function jwellery_home_product_grid( $title, $args, $link = '', $products = null
 				);
 			}
 			?>
-			<ul class="products jwellery-product-grid jwellery-product-grid--static jwellery-product-grid--cols-4<?php echo $is_deals ? ' jwellery-product-grid--deals' : ''; ?>" data-animate="carousel">
+			<?php if ( $is_deals ) : ?>
+				<?php $deals_total = count( $products ); ?>
+				<div class="jwellery-carousel jwellery-carousel--deals" data-carousel="steal-deals" data-animate="carousel" data-deals-carousel>
+					<button type="button" class="carousel-btn carousel-prev" aria-label="<?php esc_attr_e( 'Previous', 'jwellery-jewelry' ); ?>">‹</button>
+					<div class="jwellery-carousel-track" id="carousel-steal-deals">
+						<ul class="products jwellery-product-grid jwellery-product-grid--cols-4 jwellery-product-grid--deals">
+							<?php
+							foreach ( $products as $product ) {
+								jwellery_render_product_card( $product );
+							}
+							?>
+						</ul>
+					</div>
+					<button type="button" class="carousel-btn carousel-next" aria-label="<?php esc_attr_e( 'Next', 'jwellery-jewelry' ); ?>">›</button>
+				</div>
+				<div class="carousel-dots jwellery-deals-dots" role="tablist" aria-label="<?php echo esc_attr( $title ); ?>">
+					<?php for ( $d = 0; $d < $deals_total; $d++ ) : ?>
+						<button type="button" class="carousel-dot<?php echo 0 === $d ? ' is-active' : ''; ?>" data-index="<?php echo (int) $d; ?>" aria-label="<?php echo esc_attr( sprintf( __( 'Slide %d', 'jwellery-jewelry' ), $d + 1 ) ); ?>"></button>
+					<?php endfor; ?>
+				</div>
+				<p class="carousel-counter jwellery-deals-counter"><span class="carousel-current">1</span> / <?php echo (int) $deals_total; ?></p>
+			<?php else : ?>
+			<ul class="products jwellery-product-grid jwellery-product-grid--static jwellery-product-grid--cols-4" data-animate="carousel">
 				<?php
 				foreach ( $products as $product ) {
 					jwellery_render_product_card( $product );
 				}
 				?>
 			</ul>
+			<?php endif; ?>
 		</div>
 	</section>
 	<?php

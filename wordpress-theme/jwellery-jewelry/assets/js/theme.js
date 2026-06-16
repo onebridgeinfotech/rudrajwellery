@@ -235,14 +235,34 @@
 		var section = carousel.closest('.jwellery-home-section');
 		var currentEl = section ? section.querySelector('.carousel-current') : null;
 		var dotsWrap = section ? section.querySelector('.carousel-dots') : null;
+		var isDealsCarousel = carousel.hasAttribute('data-deals-carousel');
+		var dealsMobileMq = window.matchMedia('(max-width: 1024px)');
 		if (!track) {
 			return;
 		}
 
 		var items = track.querySelectorAll('.product, .category-card');
-		var step = 240;
+
+		function getStep() {
+			if (!items.length) {
+				return 240;
+			}
+			var first = items[0];
+			var gap = 16;
+			if (typeof window.getComputedStyle !== 'undefined') {
+				var grid = track.querySelector('.jwellery-product-grid');
+				if (grid) {
+					var g = window.getComputedStyle(grid).columnGap || window.getComputedStyle(grid).gap;
+					if (g) {
+						gap = parseFloat(g) || gap;
+					}
+				}
+			}
+			return first.offsetWidth + gap;
+		}
 
 		function scrollToIndex(index) {
+			var step = getStep();
 			var left = Math.max(0, index * step);
 			track.scrollTo({ left: left, behavior: 'smooth' });
 			updateCounter(index);
@@ -261,12 +281,14 @@
 
 		if (prev) {
 			prev.addEventListener('click', function () {
+				var step = getStep();
 				var idx = Math.round(track.scrollLeft / step) - 1;
 				scrollToIndex(Math.max(0, idx));
 			});
 		}
 		if (next) {
 			next.addEventListener('click', function () {
+				var step = getStep();
 				var idx = Math.round(track.scrollLeft / step) + 1;
 				scrollToIndex(Math.min(items.length - 1, idx));
 			});
@@ -281,15 +303,47 @@
 		}
 
 		track.addEventListener('scroll', function () {
+			var step = getStep();
 			updateCounter(Math.round(track.scrollLeft / step));
 		});
 
-		if (cfg.carouselAuto && items.length > 1) {
+		var autoTimer = null;
+		function startAuto() {
+			if (autoTimer || items.length < 2) {
+				return;
+			}
 			var autoIndex = 0;
-			setInterval(function () {
+			autoTimer = setInterval(function () {
+				if (isDealsCarousel && !dealsMobileMq.matches) {
+					return;
+				}
 				autoIndex = (autoIndex + 1) % items.length;
 				scrollToIndex(autoIndex);
-			}, 5000);
+			}, isDealsCarousel ? 4000 : 5000);
+		}
+
+		function stopAuto() {
+			if (!autoTimer) {
+				return;
+			}
+			clearInterval(autoTimer);
+			autoTimer = null;
+		}
+
+		if (cfg.carouselAuto && items.length > 1) {
+			startAuto();
+			carousel.addEventListener('mouseenter', stopAuto);
+			carousel.addEventListener('mouseleave', startAuto);
+			carousel.addEventListener('touchstart', stopAuto, { passive: true });
+			carousel.addEventListener('touchend', function () {
+				setTimeout(startAuto, 3000);
+			}, { passive: true });
+			if (isDealsCarousel && dealsMobileMq.addEventListener) {
+				dealsMobileMq.addEventListener('change', function () {
+					stopAuto();
+					startAuto();
+				});
+			}
 		}
 	});
 
