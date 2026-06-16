@@ -12,3 +12,8 @@ Thumbs.db
 # Local WordPress (if added later)
 wordpress/
 wp-config.php
+
+# Deploy credentials (never commit)
+.env
+.env.deploy
+deploy.local.json
