@@ -1,0 +1,31 @@
+/*
+Theme Name: Jwellery Jewelry Child
+Theme URI: https://ramyanagendra.com/
+Description: Child theme for Kadence — jewelry store colors and WooCommerce tweaks. Requires Kadence parent theme.
+Author: Jewelry E-commerce
+Template: kadence
+Version: 1.0.0
+Requires at least: 6.0
+Tested up to: 6.7
+Requires PHP: 8.0
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: jwellery-jewelry-child
+*/
+
+/* Parent styles are loaded via functions.php */
+
+/* Jewelry brand accents */
+:root {
+	--jwellery-gold: #b8860b;
+	--jwellery-cream: #fffdf8;
+}
+
+.woocommerce-message,
+.woocommerce-info {
+	border-top-color: var(--jwellery-gold);
+}
+
+.jus-thankyou-upi {
+	font-family: inherit;
+}

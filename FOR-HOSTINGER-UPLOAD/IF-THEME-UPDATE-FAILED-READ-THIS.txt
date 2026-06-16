@@ -1,0 +1,17 @@
+ERROR: "Could not remove the old theme"
+
+Your zip file is CORRECT. The server has a stuck old theme folder.
+
+FIX:
+1. Hostinger hPanel -> File Manager
+2. Go to: public_html/wp-content/themes/
+3. DELETE the folder: jwellery-jewelry
+4. WordPress admin -> Appearance -> Themes -> activate Twenty Twenty-Four first
+5. Upload 1-THEME-UPLOAD-jwellery-jewelry.zip again
+
+Full guide: docs\HOSTINGER-THEME-UPDATE-FIX.md
+
+CRITICAL ERROR on homepage?
+-> Rename themes/jwellery-jewelry folder in File Manager
+-> Install WooCommerce FIRST, then upload theme v1.0.2 again
+-> docs\CRITICAL-ERROR-FIX.md

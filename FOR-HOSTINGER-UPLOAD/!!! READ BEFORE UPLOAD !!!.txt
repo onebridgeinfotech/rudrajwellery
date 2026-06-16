@@ -1,0 +1,18 @@
+UPLOAD THIS FILE ONLY (do not re-zip this folder):
+
+  1-THEME-UPLOAD-jwellery-jewelry.zip
+
+WRONG uploads (will show "missing style.css"):
+  - FOR-HOSTINGER-UPLOAD.zip
+  - jwellery ecommerce.zip
+  - Re-compressing the zip on Mac/Windows
+
+If install still fails, use:
+  jwellery-jewelry-DIRECT.zip  (same theme, alternate build)
+
+After theme installs (v2.4.0+):
+  Appearance -> Store Setup -> Full setup
+  Customize -> Store UI -> WhatsApp number + brand name
+  Customize -> Homepage Hero -> optional slide images
+
+  2-PLUGIN-UPLOAD-jewelry-upi-store.zip  -> Plugins -> Upload

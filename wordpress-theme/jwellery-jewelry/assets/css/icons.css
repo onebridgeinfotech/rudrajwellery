@@ -1,0 +1,412 @@
+/**
+ * Professional icon UI — header, trust, social, mobile bar.
+ */
+
+/* ——— Header icon cluster ——— */
+.jwellery-header-icons {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	padding: 3px;
+	background: var(--jwellery-cream);
+	border: 1px solid var(--jwellery-border);
+	border-radius: 999px;
+}
+
+.jwellery-header-icon {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background: transparent;
+	color: var(--jwellery-black);
+	cursor: pointer;
+	text-decoration: none;
+	flex-shrink: 0;
+	transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.jwellery-header-icon:hover,
+.jwellery-header-icon:focus-visible,
+.jwellery-header-icon[aria-expanded="true"] {
+	background: #fff;
+	color: var(--jwellery-maroon);
+	outline: none;
+	box-shadow: 0 2px 8px rgba(123, 30, 58, 0.12);
+}
+
+.jwellery-header-icon svg,
+.jwellery-header-icon .jwellery-icon {
+	display: block;
+	flex-shrink: 0;
+}
+
+.jwellery-cart-icon .cart-count-badge,
+.jwellery-wishlist-header-link .jwellery-wishlist-count-badge {
+	position: absolute;
+	top: 4px;
+	right: 4px;
+	background: var(--jwellery-maroon);
+	color: #fff;
+	font-size: 0.62rem;
+	min-width: 17px;
+	height: 17px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 700;
+	line-height: 1;
+	border: 2px solid #fff;
+}
+
+.jwellery-wishlist-header-link .jwellery-wishlist-count-badge[hidden] {
+	display: none;
+}
+
+.jwellery-wishlist-header-link {
+	padding: 0;
+}
+
+.jwellery-wishlist-header-link .jwellery-icon {
+	width: 20px;
+	height: 20px;
+}
+
+.jwellery-header-user-name {
+	display: none;
+	max-width: 88px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 0.72rem;
+	font-weight: 700;
+	color: var(--jwellery-maroon);
+	line-height: 1.2;
+}
+
+.jwellery-account-icon.is-logged-in {
+	width: auto;
+	max-width: 120px;
+	padding-right: 4px;
+	gap: 6px;
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+	.jwellery-wishlist-header-link .jwellery-wishlist-count-badge {
+		top: 3px;
+		right: 3px;
+		min-width: 16px;
+		height: 16px;
+		font-size: 0.58rem;
+	}
+
+	.jwellery-wishlist-header-link .jwellery-icon {
+		width: 19px;
+		height: 19px;
+	}
+}
+
+@media (max-width: 768px) {
+	.jwellery-wishlist-header-link .jwellery-wishlist-count-badge {
+		top: 2px;
+		right: 2px;
+		min-width: 15px;
+		height: 15px;
+		font-size: 0.56rem;
+		border-width: 1.5px;
+	}
+
+	.jwellery-wishlist-header-link .jwellery-icon {
+		width: 18px;
+		height: 18px;
+	}
+}
+
+@media (max-width: 480px) {
+	.jwellery-wishlist-header-link .jwellery-wishlist-count-badge {
+		top: 1px;
+		right: 1px;
+	}
+}
+
+@media (min-width: 1025px) {
+	.jwellery-header-user-name {
+		display: inline-block;
+	}
+
+	.jwellery-wishlist-header-link .jwellery-icon {
+		width: 21px;
+		height: 21px;
+	}
+}
+
+/* Hamburger */
+.jwellery-nav-toggle {
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	border: 1px solid var(--jwellery-border);
+	background: var(--jwellery-cream);
+	transition: background 0.2s, border-color 0.2s;
+}
+
+.jwellery-nav-toggle:hover,
+.jwellery-nav-toggle:focus-visible {
+	background: #fff;
+	border-color: var(--jwellery-maroon);
+}
+
+.jwellery-nav-toggle .jwellery-icon {
+	display: block;
+}
+
+.jwellery-nav-toggle span:not(.screen-reader-text) {
+	width: 18px;
+}
+
+/* ——— Trust strip — faint white outline icons on maroon bar ——— */
+.jwellery-trust-strip .jwellery-trust-strip-grid li {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 12px;
+	text-align: left;
+}
+
+.jwellery-trust-strip .jwellery-trust-icon-wrap,
+.jwellery-trust-strip .jwellery-trust-icon {
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	border-radius: 0;
+	background: transparent;
+	color: rgba(255, 255, 255, 0.8);
+}
+
+.jwellery-trust-strip .jwellery-trust-icon-wrap .jwellery-icon svg,
+.jwellery-trust-strip .jwellery-trust-icon-wrap svg {
+	width: 24px;
+	height: 24px;
+}
+
+.jwellery-trust-strip .jwellery-trust-icon-wrap .jwellery-icon,
+.jwellery-trust-strip .jwellery-trust-icon .jwellery-icon {
+	opacity: 0.88;
+}
+
+.jwellery-trust-strip .jwellery-trust-strip-grid strong {
+	display: block;
+	margin: 0;
+	color: #fff;
+}
+
+.jwellery-trust-strip .jwellery-trust-strip-grid li > span:last-child {
+	display: block;
+	color: rgba(255, 255, 255, 0.78);
+}
+
+.jwellery-trust-strip .jwellery-trust-strip-grid li:hover {
+	background: rgba(255, 255, 255, 0.18);
+	transform: translateY(-2px);
+}
+
+/* ——— Footer social — touch-friendly ——— */
+.jwellery-social-icons--footer-newsletter .jwellery-social-btn {
+	width: 44px;
+	height: 44px;
+}
+
+.jwellery-social-icons--footer-newsletter .jwellery-social-btn svg {
+	width: 22px;
+	height: 22px;
+}
+
+/* ——— Floating WhatsApp ——— */
+.jwellery-floating-wa-icon svg,
+.jwellery-floating-wa-icon .jwellery-icon {
+	display: block;
+	flex-shrink: 0;
+	width: 26px;
+	height: 26px;
+	overflow: visible;
+}
+
+.jwellery-mobile-bar-item .jwellery-icon,
+.jwellery-mobile-bar-item svg {
+	display: block;
+	flex-shrink: 0;
+	width: 22px;
+	height: 22px;
+	overflow: visible;
+}
+
+.jwellery-floating-wa-text {
+	white-space: nowrap;
+}
+
+/* ——— Mobile / tablet bottom bar ——— */
+.jwellery-mobile-bar {
+	display: none;
+}
+
+@media (max-width: 1024px) {
+	body.jwellery-has-mobile-bar {
+		padding-bottom: calc(62px + env(safe-area-inset-bottom, 0px));
+	}
+
+	.jwellery-mobile-bar {
+		display: grid;
+		grid-template-columns: repeat(5, 1fr);
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 9980;
+		background: #fff;
+		border-top: 1px solid var(--jwellery-border);
+		box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+		padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+	}
+
+	.jwellery-mobile-bar-item {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 3px;
+		padding: 4px 2px;
+		border: none;
+		background: none;
+		color: #555;
+		font-size: 0.62rem;
+		font-weight: 600;
+		text-decoration: none;
+		cursor: pointer;
+		min-height: 48px;
+		transition: color 0.2s;
+	}
+
+	.jwellery-mobile-bar-item:hover,
+	.jwellery-mobile-bar-item:focus-visible {
+		color: var(--jwellery-maroon);
+		outline: none;
+	}
+
+	.jwellery-mobile-bar-item--wa {
+		color: #128c7e;
+	}
+
+	.jwellery-mobile-bar-icon-wrap {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 28px;
+		height: 28px;
+	}
+
+	.jwellery-mobile-bar-badge {
+		position: absolute;
+		top: -4px;
+		right: -8px;
+		min-width: 16px;
+		height: 16px;
+		padding: 0 4px;
+		border-radius: 999px;
+		background: var(--jwellery-maroon);
+		color: #fff;
+		font-size: 0.58rem;
+		font-weight: 700;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		line-height: 1;
+	}
+
+	/* Hide duplicate floating WA when bottom bar has chat; keep scroll buttons */
+	body.jwellery-has-mobile-bar .jwellery-floating-stack .jwellery-floating-wa {
+		display: none;
+	}
+
+	body.jwellery-has-mobile-bar .jwellery-sticky-atc {
+		bottom: calc(62px + env(safe-area-inset-bottom, 0px));
+	}
+
+	.jwellery-header-icons {
+		gap: 2px;
+		padding: 2px 4px;
+	}
+
+	.jwellery-header-icon {
+		width: 40px;
+		height: 40px;
+	}
+
+	.jwellery-nav-toggle {
+		width: 40px;
+		height: 40px;
+	}
+
+	.jwellery-trust-strip .jwellery-trust-strip-grid li {
+		align-items: center;
+		gap: 14px;
+		padding: 16px 18px !important;
+	}
+
+	.jwellery-trust-strip .jwellery-trust-icon-wrap,
+	.jwellery-trust-strip .jwellery-trust-icon {
+		width: 42px;
+		height: 42px;
+	}
+
+	.jwellery-trust-strip .jwellery-trust-icon-wrap .jwellery-icon svg,
+	.jwellery-trust-strip .jwellery-trust-icon-wrap svg {
+		width: 26px;
+		height: 26px;
+	}
+}
+
+@media (max-width: 640px) {
+	.jwellery-trust-strip .jwellery-trust-strip-grid {
+		grid-template-columns: 1fr;
+		gap: 12px;
+	}
+
+	.jwellery-trust-strip .jwellery-trust-strip-grid li {
+		align-items: center;
+		gap: 16px;
+		padding: 18px 20px !important;
+		background: rgba(255, 255, 255, 0.1);
+		border: 1px solid rgba(255, 255, 255, 0.15);
+		border-radius: 12px;
+	}
+
+	.jwellery-trust-strip .jwellery-trust-icon-wrap,
+	.jwellery-trust-strip .jwellery-trust-icon {
+		width: 44px;
+		height: 44px;
+	}
+
+	.jwellery-trust-strip .jwellery-trust-icon-wrap .jwellery-icon svg,
+	.jwellery-trust-strip .jwellery-trust-icon-wrap svg {
+		width: 28px;
+		height: 28px;
+	}
+
+	.jwellery-social-icons--footer-newsletter {
+		justify-content: center;
+	}
+
+	.jwellery-footer-social-inline {
+		text-align: center;
+	}
+}

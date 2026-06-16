@@ -1,0 +1,31 @@
+THEME UPLOAD — READ THIS
+========================
+
+UPLOAD ONLY THIS FILE FOR THE THEME:
+
+  1-THEME-UPLOAD-jwellery-jewelry.zip
+
+WordPress path: Appearance → Themes → Add New → Upload Theme
+
+After install, the theme folder MUST be named:
+  jwellery-jewelry
+
+DO NOT upload *-FLAT.zip — WordPress creates a wrong folder name
+(e.g. 1-THEME-UPLOAD-jwellery-jewelry-FLAT) and updates will not show.
+
+If you already used FLAT zip:
+  1. Appearance → Themes → delete "1-THEME-UPLOAD-jwellery-jewelry-FLAT"
+  2. Upload 1-THEME-UPLOAD-jwellery-jewelry.zip again
+  3. Activate "Jwellery Jewelry"
+  4. Hostinger → clear cache → hard refresh site (Ctrl+F5)
+
+Verify: View Page Source on homepage — look for:
+  <!-- Jwellery Jewelry theme 3.0.3 | folder: jwellery-jewelry -->
+
+PLUGIN (separate step):
+  2-PLUGIN-UPLOAD-jewelry-upi-store.zip
+  Plugins → Add New → Upload Plugin
+
+Regenerate zips:
+  cd "D:\jwellery ecommerce"
+  .\scripts\prepare-hostinger-upload.ps1

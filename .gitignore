@@ -1,0 +1,14 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Archives
+*.zip
+
+# IDE
+.idea/
+.vscode/
+
+# Local WordPress (if added later)
+wordpress/
+wp-config.php

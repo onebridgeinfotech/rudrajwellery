@@ -1,0 +1,53 @@
+================================================================================
+  SITE STILL DOWN AFTER DELETING UPI PLUGIN? — DO THIS IN HOSTINGER FILE MANAGER
+================================================================================
+
+Deleting the plugin folder is not enough. WordPress may still try to load it,
+or the theme may crash without the plugin.
+
+TRY THESE IN ORDER (stop when site loads):
+
+--------------------------------------------------------------------------------
+FIX A — Emergency mu-plugin (recommended)
+--------------------------------------------------------------------------------
+1. public_html/wp-content/ → create folder: mu-plugins
+2. Upload: 0-EMERGENCY-FIX-SITE-NOW.php  (into mu-plugins)
+3. Open your site in browser — should load
+4. After site works, DELETE that file from mu-plugins BEFORE activating the plugin
+   (If Activate does nothing, this emergency file is still there — delete it first.)
+
+--------------------------------------------------------------------------------
+FIX B — Switch off custom theme (if Fix A does not work)
+--------------------------------------------------------------------------------
+1. public_html/wp-content/themes/
+2. Rename: jwellery-jewelry  →  jwellery-jewelry-off
+3. Site will use a default WordPress theme (store will look plain but ONLINE)
+4. Log in to wp-admin → Appearance → Themes → re-upload theme zip later
+
+--------------------------------------------------------------------------------
+FIX C — Clean plugins folder
+--------------------------------------------------------------------------------
+In public_html/wp-content/plugins/ delete or rename ANY of these if present:
+  - jewelry-upi-store
+  - jewelry-upi-store-off
+  - jewelry-upi-store-1
+  - jewelry-upi-store-2
+
+Keep only: woocommerce, litespeed-cache, hostinger plugins
+
+--------------------------------------------------------------------------------
+FIX D — Remove stray fix file
+--------------------------------------------------------------------------------
+In public_html/ (same folder as wp-config.php) DELETE if present:
+  - 3-VISIT-ONCE-FIX-CHECKOUT.php
+
+--------------------------------------------------------------------------------
+AFTER SITE IS BACK
+--------------------------------------------------------------------------------
+1. Upload: 2-PLUGIN-UPLOAD-jewelry-upi-store.zip  (must be v1.0.6)
+2. Plugins → Activate Jewelry UPI Store
+3. WooCommerce → Payments → Manual UPI → save UPI ID
+4. LiteSpeed → Purge All
+5. Delete 0-EMERGENCY-FIX-SITE-NOW.php from mu-plugins
+
+================================================================================

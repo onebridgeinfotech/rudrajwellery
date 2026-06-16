@@ -1,0 +1,17 @@
+YOU UPLOADED THE WRONG FILE IF YOU SEE "missing style.css"
+
+WRONG (will always fail):
+  - FOR-HOSTINGER-UPLOAD.zip          <-- you zipped this folder
+  - jwellery ecommerce.zip
+  - jwellery ecommerce (2).zip
+
+CORRECT - pick ONE file at a time from THIS folder:
+
+  FILE: 1-THEME-UPLOAD-jwellery-jewelry.zip
+  WHERE IN WORDPRESS: Appearance -> Themes -> Add New -> Upload Theme
+
+  FILE: 2-PLUGIN-UPLOAD-jewelry-upi-store.zip
+  WHERE IN WORDPRESS: Plugins -> Add New -> Upload Plugin
+
+DO NOT compress this folder into a new zip file.
+Open this folder, select ONE .zip file, upload it.

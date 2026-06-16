@@ -1,0 +1,53 @@
+/**
+ * Login / register CAPTCHA
+ */
+
+.jwellery-login-captcha {
+	margin: 16px 0 14px;
+	padding: 14px 16px;
+	background: #faf9f7;
+	border: 1px solid var(--jwellery-border, #e8dfc8);
+	border-radius: 12px;
+	position: relative;
+}
+
+.jwellery-login-captcha__label {
+	display: block;
+	margin: 0 0 8px;
+	font-size: 0.86rem;
+	font-weight: 700;
+	color: #444;
+}
+
+.jwellery-login-captcha__input {
+	width: 100%;
+	max-width: 160px;
+	padding: 10px 12px;
+	border: 1px solid var(--jwellery-border, #e8dfc8);
+	border-radius: 10px;
+	font-size: 0.95rem;
+}
+
+.jwellery-login-captcha__input:focus {
+	outline: none;
+	border-color: var(--jwellery-maroon, #7b1e3a);
+	box-shadow: 0 0 0 3px rgba(123, 30, 58, 0.12);
+}
+
+.jwellery-captcha-hp {
+	position: absolute;
+	left: -9999px;
+	width: 1px;
+	height: 1px;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.jwellery-login-captcha .cf-turnstile,
+.jwellery-login-captcha .g-recaptcha {
+	margin: 0;
+}
+
+.login .jwellery-login-captcha {
+	max-width: 320px;
+}
