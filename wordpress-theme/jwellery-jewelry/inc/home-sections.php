@@ -76,13 +76,24 @@ function jwellery_category_has_products( $slug ) {
 	if ( ! $term || is_wp_error( $term ) ) {
 		return false;
 	}
-	$products = wc_get_products(
-		array(
-			'limit'        => 1,
-			'status'       => 'publish',
-			'stock_status' => 'instock',
-			'category'     => array( $slug ),
+	$products = function_exists( 'jwellery_get_products_for_display' )
+		? jwellery_get_products_for_display(
+			array(
+				'limit'        => 1,
+				'status'       => 'publish',
+				'stock_status' => 'instock',
+				'category'     => array( $slug ),
+			),
+			1,
+			1
 		)
-	);
+		: wc_get_products(
+			array(
+				'limit'        => 1,
+				'status'       => 'publish',
+				'stock_status' => 'instock',
+				'category'     => array( $slug ),
+			)
+		);
 	return ! empty( $products );
 }

@@ -145,11 +145,12 @@ function jwellery_home_product_grid( $title, $args, $link = '' ) {
 	}
 
 	$base = array(
-		'limit'        => 8,
 		'status'       => 'publish',
 		'stock_status' => 'instock',
 	);
-	$products = wc_get_products( array_merge( $base, $args ) );
+	$products = function_exists( 'jwellery_get_products_for_display' )
+		? jwellery_get_products_for_display( array_merge( $base, $args ), 4, 2 )
+		: wc_get_products( array_merge( array( 'limit' => 8 ), $base, $args ) );
 	if ( empty( $products ) ) {
 		return;
 	}
@@ -225,26 +226,32 @@ function jwellery_home_popular_tabs() {
 
 	$panels = array();
 	foreach ( $tabs as $key => $tab ) {
-		$products = wc_get_products(
-			array_merge(
-				array(
-					'limit'        => 8,
-					'status'       => 'publish',
-					'stock_status' => 'instock',
+		$products = function_exists( 'jwellery_get_products_for_display' )
+			? jwellery_get_products_for_display(
+				array_merge(
+					array(
+						'status'       => 'publish',
+						'stock_status' => 'instock',
+					),
+					$tab['args']
 				),
-				$tab['args']
+				4,
+				2
 			)
-		);
+			: array();
 		if ( empty( $products ) && 'featured' === $key ) {
-			$products = wc_get_products(
-				array(
-					'limit'        => 8,
-					'status'       => 'publish',
-					'stock_status' => 'instock',
-					'orderby'      => 'date',
-					'order'        => 'DESC',
+			$products = function_exists( 'jwellery_get_products_for_display' )
+				? jwellery_get_products_for_display(
+					array(
+						'status'       => 'publish',
+						'stock_status' => 'instock',
+						'orderby'      => 'date',
+						'order'        => 'DESC',
+					),
+					4,
+					2
 				)
-			);
+				: array();
 		}
 		$panels[ $key ] = $products;
 	}
@@ -550,24 +557,30 @@ function jwellery_home_follow_journey() {
 		return;
 	}
 
-	$products = wc_get_products(
-		array(
-			'limit'        => 6,
-			'status'       => 'publish',
-			'stock_status' => 'instock',
-			'category'     => array( 'instagram-collection' ),
-		)
-	);
-	if ( empty( $products ) ) {
-		$products = wc_get_products(
+	$products = function_exists( 'jwellery_get_products_for_display' )
+		? jwellery_get_products_for_display(
 			array(
-				'limit'        => 6,
 				'status'       => 'publish',
 				'stock_status' => 'instock',
-				'orderby'      => 'date',
-				'order'        => 'DESC',
+				'category'     => array( 'instagram-collection' ),
+			),
+			4,
+			2
+		)
+		: array();
+	if ( empty( $products ) ) {
+		$products = function_exists( 'jwellery_get_products_for_display' )
+			? jwellery_get_products_for_display(
+				array(
+					'status'       => 'publish',
+					'stock_status' => 'instock',
+					'orderby'      => 'date',
+					'order'        => 'DESC',
+				),
+				4,
+				2
 			)
-		);
+			: array();
 	}
 	if ( empty( $products ) ) {
 		return;

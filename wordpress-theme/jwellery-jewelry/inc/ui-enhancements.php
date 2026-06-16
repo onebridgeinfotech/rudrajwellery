@@ -19,6 +19,175 @@ function jwellery_home_product_args( $args ) {
 }
 
 /**
+ * Desktop product columns for homepage grids.
+ *
+ * @return int
+ */
+function jwellery_home_grid_columns() {
+	return 4;
+}
+
+/**
+ * Full rows shown per homepage product section.
+ *
+ * @return int
+ */
+function jwellery_home_grid_rows() {
+	return 2;
+}
+
+/**
+ * Keep only products that have a real featured image.
+ *
+ * @param WC_Product[] $products Products.
+ * @return WC_Product[]
+ */
+function jwellery_filter_products_with_images( $products ) {
+	if ( empty( $products ) || ! function_exists( 'jwellery_product_has_image' ) ) {
+		return is_array( $products ) ? $products : array();
+	}
+	return array_values(
+		array_filter(
+			$products,
+			static function ( $product ) {
+				return jwellery_product_has_image( $product );
+			}
+		)
+	);
+}
+
+/**
+ * Trim a product list to complete grid rows (no empty slots on the last row).
+ *
+ * @param WC_Product[] $products Products.
+ * @param int|null     $cols     Columns per row.
+ * @param int|null     $rows     Row count cap.
+ * @return WC_Product[]
+ */
+function jwellery_trim_products_to_full_rows( $products, $cols = null, $rows = null ) {
+	$cols = $cols ? (int) $cols : jwellery_home_grid_columns();
+	$rows = $rows ? (int) $rows : jwellery_home_grid_rows();
+	$max  = $cols * $rows;
+
+	$products = array_slice( $products, 0, $max );
+	$count    = count( $products );
+	if ( $count <= $cols ) {
+		return $count === $cols ? $products : array();
+	}
+
+	$full = (int) floor( $count / $cols ) * $cols;
+	return array_slice( $products, 0, $full );
+}
+
+/**
+ * Fetch in-stock products with images for homepage grids (full rows only).
+ *
+ * @param array    $args  wc_get_products args (limit optional).
+ * @param int|null $cols  Columns per row.
+ * @param int|null $rows  Max rows.
+ * @return WC_Product[]
+ */
+function jwellery_get_products_for_display( $args = array(), $cols = null, $rows = null ) {
+	if ( ! function_exists( 'wc_get_products' ) ) {
+		return array();
+	}
+
+	$cols = $cols ? (int) $cols : jwellery_home_grid_columns();
+	$rows = $rows ? (int) $rows : jwellery_home_grid_rows();
+	$need = $cols * $rows;
+
+	$base = array_merge(
+		array(
+			'status'       => 'publish',
+			'stock_status' => 'instock',
+		),
+		$args
+	);
+
+	$offset = 0;
+	$batch  = max( $need * 3, 24 );
+	$picked = array();
+	$seen   = array();
+
+	while ( count( $picked ) < $need && $offset < 120 ) {
+		$query = array_merge(
+			$base,
+			array(
+				'limit'  => $batch,
+				'offset' => $offset,
+			)
+		);
+		$batch_products = wc_get_products( $query );
+		if ( empty( $batch_products ) ) {
+			break;
+		}
+
+		foreach ( $batch_products as $product ) {
+			$pid = $product->get_id();
+			if ( isset( $seen[ $pid ] ) ) {
+				continue;
+			}
+			$seen[ $pid ] = true;
+			if ( jwellery_product_has_image( $product ) ) {
+				$picked[] = $product;
+				if ( count( $picked ) >= $need ) {
+					break 2;
+				}
+			}
+		}
+
+		$offset += $batch;
+		if ( count( $batch_products ) < $batch ) {
+			break;
+		}
+	}
+
+	return jwellery_trim_products_to_full_rows( $picked, $cols, $rows );
+}
+
+/**
+ * Hide catalog products that have no featured image.
+ *
+ * @param bool       $visible Visible.
+ * @param int        $id      Product ID.
+ * @param WC_Product $product Product.
+ * @return bool
+ */
+function jwellery_hide_products_without_images( $visible, $id, $product ) {
+	if ( ! $visible || is_admin() ) {
+		return $visible;
+	}
+	if ( function_exists( 'is_product' ) && is_product() && (int) get_queried_object_id() === (int) $id ) {
+		return $visible;
+	}
+	return jwellery_product_has_image( $product );
+}
+add_filter( 'woocommerce_product_is_visible', 'jwellery_hide_products_without_images', 10, 3 );
+
+/**
+ * Shop archive: only list products with a featured image.
+ *
+ * @param array $meta_query Meta query.
+ * @return array
+ */
+function jwellery_shop_meta_query_require_image( $meta_query ) {
+	if ( is_admin() || ! ( is_shop() || is_product_taxonomy() ) ) {
+		return $meta_query;
+	}
+	if ( ! is_array( $meta_query ) ) {
+		$meta_query = array();
+	}
+	$meta_query[] = array(
+		'key'     => '_thumbnail_id',
+		'value'   => '0',
+		'compare' => '>',
+		'type'    => 'NUMERIC',
+	);
+	return $meta_query;
+}
+add_filter( 'woocommerce_product_query_meta_query', 'jwellery_shop_meta_query_require_image' );
+
+/**
  * WhatsApp URL (wa.me).
  *
  * @return string

@@ -199,24 +199,30 @@ function jwellery_mega_menu_html() {
 
 	$featured = array();
 	if ( function_exists( 'wc_get_products' ) ) {
-		$featured = wc_get_products(
-			array(
-				'limit'        => 2,
-				'status'       => 'publish',
-				'stock_status' => 'instock',
-				'featured'     => true,
-			)
-		);
-		if ( count( $featured ) < 2 ) {
-			$featured = wc_get_products(
+		$featured = function_exists( 'jwellery_get_products_for_display' )
+			? jwellery_get_products_for_display(
 				array(
-					'limit'        => 2,
 					'status'       => 'publish',
 					'stock_status' => 'instock',
-					'orderby'      => 'date',
-					'order'        => 'DESC',
+					'featured'     => true,
+				),
+				2,
+				1
+			)
+			: array();
+		if ( count( $featured ) < 2 ) {
+			$featured = function_exists( 'jwellery_get_products_for_display' )
+				? jwellery_get_products_for_display(
+					array(
+						'status'       => 'publish',
+						'stock_status' => 'instock',
+						'orderby'      => 'date',
+						'order'        => 'DESC',
+					),
+					2,
+					1
 				)
-			);
+				: array();
 		}
 	}
 

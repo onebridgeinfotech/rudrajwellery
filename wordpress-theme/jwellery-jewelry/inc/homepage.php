@@ -33,6 +33,9 @@ function jwellery_render_product_card( $product ) {
 	if ( ! $product || ! is_a( $product, 'WC_Product' ) ) {
 		return;
 	}
+	if ( function_exists( 'jwellery_product_has_image' ) && ! jwellery_product_has_image( $product ) ) {
+		return;
+	}
 	$out_of_stock = ! $product->is_in_stock();
 	?>
 	<li class="product<?php echo $out_of_stock ? ' is-sold-out' : ''; ?>">
@@ -90,11 +93,12 @@ function jwellery_home_section( $title, $args, $link = '' ) {
 	}
 
 	$base = array(
-		'limit'        => 10,
 		'status'       => 'publish',
 		'stock_status' => 'instock',
 	);
-	$products = wc_get_products( array_merge( $base, $args ) );
+	$products = function_exists( 'jwellery_get_products_for_display' )
+		? jwellery_get_products_for_display( array_merge( $base, $args ), 4, 2 )
+		: wc_get_products( array_merge( array( 'limit' => 8 ), $base, $args ) );
 	if ( empty( $products ) ) {
 		return;
 	}
@@ -223,25 +227,31 @@ function jwellery_home_product_of_day() {
 		return;
 	}
 
-	$products = wc_get_products(
-		array(
-			'limit'        => 1,
-			'featured'     => true,
-			'status'       => 'publish',
-			'stock_status' => 'instock',
-		)
-	);
-
-	if ( empty( $products ) ) {
-		$products = wc_get_products(
+	$products = function_exists( 'jwellery_get_products_for_display' )
+		? jwellery_get_products_for_display(
 			array(
-				'limit'        => 1,
+				'featured'     => true,
 				'status'       => 'publish',
 				'stock_status' => 'instock',
-				'orderby'      => 'date',
-				'order'        => 'DESC',
+			),
+			1,
+			1
+		)
+		: array();
+
+	if ( empty( $products ) ) {
+		$products = function_exists( 'jwellery_get_products_for_display' )
+			? jwellery_get_products_for_display(
+				array(
+					'status'       => 'publish',
+					'stock_status' => 'instock',
+					'orderby'      => 'date',
+					'order'        => 'DESC',
+				),
+				1,
+				1
 			)
-		);
+			: array();
 	}
 
 	if ( empty( $products ) ) {

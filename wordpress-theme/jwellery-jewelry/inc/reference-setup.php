@@ -510,7 +510,8 @@ function jwellery_store_setup_page() {
 	}
 	if ( isset( $_POST['jwellery_import_images'] ) && check_admin_referer( 'jwellery_setup' ) ) {
 		$n = function_exists( 'jwellery_import_demo_product_images' ) ? jwellery_import_demo_product_images( true ) : 0;
-		echo '<div class="notice notice-success"><p>' . esc_html( sprintf( __( 'Product images replaced (%d products).', 'jwellery-jewelry' ), (int) $n ) ) . '</p></div>';
+		$repaired = function_exists( 'jwellery_repair_missing_product_images' ) ? jwellery_repair_missing_product_images() : 0;
+		echo '<div class="notice notice-success"><p>' . esc_html( sprintf( __( 'Product images replaced (%1$d products). Missing thumbnails repaired: %2$d.', 'jwellery-jewelry' ), (int) $n, (int) $repaired ) ) . '</p></div>';
 	}
 	if ( isset( $_POST['jwellery_update_pages'] ) && check_admin_referer( 'jwellery_setup' ) ) {
 		if ( function_exists( 'jwellery_maintain_store' ) ) {
