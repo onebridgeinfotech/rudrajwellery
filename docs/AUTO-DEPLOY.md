@@ -46,27 +46,36 @@ git push -u origin main
 
 | Secret name | Value |
 |-------------|--------|
-| `FTP_SERVER` | `82.180.143.137` |
-| `FTP_USERNAME` | `u956615329.rudrajewellery.in` |
-| `FTP_PASSWORD` | *(your FTP password)* |
-| `FTP_PORT` | `21` |
-| `FTP_REMOTE_THEME` | `/public_html/wp-content/themes/jwellery-jewelry/` |
-| `FTP_REMOTE_PLUGIN` | `/public_html/wp-content/plugins/jewelry-upi-store/` |
+| `FTP_PASSWORD` | your FTP password (only secret required) |
+
+Server, username, and paths are set in `.github/workflows/deploy.yml`.
 
 3. Push theme/plugin changes to `main` — workflow `.github/workflows/deploy.yml` runs automatically.
 
 ---
 
-## Daily workflow
+## Daily workflow (fully automatic)
+
+Every push to `main` triggers **Deploy to Hostinger** — no manual Run workflow needed.
 
 ```powershell
-# edit files, then:
-git add .
-git commit -m "Describe your change"
-git push
+cd "d:\jwellery ecommerce"
+.\scripts\ship.ps1 "Describe your change"
 ```
 
-Deploy runs on GitHub in ~1–2 minutes. Purge cache if CSS/JS looks stale.
+Or manually:
+
+```powershell
+git add .
+git commit -m "Describe your change"
+git push origin main
+```
+
+Then open **Actions** tab only to **watch** progress (optional):  
+https://github.com/onebridgeinfotech/rudrajwellery/actions
+
+**Required once:** GitHub secret `FTP_PASSWORD` = your Hostinger FTP password.  
+Server/username/paths are in `.github/workflows/deploy.yml`.
 
 ---
 
