@@ -421,9 +421,27 @@ function jwellery_run_reference_setup() {
 }
 
 /**
- * Theme activation — run setup only once.
+ * Theme activation — defer heavy setup to wp-admin (avoids critical error on shared hosting).
  */
 function jwellery_on_reference_theme_activation() {
+	update_option( 'jwellery_pending_reference_setup', '1' );
+	jwellery_force_store_live();
+}
+add_action( 'after_switch_theme', 'jwellery_on_reference_theme_activation' );
+
+/**
+ * Run store setup in admin after activation (needs WooCommerce active).
+ */
+function jwellery_run_pending_reference_setup() {
+	if ( ! get_option( 'jwellery_pending_reference_setup' ) ) {
+		return;
+	}
+	if ( ! is_admin() || ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+
+	delete_option( 'jwellery_pending_reference_setup' );
+
 	if ( get_option( 'jwellery_reference_setup_done' ) ) {
 		jwellery_force_store_live();
 		if ( function_exists( 'jwellery_maintain_store' ) ) {
@@ -431,9 +449,34 @@ function jwellery_on_reference_theme_activation() {
 		}
 		return;
 	}
+
+	if ( ! class_exists( 'WooCommerce' ) ) {
+		set_transient( 'jwellery_setup_needs_woocommerce', 1, WEEK_IN_SECONDS );
+		return;
+	}
+
 	jwellery_run_reference_setup();
 }
-add_action( 'after_switch_theme', 'jwellery_on_reference_theme_activation' );
+add_action( 'admin_init', 'jwellery_run_pending_reference_setup', 5 );
+
+/**
+ * Admin notice when WooCommerce is required for setup.
+ */
+function jwellery_admin_notice_needs_woocommerce() {
+	if ( ! current_user_can( 'activate_plugins' ) || class_exists( 'WooCommerce' ) ) {
+		return;
+	}
+	if ( JWELLERY_THEME_SLUG !== get_template() ) {
+		return;
+	}
+	if ( ! get_transient( 'jwellery_setup_needs_woocommerce' ) && ! get_option( 'jwellery_pending_reference_setup' ) ) {
+		return;
+	}
+	echo '<div class="notice notice-warning"><p><strong>Jwellery Jewelry:</strong> ';
+	echo esc_html__( 'Install and activate WooCommerce, then open Appearance → Store Setup to finish.', 'jwellery-jewelry' );
+	echo '</p></div>';
+}
+add_action( 'admin_notices', 'jwellery_admin_notice_needs_woocommerce' );
 
 /**
  * Admin setup page.

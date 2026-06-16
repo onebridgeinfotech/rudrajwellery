@@ -716,4 +716,11 @@ function jwellery_maintain_store( $force = false ) {
 	flush_rewrite_rules( false );
 	update_option( 'jwellery_store_maintain_ver', JWELLERY_THEME_VERSION );
 }
-add_action( 'init', 'jwellery_maintain_store', 25 );
+
+/**
+ * Run maintain_store in wp-admin only (not on public page views).
+ */
+function jwellery_maintain_store_on_admin() {
+	jwellery_maintain_store( false );
+}
+add_action( 'admin_init', 'jwellery_maintain_store_on_admin', 20 );

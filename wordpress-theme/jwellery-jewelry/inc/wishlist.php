@@ -107,7 +107,20 @@ function jwellery_wishlist_account_menu_item( $items ) {
 	}
 	return $new;
 }
-add_filter( 'woocommerce_account_menu_items', 'jwellery_wishlist_account_menu_item' );
+/**
+ * Register WooCommerce wishlist hooks when WooCommerce is ready.
+ */
+function jwellery_wishlist_bootstrap() {
+	if ( ! class_exists( 'WooCommerce' ) ) {
+		return;
+	}
+
+	add_filter( 'woocommerce_account_menu_items', 'jwellery_wishlist_account_menu_item' );
+	add_action( 'woocommerce_account_wishlist_endpoint', 'jwellery_wishlist_account_endpoint_content' );
+	add_action( 'woocommerce_after_add_to_cart_button', 'jwellery_single_product_wishlist_button', 12 );
+	add_action( 'woocommerce_before_shop_loop_item_title', 'jwellery_loop_product_wishlist_button', 9 );
+}
+add_action( 'woocommerce_init', 'jwellery_wishlist_bootstrap' );
 
 /**
  * Account wishlist row card (dashboard layout — not shop grid).
@@ -189,7 +202,6 @@ function jwellery_wishlist_account_endpoint_content() {
 	</div>
 	<?php
 }
-add_action( 'woocommerce_account_wishlist_endpoint', 'jwellery_wishlist_account_endpoint_content' );
 
 /**
  * Persist wishlist for user.
@@ -381,7 +393,6 @@ function jwellery_single_product_wishlist_button() {
 		jwellery_wishlist_button( $product, 'single' );
 	}
 }
-add_action( 'woocommerce_after_add_to_cart_button', 'jwellery_single_product_wishlist_button', 12 );
 
 /**
  * Default WooCommerce loop wishlist (shop archive).
@@ -392,4 +403,3 @@ function jwellery_loop_product_wishlist_button() {
 		jwellery_wishlist_button( $product, 'loop' );
 	}
 }
-add_action( 'woocommerce_before_shop_loop_item_title', 'jwellery_loop_product_wishlist_button', 9 );
