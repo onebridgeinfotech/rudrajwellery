@@ -15,7 +15,7 @@
 .jwellery-page-hero-overlay {
 	position: absolute;
 	inset: 0;
-	background: radial-gradient(circle at 85% 20%, rgba(201, 162, 39, 0.18) 0%, transparent 45%);
+	background: radial-gradient(circle at 85% 20%, rgba(var(--jwellery-gold-rgb), 0.18) 0%, transparent 45%);
 	z-index: 1;
 	pointer-events: none;
 }
@@ -185,7 +185,7 @@
 	background: var(--jwellery-cream);
 	border: 1px solid var(--jwellery-border);
 	border-radius: 16px;
-	box-shadow: 0 12px 40px rgba(123, 30, 58, 0.06);
+	box-shadow: 0 12px 40px rgba(var(--jwellery-ruby-rgb), 0.06);
 }
 
 .jwellery-page-split-visual--icon {
@@ -212,7 +212,7 @@
 
 .jwellery-page-offer-card:hover {
 	transform: translateY(-6px);
-	box-shadow: 0 14px 32px rgba(123, 30, 58, 0.1);
+	box-shadow: 0 14px 32px rgba(var(--jwellery-ruby-rgb), 0.1);
 }
 
 .jwellery-page-offer-icon {
@@ -337,7 +337,7 @@
 
 .jwellery-contact-card:hover {
 	transform: translateY(-5px);
-	box-shadow: 0 12px 28px rgba(123, 30, 58, 0.12);
+	box-shadow: 0 12px 28px rgba(var(--jwellery-ruby-rgb), 0.12);
 	border-color: var(--jwellery-gold);
 	color: inherit;
 }
@@ -554,7 +554,7 @@
 
 .jwellery-page-card:hover {
 	transform: translateY(-4px);
-	box-shadow: 0 12px 28px rgba(123, 30, 58, 0.08);
+	box-shadow: 0 12px 28px rgba(var(--jwellery-ruby-rgb), 0.08);
 }
 
 .jwellery-page-card-icon {

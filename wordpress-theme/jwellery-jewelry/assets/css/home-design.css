@@ -112,7 +112,7 @@
 	color: var(--jwellery-maroon);
 	margin: 0 0 12px;
 	padding: 6px 14px;
-	background: rgba(123, 30, 58, 0.08);
+	background: rgba(var(--jwellery-ruby-rgb), 0.08);
 	border-radius: 100px;
 	line-height: 1.2;
 }
@@ -288,7 +288,7 @@
 
 .category-card:hover {
 	transform: translateY(-6px) scale(1.02);
-	box-shadow: 0 16px 32px rgba(123, 30, 58, 0.12);
+	box-shadow: 0 16px 32px rgba(var(--jwellery-ruby-rgb), 0.12);
 }
 
 .category-card .category-image {
@@ -393,7 +393,7 @@
 
 .jwellery-category-browse-card:hover {
 	transform: translateY(-6px);
-	box-shadow: 0 14px 36px rgba(123, 30, 58, 0.14);
+	box-shadow: 0 14px 36px rgba(var(--jwellery-ruby-rgb), 0.14);
 	border-color: var(--jwellery-gold-light);
 }
 
@@ -470,6 +470,10 @@
 	color: var(--jwellery-maroon);
 	letter-spacing: 0.02em;
 	transition: letter-spacing 0.2s ease;
+}
+
+.jwellery-category-browse-cta::after {
+	content: " \2192";
 }
 
 .jwellery-category-browse-card:hover .jwellery-category-browse-cta {
@@ -873,7 +877,7 @@
 	background: #fff;
 	border: 1px solid var(--jwellery-border);
 	border-radius: 18px;
-	box-shadow: 0 16px 48px rgba(123, 30, 58, 0.08);
+	box-shadow: 0 16px 48px rgba(var(--jwellery-ruby-rgb), 0.08);
 }
 
 .jwellery-owner-photo {
@@ -883,14 +887,14 @@
 	aspect-ratio: 3 / 4;
 	max-width: 420px;
 	margin: 0 auto;
-	box-shadow: 0 12px 36px rgba(123, 30, 58, 0.12);
+	box-shadow: 0 12px 36px rgba(var(--jwellery-ruby-rgb), 0.12);
 }
 
 .jwellery-owner-photo::before {
 	content: "";
 	position: absolute;
 	inset: 0;
-	border: 3px solid rgba(201, 162, 39, 0.35);
+	border: 3px solid rgba(var(--jwellery-gold-rgb), 0.35);
 	border-radius: 16px;
 	pointer-events: none;
 	z-index: 1;

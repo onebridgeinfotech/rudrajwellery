@@ -120,7 +120,7 @@ function jwellery_home_shop_by_budget() {
 				<?php foreach ( $budgets as $max ) : ?>
 					<a class="jwellery-budget-card" href="<?php echo esc_url( jwellery_budget_shop_url( $max ) ); ?>">
 						<span class="jwellery-budget-caps"><?php esc_html_e( 'Under', 'jwellery-jewelry' ); ?></span>
-						<span class="jwellery-budget-amount"><?php echo esc_html( 'â‚¹' . number_format_i18n( $max ) ); ?></span>
+						<span class="jwellery-budget-amount"><?php echo esc_html( jwellery_currency_symbol() . number_format_i18n( $max ) ); ?></span>
 						<span class="jwellery-budget-arrow" aria-hidden="true">
 							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
 						</span>
@@ -200,7 +200,7 @@ function jwellery_home_product_grid( $title, $args, $link = '', $products = null
 			<?php if ( $is_deals ) : ?>
 				<?php $deals_total = count( $products ); ?>
 				<div class="jwellery-carousel jwellery-carousel--deals" data-carousel="steal-deals" data-animate="carousel" data-deals-carousel>
-					<button type="button" class="carousel-btn carousel-prev" aria-label="<?php esc_attr_e( 'Previous', 'jwellery-jewelry' ); ?>">â€¹</button>
+					<button type="button" class="carousel-btn carousel-prev" aria-label="<?php esc_attr_e( 'Previous', 'jwellery-jewelry' ); ?>"><?php echo html_entity_decode( '&#8249;', ENT_QUOTES, 'UTF-8' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></button>
 					<div class="jwellery-carousel-track" id="carousel-steal-deals">
 						<ul class="products jwellery-product-grid jwellery-product-grid--deals">
 							<?php
@@ -210,7 +210,7 @@ function jwellery_home_product_grid( $title, $args, $link = '', $products = null
 							?>
 						</ul>
 					</div>
-					<button type="button" class="carousel-btn carousel-next" aria-label="<?php esc_attr_e( 'Next', 'jwellery-jewelry' ); ?>">â€º</button>
+					<button type="button" class="carousel-btn carousel-next" aria-label="<?php esc_attr_e( 'Next', 'jwellery-jewelry' ); ?>"><?php echo html_entity_decode( '&#8250;', ENT_QUOTES, 'UTF-8' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></button>
 				</div>
 				<div class="carousel-dots jwellery-deals-dots" role="tablist" aria-label="<?php echo esc_attr( $title ); ?>">
 					<?php for ( $d = 0; $d < $deals_total; $d++ ) : ?>
@@ -435,7 +435,7 @@ function jwellery_home_category_stats() {
 						</span>
 						<span class="jwellery-category-browse-body">
 							<span class="jwellery-category-browse-name"><?php echo esc_html( $term->name ); ?></span>
-							<span class="jwellery-category-browse-cta"><?php esc_html_e( 'Shop now', 'jwellery-jewelry' ); ?> â†’</span>
+							<span class="jwellery-category-browse-cta"><?php esc_html_e( 'Shop now', 'jwellery-jewelry' ); ?></span>
 						</span>
 					</a>
 				<?php endforeach; ?>

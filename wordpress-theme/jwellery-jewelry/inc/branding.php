@@ -44,6 +44,22 @@ function jwellery_bundled_logo_info( $context = 'header' ) {
 }
 
 /**
+ * Store currency symbol (encoding-safe; avoids mojibake for INR).
+ *
+ * @return string
+ */
+function jwellery_currency_symbol() {
+	if ( function_exists( 'get_woocommerce_currency_symbol' ) ) {
+		$symbol = get_woocommerce_currency_symbol();
+		if ( is_string( $symbol ) && '' !== $symbol ) {
+			return html_entity_decode( $symbol, ENT_QUOTES, 'UTF-8' );
+		}
+	}
+
+	return html_entity_decode( '&#8377;', ENT_QUOTES, 'UTF-8' );
+}
+
+/**
  * Bundled default logo URL (header).
  *
  * @return string

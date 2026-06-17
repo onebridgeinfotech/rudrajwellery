@@ -216,7 +216,7 @@
 	justify-content: space-between;
 	gap: 20px;
 	padding: 28px 28px 24px;
-	background: linear-gradient(135deg, var(--jwellery-maroon) 0%, #5c1529 55%, #3d0f1c 100%);
+	background: linear-gradient(135deg, var(--jwellery-maroon) 0%, var(--jwellery-maroon-dark) 55%, #4d1018 100%);
 	color: #fff;
 }
 
@@ -357,7 +357,7 @@
 .jwellery-uda-action:hover,
 .jwellery-uda-action:focus-visible {
 	transform: translateY(-2px);
-	box-shadow: 0 8px 20px rgba(123, 30, 58, 0.1);
+	box-shadow: 0 8px 20px rgba(var(--jwellery-ruby-rgb), 0.1);
 	outline: none;
 }
 
@@ -592,7 +592,7 @@
 
 .jwellery-wishlist-row:hover {
 	transform: translateY(-2px);
-	box-shadow: 0 8px 22px rgba(123, 30, 58, 0.1);
+	box-shadow: 0 8px 22px rgba(var(--jwellery-ruby-rgb), 0.1);
 }
 
 .jwellery-wishlist-row__image {
@@ -803,7 +803,7 @@
 	justify-content: space-between;
 	gap: 20px;
 	padding: 28px 32px;
-	background: linear-gradient(135deg, var(--jwellery-maroon) 0%, #5c1529 55%, #3d0f1c 100%);
+	background: linear-gradient(135deg, var(--jwellery-maroon) 0%, var(--jwellery-maroon-dark) 55%, #4d1018 100%);
 	color: #fff;
 	border-radius: 20px 20px 0 0;
 	position: relative;
@@ -953,7 +953,7 @@
 	border: 1px solid var(--jwellery-border);
 	background: #fff;
 	border-radius: 16px;
-	box-shadow: 0 4px 18px rgba(123, 30, 58, 0.06);
+	box-shadow: 0 4px 18px rgba(var(--jwellery-ruby-rgb), 0.06);
 	transition: transform 0.25s ease, box-shadow 0.25s ease;
 	min-height: 100%;
 }
@@ -961,7 +961,7 @@
 .jwellery-account-page .jwellery-uda-guest__card .col-1:hover,
 .jwellery-account-page .jwellery-uda-guest__card .col-2:hover {
 	transform: translateY(-3px);
-	box-shadow: 0 10px 28px rgba(123, 30, 58, 0.12);
+	box-shadow: 0 10px 28px rgba(var(--jwellery-ruby-rgb), 0.12);
 }
 
 .jwellery-uda-guest__card .col-1 > h2,
@@ -1059,10 +1059,10 @@
 .jwellery-account-page .jwellery-uda-guest__card form.login .button:hover,
 .jwellery-account-page .jwellery-uda-guest__card form.register .button:hover,
 .jwellery-account-page .jwellery-uda-guest__card .woocommerce-Button:hover {
-	background: var(--jwellery-maroon-dark, #5c1529) !important;
-	border-color: var(--jwellery-maroon-dark, #5c1529) !important;
+	background: var(--jwellery-maroon-dark) !important;
+	border-color: var(--jwellery-maroon-dark) !important;
 	transform: translateY(-1px);
-	box-shadow: 0 6px 16px rgba(123, 30, 58, 0.25);
+	box-shadow: 0 6px 16px rgba(var(--jwellery-ruby-rgb), 0.25);
 }
 
 .jwellery-uda-form .woocommerce-form-row,
@@ -1094,7 +1094,7 @@
 .jwellery-uda-guest__card .input-text:focus {
 	outline: none;
 	border-color: var(--jwellery-maroon);
-	box-shadow: 0 0 0 3px rgba(123, 30, 58, 0.12);
+	box-shadow: 0 0 0 3px rgba(var(--jwellery-ruby-rgb), 0.12);
 	background: #fff;
 }
 

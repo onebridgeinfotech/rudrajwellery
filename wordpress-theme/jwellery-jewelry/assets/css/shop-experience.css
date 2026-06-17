@@ -109,7 +109,7 @@
 }
 
 .jwellery-mega-product:hover {
-	box-shadow: 0 6px 16px rgba(123, 30, 58, 0.1);
+	box-shadow: 0 6px 16px rgba(var(--jwellery-ruby-rgb), 0.1);
 }
 
 .jwellery-mega-product img {
@@ -188,7 +188,7 @@
 	color: var(--jwellery-maroon);
 	transform: scale(1.04);
 	outline: none;
-	box-shadow: 0 3px 12px rgba(123, 30, 58, 0.18);
+	box-shadow: 0 3px 12px rgba(var(--jwellery-ruby-rgb), 0.18);
 }
 
 .jwellery-wishlist-btn.is-active {

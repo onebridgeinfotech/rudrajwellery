@@ -30,11 +30,36 @@ add_action( 'after_switch_theme', 'jwellery_maybe_force_store_live', 20 );
  * Purge LiteSpeed / Hostinger page cache when theme version changes after deploy.
  */
 function jwellery_purge_hosting_cache() {
+	$urls = array_unique(
+		array_filter(
+			array(
+				home_url( '/' ),
+				home_url( '/shop/' ),
+				site_url( '/' ),
+				untrailingslashit( (string) get_option( 'home' ) ) . '/',
+				untrailingslashit( (string) get_option( 'siteurl' ) ) . '/',
+			)
+		)
+	);
+
+	$host = wp_parse_url( home_url(), PHP_URL_HOST );
+	if ( is_string( $host ) && $host ) {
+		if ( 0 === stripos( $host, 'www.' ) ) {
+			$bare = substr( $host, 4 );
+			$urls[] = 'https://' . $bare . '/';
+			$urls[] = 'https://' . $bare . '/shop/';
+		} else {
+			$urls[] = 'https://www.' . $host . '/';
+			$urls[] = 'https://www.' . $host . '/shop/';
+		}
+	}
+
 	if ( class_exists( 'LiteSpeed_Cache_API' ) ) {
 		LiteSpeed_Cache_API::purge_all();
 		if ( method_exists( 'LiteSpeed_Cache_API', 'purge' ) ) {
-			LiteSpeed_Cache_API::purge( home_url( '/' ) );
-			LiteSpeed_Cache_API::purge( home_url( '/shop/' ) );
+			foreach ( $urls as $url ) {
+				LiteSpeed_Cache_API::purge( $url );
+			}
 		}
 	}
 	if ( function_exists( 'litespeed_purge_all' ) ) {
@@ -42,7 +67,9 @@ function jwellery_purge_hosting_cache() {
 	}
 	do_action( 'litespeed_purge_all' );
 	if ( function_exists( 'litespeed_purge_url' ) ) {
-		litespeed_purge_url( home_url( '/' ) );
+		foreach ( $urls as $url ) {
+			litespeed_purge_url( $url );
+		}
 	}
 	if ( function_exists( 'wp_cache_clear_cache' ) ) {
 		wp_cache_clear_cache();

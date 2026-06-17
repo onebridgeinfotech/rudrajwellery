@@ -37,7 +37,7 @@
 	background: #fff;
 	color: var(--jwellery-icon-color-hover);
 	outline: none;
-	box-shadow: 0 2px 8px rgba(123, 30, 58, 0.12);
+	box-shadow: 0 2px 8px rgba(var(--jwellery-ruby-rgb), 0.12);
 }
 
 .jwellery-header-icon svg,

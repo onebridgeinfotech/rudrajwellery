@@ -30,8 +30,8 @@
 
 .jwellery-login-captcha__input:focus {
 	outline: none;
-	border-color: var(--jwellery-maroon, #7b1e3a);
-	box-shadow: 0 0 0 3px rgba(123, 30, 58, 0.12);
+	border-color: var(--jwellery-maroon);
+	box-shadow: 0 0 0 3px rgba(var(--jwellery-ruby-rgb), 0.12);
 }
 
 .jwellery-captcha-hp {
