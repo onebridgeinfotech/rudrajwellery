@@ -195,3 +195,93 @@ function jwellery_render_footer_logo() {
 		$html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	);
 }
+
+/**
+ * Theme favicon URL (square SVG mark).
+ *
+ * @return string
+ */
+function jwellery_theme_favicon_url() {
+	return JWELLERY_THEME_URI . '/assets/images/favicon.svg';
+}
+
+/**
+ * Output crisp SVG favicon before WordPress site-icon JPEG tags.
+ */
+function jwellery_prepend_favicon_meta_tags( $meta_tags ) {
+	if ( ! is_array( $meta_tags ) ) {
+		$meta_tags = array();
+	}
+
+	$url = jwellery_theme_favicon_url();
+	if ( ! $url || ! file_exists( JWELLERY_THEME_DIR . '/assets/images/favicon.svg' ) ) {
+		return $meta_tags;
+	}
+
+	array_unshift(
+		$meta_tags,
+		sprintf(
+			'<link rel="icon" href="%s" type="image/svg+xml" sizes="any" />',
+			esc_url( $url )
+		),
+		sprintf(
+			'<link rel="shortcut icon" href="%s" type="image/svg+xml" />',
+			esc_url( $url )
+		)
+	);
+
+	return $meta_tags;
+}
+add_filter( 'site_icon_meta_tags', 'jwellery_prepend_favicon_meta_tags', 5 );
+
+/**
+ * Fallback favicon when no Site Icon is set in WordPress.
+ */
+function jwellery_fallback_favicon_tags() {
+	if ( function_exists( 'has_site_icon' ) && has_site_icon() ) {
+		return;
+	}
+
+	$url = jwellery_theme_favicon_url();
+	if ( ! $url ) {
+		return;
+	}
+
+	printf(
+		'<link rel="icon" href="%s" type="image/svg+xml" sizes="any" />' . "\n",
+		esc_url( $url )
+	);
+	printf(
+		'<link rel="apple-touch-icon" href="%s" />' . "\n",
+		esc_url( $url )
+	);
+}
+add_action( 'wp_head', 'jwellery_fallback_favicon_tags', 0 );
+
+/**
+ * Serve /favicon.ico (many browsers request this before parsing HTML).
+ */
+function jwellery_serve_favicon_ico() {
+	if ( is_admin() ) {
+		return;
+	}
+
+	$request_path = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	$request_path = (string) wp_parse_url( $request_path, PHP_URL_PATH );
+	if ( '/favicon.ico' !== $request_path ) {
+		return;
+	}
+
+	$file = JWELLERY_THEME_DIR . '/assets/images/favicon.svg';
+	if ( ! file_exists( $file ) ) {
+		return;
+	}
+
+	status_header( 200 );
+	header( 'Content-Type: image/svg+xml' );
+	header( 'Cache-Control: public, max-age=604800' );
+	// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
+	readfile( $file );
+	exit;
+}
+add_action( 'init', 'jwellery_serve_favicon_ico', 0 );
