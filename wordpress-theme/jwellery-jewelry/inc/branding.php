@@ -152,6 +152,73 @@ function jwellery_logo_image_html( $context = 'header' ) {
 }
 
 /**
+ * Legacy store emails replaced during migrations.
+ *
+ * @param string $email Email address.
+ * @return bool
+ */
+function jwellery_is_legacy_store_email( $email ) {
+	$email = strtolower( trim( (string) $email ) );
+	if ( ! $email ) {
+		return false;
+	}
+
+	return in_array(
+		$email,
+		array(
+			'udayach123@gmail.com',
+			'your@email.com',
+		),
+		true
+	);
+}
+
+/**
+ * Primary store contact email.
+ *
+ * @return string
+ */
+function jwellery_store_email() {
+	$email = (string) get_theme_mod( 'jwellery_email', 'kalpanayadav503@gmail.com' );
+	if ( ! is_email( $email ) || jwellery_is_legacy_store_email( $email ) ) {
+		if ( class_exists( 'JUS_Notifications' ) ) {
+			return JUS_Notifications::store_email();
+		}
+		return 'kalpanayadav503@gmail.com';
+	}
+
+	return $email;
+}
+
+/**
+ * Secondary public inbox (footer / enquiries).
+ *
+ * @return string
+ */
+function jwellery_info_email() {
+	$email = (string) get_theme_mod( 'jwellery_info_email', 'info@rudrajwelelry.co.in' );
+	return is_email( $email ) ? $email : 'info@rudrajwelelry.co.in';
+}
+
+/**
+ * Unique footer contact emails (store + info).
+ *
+ * @return string[]
+ */
+function jwellery_footer_contact_emails() {
+	$emails = array();
+
+	foreach ( array( jwellery_store_email(), jwellery_info_email() ) as $email ) {
+		$email = strtolower( trim( (string) $email ) );
+		if ( is_email( $email ) && ! in_array( $email, $emails, true ) ) {
+			$emails[] = $email;
+		}
+	}
+
+	return $emails;
+}
+
+/**
  * Header logo.
  */
 function jwellery_render_site_logo() {

@@ -76,7 +76,23 @@ function jwellery_customize_register( $wp_customize ) {
 	$wp_customize->add_control(
 		'jwellery_email',
 		array(
-			'label'   => __( 'Store email (footer)', 'jwellery-jewelry' ),
+			'label'   => __( 'Store email (footer & policies)', 'jwellery-jewelry' ),
+			'section' => 'jwellery_store_ui',
+			'type'    => 'email',
+		)
+	);
+
+	$wp_customize->add_setting(
+		'jwellery_info_email',
+		array(
+			'sanitize_callback' => 'sanitize_email',
+			'default'           => 'info@rudrajwelelry.co.in',
+		)
+	);
+	$wp_customize->add_control(
+		'jwellery_info_email',
+		array(
+			'label'   => __( 'Info email (footer)', 'jwellery-jewelry' ),
 			'section' => 'jwellery_store_ui',
 			'type'    => 'email',
 		)

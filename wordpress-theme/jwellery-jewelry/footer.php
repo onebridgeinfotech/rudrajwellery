@@ -9,6 +9,7 @@ defined( 'ABSPATH' ) || exit;
 
 $phone   = trim( (string) get_theme_mod( 'jwellery_phone', '+91 7036837243' ) );
 $address = trim( (string) get_theme_mod( 'jwellery_address', 'H no 7-7-11/8, New Sri Ram Nagar Colony, Peerzadiguda, Hyderabad - 500098' ) );
+$emails  = function_exists( 'jwellery_footer_contact_emails' ) ? jwellery_footer_contact_emails() : array( 'kalpanayadav503@gmail.com', 'info@rudrajwelelry.co.in' );
 if ( ! $phone ) {
 	$phone = '+91 7036837243';
 }
@@ -106,6 +107,18 @@ if ( ! $address ) {
 							<a href="tel:<?php echo esc_attr( preg_replace( '/\D+/', '', $phone ) ); ?>"><?php echo esc_html( $phone ); ?></a>
 						</li>
 					<?php endif; ?>
+					<?php foreach ( $emails as $email ) : ?>
+						<li>
+							<span class="jwellery-footer-stay-icon" aria-hidden="true">
+								<?php
+								if ( function_exists( 'jwellery_icon_svg' ) ) {
+									echo jwellery_icon_svg( 'email', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+								}
+								?>
+							</span>
+							<a href="mailto:<?php echo esc_attr( $email ); ?>"><?php echo esc_html( $email ); ?></a>
+						</li>
+					<?php endforeach; ?>
 					<?php if ( $address ) : ?>
 						<li>
 							<span class="jwellery-footer-stay-icon" aria-hidden="true">

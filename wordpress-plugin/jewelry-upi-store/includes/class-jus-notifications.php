@@ -159,6 +159,11 @@ class JUS_Notifications {
 			set_theme_mod( 'jwellery_email', $email );
 		}
 
+		$info_email = (string) get_theme_mod( 'jwellery_info_email', '' );
+		if ( '' === $info_email || ! is_email( $info_email ) ) {
+			set_theme_mod( 'jwellery_info_email', 'info@rudrajwelelry.co.in' );
+		}
+
 		$from_address = class_exists( 'JUS_Mail' ) ? JUS_Mail::transactional_from_email() : self::DEFAULT_EMAIL;
 		if ( self::is_legacy_email( $from_address ) || ! is_email( $from_address ) ) {
 			update_option( 'woocommerce_email_from_address', class_exists( 'JUS_Mail' ) ? JUS_Mail::transactional_from_email() : 'noreply@' . wp_parse_url( home_url(), PHP_URL_HOST ) );
