@@ -15,6 +15,15 @@
 	--jwellery-font-body: "Lato", system-ui, sans-serif;
 	--jwellery-container: 1200px;
 	--jwellery-shadow-soft: 0 8px 28px rgba(123, 30, 58, 0.08);
+	--jwellery-header-bg: #0f0f0f;
+	--jwellery-header-text: #faf7f2;
+	--jwellery-header-border: rgba(201, 162, 39, 0.38);
+	--jwellery-header-surface: rgba(255, 255, 255, 0.08);
+	--jwellery-icon-color: var(--jwellery-maroon);
+	--jwellery-icon-color-muted: rgba(123, 30, 58, 0.55);
+	--jwellery-icon-color-hover: var(--jwellery-gold);
+	--jwellery-icon-on-dark: var(--jwellery-header-text);
+	--jwellery-icon-on-dark-hover: var(--jwellery-gold-light);
 }
 
 *,
@@ -95,12 +104,56 @@ body {
 }
 
 .jwellery-header {
-	background: #fff;
-	border-bottom: 1px solid var(--jwellery-border);
+	background: var(--jwellery-header-bg);
+	border-bottom: 1px solid var(--jwellery-header-border);
 	position: sticky;
 	top: 0;
 	z-index: 100;
-	box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+	box-shadow: 0 4px 18px rgba(0, 0, 0, 0.32);
+}
+
+.jwellery-header .jwellery-menu a {
+	color: var(--jwellery-header-text);
+}
+
+.jwellery-header .jwellery-menu a:hover,
+.jwellery-header .jwellery-menu a:focus-visible {
+	color: var(--jwellery-gold-light);
+}
+
+.jwellery-header .jwellery-header-icon,
+.jwellery-header .jwellery-nav-toggle {
+	color: var(--jwellery-icon-on-dark);
+}
+
+.jwellery-header .jwellery-header-icons {
+	background: var(--jwellery-header-surface);
+	border-color: var(--jwellery-header-border);
+}
+
+.jwellery-header .jwellery-header-icon:hover,
+.jwellery-header .jwellery-header-icon:focus-visible,
+.jwellery-header .jwellery-header-icon[aria-expanded="true"] {
+	background: rgba(201, 162, 39, 0.2);
+	color: var(--jwellery-icon-on-dark-hover);
+	box-shadow: none;
+}
+
+.jwellery-header .jwellery-nav-toggle {
+	background: var(--jwellery-header-surface);
+	border-color: var(--jwellery-header-border);
+}
+
+.jwellery-header .jwellery-nav-toggle:hover,
+.jwellery-header .jwellery-nav-toggle:focus-visible {
+	background: rgba(201, 162, 39, 0.2);
+	border-color: var(--jwellery-gold);
+	color: var(--jwellery-icon-on-dark-hover);
+}
+
+.jwellery-header .jwellery-cart-icon .cart-count-badge,
+.jwellery-header .jwellery-wishlist-header-link .jwellery-wishlist-count-badge {
+	border-color: var(--jwellery-header-bg);
 }
 
 .jwellery-header-top {
@@ -181,45 +234,45 @@ body {
 	object-position: left center;
 }
 
-/* Portrait marks (Rudra, custom uploads) — logo only, header height unchanged */
-.jwellery-site-logo--rudra,
+/* Rudra landscape mark — height-led sizing, fits header without extra bar height */
+.jwellery-site-logo--rudra {
+	width: auto;
+	height: 40px;
+	max-height: 40px;
+	max-width: min(168px, 48vw);
+	object-fit: contain;
+	object-position: left center;
+}
+
 .jwellery-site-logo--kalpana,
 .jwellery-site-logo--custom {
 	width: auto;
 	height: 48px;
 	max-height: 48px;
-	max-width: min(86px, 20vw);
+	max-width: min(200px, 40vw);
 	object-fit: contain;
 	object-position: left center;
 }
 
 @media (min-width: 769px) {
-	.jwellery-site-logo,
-	.jwellery-branding .custom-logo {
-		max-height: 52px;
-		max-width: min(220px, 32vw);
-	}
-
-	.jwellery-site-logo--rudra,
-	.jwellery-site-logo--kalpana,
-	.jwellery-site-logo--custom {
-		height: 52px;
-		max-height: 52px;
-		max-width: min(94px, 22vw);
+	.jwellery-site-logo--rudra {
+		height: 46px;
+		max-height: 46px;
+		max-width: min(200px, 34vw);
 	}
 }
 
 @media (min-width: 1025px) {
-	.jwellery-site-logo--rudra,
+	.jwellery-site-logo--rudra {
+		height: 50px;
+		max-height: 50px;
+		max-width: 220px;
+		object-position: left center;
+	}
+
 	.jwellery-site-logo--kalpana,
 	.jwellery-site-logo--custom {
 		height: 56px;
-		max-height: 56px;
-		max-width: 100px;
-	}
-
-	.jwellery-site-logo,
-	.jwellery-branding .custom-logo {
 		max-height: 56px;
 		max-width: min(260px, 24vw);
 	}
@@ -242,11 +295,18 @@ body {
 	object-position: left center;
 }
 
-.jwellery-footer-logo.jwellery-site-logo--rudra,
+.jwellery-footer-logo.jwellery-site-logo--rudra {
+	max-width: 160px;
+	max-height: 44px;
+	height: 44px;
+	width: auto;
+}
+
 .jwellery-footer-logo.jwellery-site-logo--kalpana,
 .jwellery-footer-logo.jwellery-site-logo--custom {
-	max-width: 110px;
-	max-height: 52px;
+	max-width: 56px;
+	max-height: 56px;
+	height: 56px;
 	width: auto;
 }
 
@@ -986,7 +1046,7 @@ body {
 }
 
 /* WooCommerce product grid on homepage (non-carousel fallback) */
-.jwellery-product-grid.products:not(.jwellery-carousel .jwellery-product-grid) {
+.jwellery-product-grid.products:not(.jwellery-carousel .jwellery-product-grid):not(.jwellery-product-grid--deals) {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 	gap: 24px;
@@ -1939,7 +1999,7 @@ body.jwellery-keyboard-nav *:focus-visible {
 }
 
 @media (min-width: 1025px) {
-	.jwellery-product-grid--cols-4 {
+	.jwellery-product-grid--cols-4:not(.jwellery-product-grid--deals) {
 		display: grid !important;
 		grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
 		gap: 20px;
@@ -2612,10 +2672,6 @@ body.jwellery-keyboard-nav *:focus-visible {
 .jwellery-follow-item:hover {
 	transform: scale(1.03);
 	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
-
-.jwellery-header {
-	box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
 }
 
 .jwellery-branding .site-title {

@@ -24,7 +24,7 @@
 	border: none;
 	border-radius: 50%;
 	background: transparent;
-	color: var(--jwellery-black);
+	color: var(--jwellery-icon-color);
 	cursor: pointer;
 	text-decoration: none;
 	flex-shrink: 0;
@@ -35,7 +35,7 @@
 .jwellery-header-icon:focus-visible,
 .jwellery-header-icon[aria-expanded="true"] {
 	background: #fff;
-	color: var(--jwellery-maroon);
+	color: var(--jwellery-icon-color-hover);
 	outline: none;
 	box-shadow: 0 2px 8px rgba(123, 30, 58, 0.12);
 }
@@ -153,13 +153,15 @@
 	border-radius: 50%;
 	border: 1px solid var(--jwellery-border);
 	background: var(--jwellery-cream);
-	transition: background 0.2s, border-color 0.2s;
+	color: var(--jwellery-icon-color);
+	transition: background 0.2s, border-color 0.2s, color 0.2s;
 }
 
 .jwellery-nav-toggle:hover,
 .jwellery-nav-toggle:focus-visible {
 	background: #fff;
 	border-color: var(--jwellery-maroon);
+	color: var(--jwellery-icon-color-hover);
 }
 
 .jwellery-nav-toggle .jwellery-icon {
@@ -286,7 +288,7 @@
 		padding: 4px 2px;
 		border: none;
 		background: none;
-		color: #555;
+		color: var(--jwellery-icon-color);
 		font-size: 0.62rem;
 		font-weight: 600;
 		text-decoration: none;
@@ -296,13 +298,19 @@
 	}
 
 	.jwellery-mobile-bar-item:hover,
-	.jwellery-mobile-bar-item:focus-visible {
-		color: var(--jwellery-maroon);
+	.jwellery-mobile-bar-item:focus-visible,
+	.jwellery-mobile-bar-item[aria-expanded="true"] {
+		color: var(--jwellery-icon-color-hover);
 		outline: none;
 	}
 
 	.jwellery-mobile-bar-item--wa {
-		color: #128c7e;
+		color: var(--jwellery-icon-color);
+	}
+
+	.jwellery-mobile-bar-item--wa:hover,
+	.jwellery-mobile-bar-item--wa:focus-visible {
+		color: var(--jwellery-icon-color-hover);
 	}
 
 	.jwellery-mobile-bar-icon-wrap {

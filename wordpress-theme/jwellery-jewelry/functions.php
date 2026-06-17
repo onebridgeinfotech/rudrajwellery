@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Jwellery Jewelry theme functions.
  *
@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'JWELLERY_THEME_VERSION', '4.4.4' );
+define( 'JWELLERY_THEME_VERSION', '4.5.5' );
 define( 'JWELLERY_THEME_DIR', get_template_directory() );
 define( 'JWELLERY_THEME_URI', get_template_directory_uri() );
 define( 'JWELLERY_THEME_SLUG', 'jwellery-jewelry' );
@@ -34,7 +34,7 @@ function jwellery_wrong_theme_folder_notice() {
 	if ( JWELLERY_THEME_SLUG === $folder ) {
 		return;
 	}
-	echo '<div class="notice notice-error"><p><strong>' . esc_html__( 'Jwellery theme: wrong install folder', 'jwellery-jewelry' ) . '</strong> — ';
+	echo '<div class="notice notice-error"><p><strong>' . esc_html__( 'Jwellery theme: wrong install folder', 'jwellery-jewelry' ) . '</strong> â€” ';
 	echo esc_html(
 		sprintf(
 			/* translators: 1: current folder, 2: expected folder */
@@ -205,3 +205,6 @@ function jwellery_body_classes( $classes ) {
 	return $classes;
 }
 add_filter( 'body_class', 'jwellery_body_classes' );
+
+
+

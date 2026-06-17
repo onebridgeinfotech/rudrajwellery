@@ -150,7 +150,7 @@
 	border: none;
 	border-radius: 50%;
 	background: rgba(255, 255, 255, 0.96);
-	color: #b8b8b8;
+	color: var(--jwellery-icon-color-muted);
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
