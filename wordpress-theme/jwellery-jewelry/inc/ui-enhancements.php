@@ -365,7 +365,7 @@ function jwellery_handle_subscribe() {
 		wp_safe_redirect( home_url( '/?subscribe=invalid' ) );
 		exit;
 	}
-	$admin = get_option( 'admin_email' );
+	$admin = class_exists( 'JUS_Notifications' ) ? JUS_Notifications::store_email() : get_option( 'admin_email' );
 	/* translators: %s: subscriber email */
 	wp_mail( $admin, __( 'New newsletter subscriber', 'jwellery-jewelry' ), sprintf( __( 'Subscribe request: %s', 'jwellery-jewelry' ), $email ) );
 	wp_safe_redirect( home_url( '/?subscribe=thanks' ) );

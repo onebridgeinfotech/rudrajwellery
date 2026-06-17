@@ -194,7 +194,7 @@ class JUS_Payment_Tracking {
 	 * @param string   $utr   Optional UTR.
 	 */
 	private static function email_admin_payment_claimed( $order, $utr = '' ) {
-		$admin_email = get_option( 'admin_email' );
+		$admin_email = class_exists( 'JUS_Notifications' ) ? JUS_Notifications::store_email() : get_option( 'admin_email' );
 		if ( ! $admin_email ) {
 			return;
 		}
