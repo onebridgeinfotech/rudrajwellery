@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Homepage sections styled like krishnamaalika.in
  *
@@ -31,7 +31,7 @@ function jwellery_budget_shop_url( $max, $min = 0 ) {
 function jwellery_render_announcement_marquee() {
 	$messages = function_exists( 'jwellery_announcement_messages' ) ? jwellery_announcement_messages() : array();
 	if ( empty( $messages ) ) {
-		$messages = array( __( 'Free shipping on orders above ₹999', 'jwellery-jewelry' ) );
+		$messages = array( __( 'Free Shipping All Over India', 'jwellery-jewelry' ) );
 	}
 	$text = implode( ' &nbsp;|&nbsp; ', array_map( 'esc_html', $messages ) );
 	$dup  = $text . ' &nbsp;|&nbsp; ' . $text;
@@ -54,8 +54,8 @@ function jwellery_home_trust_strip() {
 	$items = array(
 		array(
 			'icon'  => 'truck',
-			'title' => __( 'All India Shipping', 'jwellery-jewelry' ),
-			'desc'  => __( 'Reliable delivery across India', 'jwellery-jewelry' ),
+			'title' => __( 'Free Shipping Across India', 'jwellery-jewelry' ),
+			'desc'  => __( 'Free shipping all over India', 'jwellery-jewelry' ),
 		),
 		array(
 			'icon'  => 'lock',
@@ -120,7 +120,7 @@ function jwellery_home_shop_by_budget() {
 				<?php foreach ( $budgets as $max ) : ?>
 					<a class="jwellery-budget-card" href="<?php echo esc_url( jwellery_budget_shop_url( $max ) ); ?>">
 						<span class="jwellery-budget-caps"><?php esc_html_e( 'Under', 'jwellery-jewelry' ); ?></span>
-						<span class="jwellery-budget-amount"><?php echo esc_html( '₹' . number_format_i18n( $max ) ); ?></span>
+						<span class="jwellery-budget-amount"><?php echo esc_html( 'â‚¹' . number_format_i18n( $max ) ); ?></span>
 						<span class="jwellery-budget-arrow" aria-hidden="true">
 							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
 						</span>
@@ -133,7 +133,7 @@ function jwellery_home_shop_by_budget() {
 }
 
 /**
- * Product grid section (Best Sellers style — krishnamaalika.in).
+ * Product grid section (Best Sellers style â€” krishnamaalika.in).
  *
  * @param string $title Section title.
  * @param array  $args  wc_get_products args.
@@ -200,9 +200,9 @@ function jwellery_home_product_grid( $title, $args, $link = '', $products = null
 			<?php if ( $is_deals ) : ?>
 				<?php $deals_total = count( $products ); ?>
 				<div class="jwellery-carousel jwellery-carousel--deals" data-carousel="steal-deals" data-animate="carousel" data-deals-carousel>
-					<button type="button" class="carousel-btn carousel-prev" aria-label="<?php esc_attr_e( 'Previous', 'jwellery-jewelry' ); ?>">‹</button>
+					<button type="button" class="carousel-btn carousel-prev" aria-label="<?php esc_attr_e( 'Previous', 'jwellery-jewelry' ); ?>">â€¹</button>
 					<div class="jwellery-carousel-track" id="carousel-steal-deals">
-						<ul class="products jwellery-product-grid jwellery-product-grid--cols-4 jwellery-product-grid--deals">
+						<ul class="products jwellery-product-grid jwellery-product-grid--deals">
 							<?php
 							foreach ( $products as $product ) {
 								jwellery_render_product_card( $product );
@@ -210,7 +210,7 @@ function jwellery_home_product_grid( $title, $args, $link = '', $products = null
 							?>
 						</ul>
 					</div>
-					<button type="button" class="carousel-btn carousel-next" aria-label="<?php esc_attr_e( 'Next', 'jwellery-jewelry' ); ?>">›</button>
+					<button type="button" class="carousel-btn carousel-next" aria-label="<?php esc_attr_e( 'Next', 'jwellery-jewelry' ); ?>">â€º</button>
 				</div>
 				<div class="carousel-dots jwellery-deals-dots" role="tablist" aria-label="<?php echo esc_attr( $title ); ?>">
 					<?php for ( $d = 0; $d < $deals_total; $d++ ) : ?>
@@ -361,7 +361,7 @@ function jwellery_home_popular_tabs() {
 }
 
 /**
- * Shop by Category — image browse grid.
+ * Shop by Category â€” image browse grid.
  */
 function jwellery_home_category_stats() {
 	if ( ! taxonomy_exists( 'product_cat' ) ) {
@@ -409,7 +409,7 @@ function jwellery_home_category_stats() {
 					array(
 						'center'    => true,
 						'eyebrow'   => __( 'Browse collections', 'jwellery-jewelry' ),
-						'subtitle'  => __( 'Earrings, necklaces, bangles & more — tap a style to explore', 'jwellery-jewelry' ),
+						'subtitle'  => __( 'Earrings, necklaces, bangles & more â€” tap a style to explore', 'jwellery-jewelry' ),
 						'link'      => $shop_url,
 						'link_text' => __( 'View all products', 'jwellery-jewelry' ),
 					)
@@ -435,7 +435,7 @@ function jwellery_home_category_stats() {
 						</span>
 						<span class="jwellery-category-browse-body">
 							<span class="jwellery-category-browse-name"><?php echo esc_html( $term->name ); ?></span>
-							<span class="jwellery-category-browse-cta"><?php esc_html_e( 'Shop now', 'jwellery-jewelry' ); ?> →</span>
+							<span class="jwellery-category-browse-cta"><?php esc_html_e( 'Shop now', 'jwellery-jewelry' ); ?> â†’</span>
 						</span>
 					</a>
 				<?php endforeach; ?>
@@ -549,7 +549,7 @@ function jwellery_owner_image_url() {
 }
 
 /**
- * Meet the owner — photo + intro on homepage.
+ * Meet the owner â€” photo + intro on homepage.
  */
 function jwellery_home_owner_section() {
 	if ( ! get_theme_mod( 'jwellery_owner_enable', true ) ) {
@@ -565,7 +565,7 @@ function jwellery_home_owner_section() {
 	$role = trim( (string) get_theme_mod( 'jwellery_owner_role', __( 'Founder', 'jwellery-jewelry' ) ) );
 	$bio  = trim( (string) get_theme_mod( 'jwellery_owner_bio', '' ) );
 	if ( ! $bio ) {
-		$bio = __( 'Passionate about traditional Indian jewelry — every piece is chosen with love so you can shine at weddings, festivals, and everyday moments.', 'jwellery-jewelry' );
+		$bio = __( 'Passionate about traditional Indian jewelry â€” every piece is chosen with love so you can shine at weddings, festivals, and everyday moments.', 'jwellery-jewelry' );
 	}
 
 	$brand = function_exists( 'jwellery_brand_name' ) ? jwellery_brand_name() : get_bloginfo( 'name' );
@@ -577,7 +577,7 @@ function jwellery_home_owner_section() {
 				<div class="jwellery-owner-photo">
 					<img
 						src="<?php echo esc_url( $image_url ); ?>"
-						alt="<?php echo esc_attr( $name ? sprintf( __( '%1$s — %2$s', 'jwellery-jewelry' ), $name, $brand ) : sprintf( __( 'Owner of %s', 'jwellery-jewelry' ), $brand ) ); ?>"
+						alt="<?php echo esc_attr( $name ? sprintf( __( '%1$s â€” %2$s', 'jwellery-jewelry' ), $name, $brand ) : sprintf( __( 'Owner of %s', 'jwellery-jewelry' ), $brand ) ); ?>"
 						width="480"
 						height="640"
 						loading="eager"
@@ -609,7 +609,7 @@ function jwellery_home_owner_section() {
 }
 
 /**
- * Follow our journey — product / Instagram gallery.
+ * Follow our journey â€” product / Instagram gallery.
  */
 function jwellery_home_follow_journey() {
 	if ( ! function_exists( 'wc_get_products' ) ) {
@@ -722,7 +722,7 @@ function jwellery_home_faq() {
 		),
 		array(
 			'q' => __( 'Is it suitable for weddings?', 'jwellery-jewelry' ),
-			'a' => __( 'Yes — perfect for bridal, festive, and daily traditional wear.', 'jwellery-jewelry' ),
+			'a' => __( 'Yes â€” perfect for bridal, festive, and daily traditional wear.', 'jwellery-jewelry' ),
 		),
 		array(
 			'q' => __( 'How do I pay?', 'jwellery-jewelry' ),
@@ -730,11 +730,11 @@ function jwellery_home_faq() {
 		),
 		array(
 			'q' => __( 'Do you offer free shipping?', 'jwellery-jewelry' ),
-			'a' => __( 'Free shipping on orders above ₹999 (configure exact rules in WooCommerce → Shipping).', 'jwellery-jewelry' ),
+			'a' => __( 'Free shipping on orders above â‚¹999 (configure exact rules in WooCommerce â†’ Shipping).', 'jwellery-jewelry' ),
 		),
 		array(
 			'q' => __( 'Will the color fade?', 'jwellery-jewelry' ),
-			'a' => __( 'With proper care — avoid water and perfume directly on pieces — color stays long-lasting.', 'jwellery-jewelry' ),
+			'a' => __( 'With proper care â€” avoid water and perfume directly on pieces â€” color stays long-lasting.', 'jwellery-jewelry' ),
 		),
 	);
 	$contact_url = function_exists( 'jwellery_get_store_page_url' ) ? jwellery_get_store_page_url( 'contact' ) : home_url( '/contact/' );
@@ -771,7 +771,7 @@ function jwellery_home_faq() {
 				</div>
 				<aside class="jwellery-faq-cta">
 					<div class="jwellery-faq-cta-inner">
-						<span class="jwellery-faq-cta-icon" aria-hidden="true">💬</span>
+						<span class="jwellery-faq-cta-icon" aria-hidden="true">ðŸ’¬</span>
 						<h3><?php esc_html_e( 'Still Have Questions?', 'jwellery-jewelry' ); ?></h3>
 						<p><?php esc_html_e( 'Our team is happy to help with orders, sizing, and styling advice.', 'jwellery-jewelry' ); ?></p>
 						<div class="jwellery-faq-cta-actions">
@@ -794,7 +794,7 @@ function jwellery_home_faq() {
 function jwellery_home_testimonials_km() {
 	$reviews = array(
 		array(
-			'text'   => __( 'Bangles are very good and strong — looks like real gold. Thank you!', 'jwellery-jewelry' ),
+			'text'   => __( 'Bangles are very good and strong â€” looks like real gold. Thank you!', 'jwellery-jewelry' ),
 			'name'   => 'Sridevi',
 			'city'   => 'Eluru',
 		),
@@ -804,7 +804,7 @@ function jwellery_home_testimonials_km() {
 			'city'   => 'Ahmedabad',
 		),
 		array(
-			'text'   => __( 'Ordered earrings — they look exactly like the photos. Very stylish.', 'jwellery-jewelry' ),
+			'text'   => __( 'Ordered earrings â€” they look exactly like the photos. Very stylish.', 'jwellery-jewelry' ),
 			'name'   => 'Sneha Kulkarni',
 			'city'   => 'Pune',
 		),
@@ -853,5 +853,7 @@ function jwellery_footer_about_text() {
 	if ( $custom ) {
 		return $custom;
 	}
-	return __( 'Elegant artificial and fashion jewelry inspired by traditional Indian designs — timeless beauty, style, and affordability for every occasion.', 'jwellery-jewelry' );
+	return __( 'Elegant artificial and fashion jewelry inspired by traditional Indian designs â€” timeless beauty, style, and affordability for every occasion.', 'jwellery-jewelry' );
 }
+
+

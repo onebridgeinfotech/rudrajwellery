@@ -347,6 +347,109 @@
 		}
 	});
 
+	/* Hot Deals — auto-scroll on mobile/tablet (carousel + cached static fallback) */
+	function initDealsMobileStrip() {
+		var mq = window.matchMedia('(max-width: 1024px)');
+		var strips = [];
+
+		document.querySelectorAll('.jwellery-home-section--steal-deals').forEach(function (section) {
+			var carousel = section.querySelector('.jwellery-carousel--deals');
+			var track = carousel
+				? carousel.querySelector('.jwellery-carousel-track')
+				: section.querySelector('.jwellery-product-grid--deals');
+			if (!track) {
+				return;
+			}
+			var items = track.querySelectorAll('.product');
+			if (items.length < 2) {
+				return;
+			}
+			strips.push({ track: track, items: items, index: 0, timer: null });
+		});
+
+		function getStep(track, items) {
+			if (!items.length) {
+				return 280;
+			}
+			var gap = 14;
+			var grid = track.querySelector('.jwellery-product-grid--deals') || track;
+			if (typeof window.getComputedStyle !== 'undefined') {
+				var g = window.getComputedStyle(grid).columnGap || window.getComputedStyle(grid).gap;
+				if (g) {
+					gap = parseFloat(g) || gap;
+				}
+			}
+			return items[0].offsetWidth + gap;
+		}
+
+		function scrollStrip(strip, index) {
+			var step = getStep(strip.track, strip.items);
+			strip.track.scrollTo({ left: Math.max(0, index * step), behavior: 'smooth' });
+			strip.index = index;
+			var section = strip.track.closest('.jwellery-home-section--steal-deals');
+			var currentEl = section ? section.querySelector('.carousel-current') : null;
+			var dotsWrap = section ? section.querySelector('.carousel-dots') : null;
+			if (currentEl) {
+				currentEl.textContent = String(index + 1);
+			}
+			if (dotsWrap) {
+				dotsWrap.querySelectorAll('.carousel-dot').forEach(function (dot, n) {
+					dot.classList.toggle('is-active', n === index);
+				});
+			}
+		}
+
+		function stopAll() {
+			strips.forEach(function (strip) {
+				if (strip.timer) {
+					clearInterval(strip.timer);
+					strip.timer = null;
+				}
+			});
+		}
+
+		function startAll() {
+			if (!mq.matches || !cfg.carouselAuto) {
+				stopAll();
+				return;
+			}
+			strips.forEach(function (strip) {
+				if (strip.timer || strip.items.length < 2) {
+					return;
+				}
+				strip.timer = setInterval(function () {
+					if (!mq.matches) {
+						return;
+					}
+					var next = (strip.index + 1) % strip.items.length;
+					scrollStrip(strip, next);
+				}, 4000);
+			});
+		}
+
+		strips.forEach(function (strip) {
+			strip.track.addEventListener('scroll', function () {
+				var step = getStep(strip.track, strip.items);
+				strip.index = Math.round(strip.track.scrollLeft / step);
+			});
+			strip.track.addEventListener('touchstart', stopAll, { passive: true });
+			strip.track.addEventListener('touchend', function () {
+				setTimeout(startAll, 3500);
+			}, { passive: true });
+		});
+
+		if (mq.addEventListener) {
+			mq.addEventListener('change', function () {
+				stopAll();
+				startAll();
+			});
+		}
+
+		startAll();
+	}
+
+	initDealsMobileStrip();
+
 	/* Add to cart toast + loading */
 	var toast = document.getElementById('jwellery-toast');
 	function showToast(msg) {

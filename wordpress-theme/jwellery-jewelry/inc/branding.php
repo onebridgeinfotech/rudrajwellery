@@ -14,18 +14,18 @@ defined( 'ABSPATH' ) || exit;
  * @return array{url: string, slug: string, width: int, height: int}|null
  */
 function jwellery_bundled_logo_info( $context = 'header' ) {
-	$portrait = array( 'slug' => 'rudra', 'width' => 128, 'height' => 128 );
+	$landscape = array( 'slug' => 'rudra', 'width' => 360, 'height' => 164 );
 
 	$candidates = 'footer' === $context
 		? array(
-			'rudra-logo-footer.png' => array_merge( $portrait, array( 'width' => 80, 'height' => 80 ) ),
-			'rudra-logo.png'        => array_merge( $portrait, array( 'width' => 80, 'height' => 80 ) ),
+			'rudra-logo-footer.png' => array_merge( $landscape, array( 'width' => 220, 'height' => 100 ) ),
+			'rudra-logo.png'        => array_merge( $landscape, array( 'width' => 220, 'height' => 100 ) ),
 			'kalpana-logo.png'      => array( 'slug' => 'kalpana', 'width' => 280, 'height' => 120 ),
 			'logo.svg'              => array( 'slug' => 'default', 'width' => 240, 'height' => 56 ),
 		)
 		: array(
-			'rudra-logo-header.png' => $portrait,
-			'rudra-logo.png'        => $portrait,
+			'rudra-logo-header.png' => $landscape,
+			'rudra-logo.png'        => $landscape,
 			'kalpana-logo.png'      => array( 'slug' => 'kalpana', 'width' => 280, 'height' => 120 ),
 			'logo.svg'              => array( 'slug' => 'default', 'width' => 240, 'height' => 56 ),
 		);

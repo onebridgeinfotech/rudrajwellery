@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * UI enhancements: homepage stock filter, cart banner, product trust, WhatsApp, footer brand.
  *
@@ -317,13 +317,29 @@ function jwellery_cart_icon_link() {
 function jwellery_announcement_messages() {
 	$raw = (string) get_theme_mod( 'jwellery_announcements', '' );
 	if ( $raw ) {
+		$raw = str_ireplace(
+			array(
+				'FREE Shipping on Orders Above ₹999',
+				'Free shipping on orders above ₹999',
+				'Free Shipping Across India on Orders Above ₹999',
+				'All India Shipping',
+			),
+			'Free Shipping All Over India',
+			$raw
+		);
 		$lines = array_filter( array_map( 'trim', explode( '|', $raw ) ) );
 		if ( $lines ) {
+			foreach ( $lines as $idx => $line ) {
+				$line = trim( (string) $line );
+				if ( false !== stripos( $line, 'shipping' ) && false !== stripos( $line, 'india' ) ) {
+					$lines[ $idx ] = 'Free Shipping All Over India';
+				}
+			}
 			return $lines;
 		}
 	}
 	return array(
-		__( 'FREE Shipping on Orders Above ₹999', 'jwellery-jewelry' ),
+		__( 'Free Shipping All Over India', 'jwellery-jewelry' ),
 		__( 'Elegant Artificial Jewellery', 'jwellery-jewelry' ),
 		__( 'New Arrivals Now Live', 'jwellery-jewelry' ),
 		__( 'Perfect Jewellery for Every Occasion', 'jwellery-jewelry' ),
@@ -476,8 +492,8 @@ function jwellery_product_trust_badges() {
 	?>
 	<ul class="jwellery-trust-badges jwellery-trust-badges--product">
 		<li><?php esc_html_e( 'Premium imitation jewellery', 'jwellery-jewelry' ); ?></li>
-		<li><?php esc_html_e( 'Gold-tone finish — not real gold', 'jwellery-jewelry' ); ?></li>
-		<li><?php esc_html_e( 'Secure UPI · All-India shipping', 'jwellery-jewelry' ); ?></li>
+		<li><?php esc_html_e( 'Gold-tone finish â€” not real gold', 'jwellery-jewelry' ); ?></li>
+		<li><?php esc_html_e( 'Secure UPI Â· All-India shipping', 'jwellery-jewelry' ); ?></li>
 	</ul>
 	<?php
 }
@@ -498,7 +514,7 @@ function jwellery_product_whatsapp_share() {
 	if ( ! $wa ) {
 		return;
 	}
-	$text = rawurlencode( $product->get_name() . ' — ' . $product->get_permalink() );
+	$text = rawurlencode( $product->get_name() . ' â€” ' . $product->get_permalink() );
 	?>
 	<p class="jwellery-wa-share jwellery-single-product-actions">
 		<a class="jwellery-btn jwellery-btn-wa jwellery-single-wa-btn" href="<?php echo esc_url( $wa . '?text=' . $text ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Ask on WhatsApp', 'jwellery-jewelry' ); ?></a>
@@ -594,7 +610,7 @@ function jwellery_home_newsletter() {
 			<?php if ( $wa ) : ?>
 				<a class="jwellery-btn jwellery-btn-primary" href="<?php echo esc_url( $wa ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Chat on WhatsApp', 'jwellery-jewelry' ); ?></a>
 			<?php else : ?>
-				<p class="jwellery-newsletter-hint"><?php esc_html_e( 'Add your WhatsApp number in Appearance → Customize → Store UI', 'jwellery-jewelry' ); ?></p>
+				<p class="jwellery-newsletter-hint"><?php esc_html_e( 'Add your WhatsApp number in Appearance â†’ Customize â†’ Store UI', 'jwellery-jewelry' ); ?></p>
 			<?php endif; ?>
 		</div>
 	</section>
@@ -610,9 +626,9 @@ function jwellery_home_testimonials() {
 		<div class="container">
 			<h2 class="section-title section-title--center"><?php esc_html_e( 'What customers say', 'jwellery-jewelry' ); ?></h2>
 			<div class="jwellery-testimonial-grid">
-				<blockquote><p><?php esc_html_e( 'Beautiful designs and great quality for the price!', 'jwellery-jewelry' ); ?></p><cite>— <?php esc_html_e( 'Happy customer', 'jwellery-jewelry' ); ?></cite></blockquote>
-				<blockquote><p><?php esc_html_e( 'Easy UPI checkout and fast delivery.', 'jwellery-jewelry' ); ?></p><cite>— <?php esc_html_e( 'Repeat buyer', 'jwellery-jewelry' ); ?></cite></blockquote>
-				<blockquote><p><?php esc_html_e( 'Perfect for festive wear — looks like real gold!', 'jwellery-jewelry' ); ?></p><cite>— <?php esc_html_e( 'Verified buyer', 'jwellery-jewelry' ); ?></cite></blockquote>
+				<blockquote><p><?php esc_html_e( 'Beautiful designs and great quality for the price!', 'jwellery-jewelry' ); ?></p><cite>â€” <?php esc_html_e( 'Happy customer', 'jwellery-jewelry' ); ?></cite></blockquote>
+				<blockquote><p><?php esc_html_e( 'Easy UPI checkout and fast delivery.', 'jwellery-jewelry' ); ?></p><cite>â€” <?php esc_html_e( 'Repeat buyer', 'jwellery-jewelry' ); ?></cite></blockquote>
+				<blockquote><p><?php esc_html_e( 'Perfect for festive wear â€” looks like real gold!', 'jwellery-jewelry' ); ?></p><cite>â€” <?php esc_html_e( 'Verified buyer', 'jwellery-jewelry' ); ?></cite></blockquote>
 			</div>
 		</div>
 	</section>
@@ -648,3 +664,6 @@ function jwellery_cart_icon_fragments( $fragments ) {
 	return $fragments;
 }
 add_filter( 'woocommerce_add_to_cart_fragments', 'jwellery_cart_icon_fragments' );
+
+
+

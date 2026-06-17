@@ -1,6 +1,6 @@
-<?php
+﻿<?php
 /**
- * Theme Customizer — brand, social, hero, WhatsApp, announcements.
+ * Theme Customizer â€” brand, social, hero, WhatsApp, announcements.
  *
  * @package JwelleryJewelry
  */
@@ -142,7 +142,7 @@ function jwellery_customize_register( $wp_customize ) {
 		'jwellery_announcements',
 		array(
 			'label'       => __( 'Announcement bar messages', 'jwellery-jewelry' ),
-			'description' => __( 'Separate with | (pipe). Rotates every few seconds.', 'jwellery-jewelry' ),
+			'description' => __( 'Separate with | (pipe). Example: Free Shipping All Over India | New Arrivals', 'jwellery-jewelry' ),
 			'section'     => 'jwellery_store_ui',
 			'type'        => 'textarea',
 		)
@@ -158,7 +158,7 @@ function jwellery_customize_register( $wp_customize ) {
 	$wp_customize->add_control(
 		'jwellery_free_shipping_min',
 		array(
-			'label'       => __( 'Free shipping minimum (₹)', 'jwellery-jewelry' ),
+			'label'       => __( 'Free shipping minimum (â‚¹)', 'jwellery-jewelry' ),
 			'description' => __( 'Used in the mini cart progress bar.', 'jwellery-jewelry' ),
 			'section'     => 'jwellery_store_ui',
 			'type'        => 'number',
@@ -173,7 +173,7 @@ function jwellery_customize_register( $wp_customize ) {
 		array(
 			'jwellery_enable_cart_drawer' => __( 'Mini cart drawer', 'jwellery-jewelry' ),
 			'jwellery_enable_quick_view'  => __( 'Quick view on products', 'jwellery-jewelry' ),
-			'jwellery_enable_mega_menu'   => __( 'Shop mega menu (wide panel — off = simple dropdown)', 'jwellery-jewelry' ),
+			'jwellery_enable_mega_menu'   => __( 'Shop mega menu (wide panel â€” off = simple dropdown)', 'jwellery-jewelry' ),
 		) as $key => $label
 	) {
 		$default_on = 'jwellery_enable_mega_menu' !== $key;
@@ -229,7 +229,7 @@ function jwellery_customize_register( $wp_customize ) {
 	$wp_customize->add_section(
 		'jwellery_owner',
 		array(
-			'title'       => __( 'Homepage — Meet the Owner', 'jwellery-jewelry' ),
+			'title'       => __( 'Homepage â€” Meet the Owner', 'jwellery-jewelry' ),
 			'description' => __( 'Owner photo and intro shown on the homepage.', 'jwellery-jewelry' ),
 			'priority'    => 120,
 		)
@@ -306,7 +306,7 @@ function jwellery_customize_register( $wp_customize ) {
 		'jwellery_owner_bio',
 		array(
 			'sanitize_callback' => 'sanitize_textarea_field',
-			'default'           => __( 'Passionate about traditional Indian jewelry — every piece is chosen with love so you can shine at weddings, festivals, and everyday moments.', 'jwellery-jewelry' ),
+			'default'           => __( 'Passionate about traditional Indian jewelry â€” every piece is chosen with love so you can shine at weddings, festivals, and everyday moments.', 'jwellery-jewelry' ),
 		)
 	);
 	$wp_customize->add_control(
@@ -322,7 +322,7 @@ function jwellery_customize_register( $wp_customize ) {
 		'jwellery_home_sections',
 		array(
 			'title'       => __( 'Homepage Sections', 'jwellery-jewelry' ),
-			'description' => __( 'Show or hide homepage blocks. Top Categories carousel is off by default — Shop by Category cards are recommended.', 'jwellery-jewelry' ),
+			'description' => __( 'Show or hide homepage blocks. Top Categories carousel is off by default â€” Shop by Category cards are recommended.', 'jwellery-jewelry' ),
 			'priority'    => 119,
 		)
 	);
@@ -408,7 +408,7 @@ function jwellery_customize_register( $wp_customize ) {
 	$wp_customize->add_control(
 		'jwellery_hero_from_price',
 		array(
-			'label'       => __( 'Hero “from” price (₹)', 'jwellery-jewelry' ),
+			'label'       => __( 'Hero â€œfromâ€ price (â‚¹)', 'jwellery-jewelry' ),
 			'description' => __( 'Leave 0 to use your lowest in-stock product price automatically.', 'jwellery-jewelry' ),
 			'section'     => 'jwellery_hero',
 			'type'        => 'number',
@@ -521,3 +521,5 @@ function jwellery_customize_register( $wp_customize ) {
 	}
 }
 add_action( 'customize_register', 'jwellery_customize_register' );
+
+

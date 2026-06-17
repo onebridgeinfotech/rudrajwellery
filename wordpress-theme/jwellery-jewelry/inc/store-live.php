@@ -32,11 +32,18 @@ add_action( 'after_switch_theme', 'jwellery_maybe_force_store_live', 20 );
 function jwellery_purge_hosting_cache() {
 	if ( class_exists( 'LiteSpeed_Cache_API' ) ) {
 		LiteSpeed_Cache_API::purge_all();
+		if ( method_exists( 'LiteSpeed_Cache_API', 'purge' ) ) {
+			LiteSpeed_Cache_API::purge( home_url( '/' ) );
+			LiteSpeed_Cache_API::purge( home_url( '/shop/' ) );
+		}
 	}
 	if ( function_exists( 'litespeed_purge_all' ) ) {
 		litespeed_purge_all();
 	}
 	do_action( 'litespeed_purge_all' );
+	if ( function_exists( 'litespeed_purge_url' ) ) {
+		litespeed_purge_url( home_url( '/' ) );
+	}
 	if ( function_exists( 'wp_cache_clear_cache' ) ) {
 		wp_cache_clear_cache();
 	}
