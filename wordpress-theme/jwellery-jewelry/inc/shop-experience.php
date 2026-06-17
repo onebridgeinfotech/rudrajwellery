@@ -170,7 +170,8 @@ function jwellery_shop_uses_mega_menu() {
  * @return string
  */
 function jwellery_shop_submenu_html() {
-	$shop = jwellery_get_shop_url();
+	$shop     = jwellery_get_shop_url();
+	$all_url  = function_exists( 'jwellery_all_products_url' ) ? jwellery_all_products_url() : $shop;
 	ob_start();
 	?>
 	<ul class="sub-menu">
@@ -179,7 +180,7 @@ function jwellery_shop_submenu_html() {
 		<li><a href="<?php echo esc_url( add_query_arg( 'featured', '1', $shop ) ); ?>"><?php esc_html_e( 'Best Sellers', 'jwellery-jewelry' ); ?></a></li>
 		<li><a href="<?php echo esc_url( jwellery_term_link( 'latest-collection' ) ); ?>"><?php esc_html_e( 'Latest Collection', 'jwellery-jewelry' ); ?></a></li>
 		<li><a href="<?php echo esc_url( $shop ); ?>"><?php esc_html_e( 'All Collections', 'jwellery-jewelry' ); ?></a></li>
-		<li><a href="<?php echo esc_url( $shop ); ?>"><?php esc_html_e( 'All Products', 'jwellery-jewelry' ); ?></a></li>
+		<li><a href="<?php echo esc_url( $all_url ); ?>"><?php esc_html_e( 'All Products', 'jwellery-jewelry' ); ?></a></li>
 	</ul>
 	<?php
 	return ob_get_clean();
@@ -241,7 +242,7 @@ function jwellery_mega_menu_html() {
 							</a>
 						</li>
 					<?php endforeach; ?>
-					<li><a href="<?php echo esc_url( jwellery_get_shop_url() ); ?>"><?php esc_html_e( 'All Products', 'jwellery-jewelry' ); ?></a></li>
+					<li><a href="<?php echo esc_url( function_exists( 'jwellery_all_products_url' ) ? jwellery_all_products_url() : jwellery_get_shop_url() ); ?>"><?php esc_html_e( 'All Products', 'jwellery-jewelry' ); ?></a></li>
 				</ul>
 			</div>
 			<div class="jwellery-mega-col jwellery-mega-col--links">
@@ -415,7 +416,7 @@ function jwellery_cart_drawer_inner_html() {
 	if ( WC()->cart->is_empty() ) {
 		?>
 		<p class="jwellery-cart-drawer-empty"><?php esc_html_e( 'Your cart is empty.', 'jwellery-jewelry' ); ?></p>
-		<a class="jwellery-btn jwellery-btn-primary jwellery-cart-drawer-shop" href="<?php echo esc_url( jwellery_get_shop_url() ); ?>"><?php esc_html_e( 'Start shopping', 'jwellery-jewelry' ); ?></a>
+		<a class="jwellery-btn jwellery-btn-primary jwellery-cart-drawer-shop" href="<?php echo esc_url( function_exists( 'jwellery_all_products_url' ) ? jwellery_all_products_url() : jwellery_get_shop_url() ); ?>"><?php esc_html_e( 'Start shopping', 'jwellery-jewelry' ); ?></a>
 		<?php
 		return ob_get_clean();
 	}
@@ -503,24 +504,10 @@ function jwellery_cart_drawer_fragments( $fragments ) {
 add_filter( 'woocommerce_add_to_cart_fragments', 'jwellery_cart_drawer_fragments', 20 );
 
 /**
- * Quick view on WooCommerce shop/archive cards.
+ * Shop/archive loops use woocommerce/content-product.php → jwellery_render_product_card().
+ * Do not hook before_shop_loop_item_title here — it conflicts with the default WC
+ * template and caused fatal errors on /shop/, upsells, and related products.
  */
-function jwellery_shop_loop_image_wrap_open() {
-	echo '<span class="product-image-wrap">';
-}
-add_action( 'woocommerce_before_shop_loop_item_title', 'jwellery_shop_loop_image_wrap_open', 9 );
-
-function jwellery_shop_loop_quick_view() {
-	global $product;
-	if ( ! $product instanceof WC_Product ) {
-		return;
-	}
-	echo '<span class="jwellery-card-hover-actions">';
-	jwellery_quick_view_button( $product );
-	echo '</span></span>';
-}
-remove_action( 'woocommerce_before_shop_loop_item_title', 'jwellery_shop_loop_quick_view', 20 );
-add_action( 'woocommerce_before_shop_loop_item_title', 'jwellery_shop_loop_quick_view', 11 );
 
 /**
  * Cart toggle button (opens drawer).

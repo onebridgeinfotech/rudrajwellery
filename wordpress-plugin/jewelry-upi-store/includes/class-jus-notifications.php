@@ -159,9 +159,11 @@ class JUS_Notifications {
 			set_theme_mod( 'jwellery_email', $email );
 		}
 
-		$from_address = (string) get_option( 'woocommerce_email_from_address', '' );
-		if ( self::is_legacy_email( $from_address ) ) {
-			update_option( 'woocommerce_email_from_address', $email );
+		$from_address = class_exists( 'JUS_Mail' ) ? JUS_Mail::transactional_from_email() : self::DEFAULT_EMAIL;
+		if ( self::is_legacy_email( $from_address ) || ! is_email( $from_address ) ) {
+			update_option( 'woocommerce_email_from_address', class_exists( 'JUS_Mail' ) ? JUS_Mail::transactional_from_email() : 'noreply@' . wp_parse_url( home_url(), PHP_URL_HOST ) );
+		} elseif ( self::is_legacy_email( (string) get_option( 'woocommerce_email_from_address', '' ) ) ) {
+			update_option( 'woocommerce_email_from_address', $from_address );
 		}
 
 		$from_name = get_bloginfo( 'name' );

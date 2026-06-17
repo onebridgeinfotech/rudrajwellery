@@ -1061,6 +1061,17 @@ body {
 	padding: 0;
 }
 
+/* WooCommerce clearfix ::before/::after become grid items and break 4-column rows */
+ul.products.jwellery-product-grid::before,
+ul.products.jwellery-product-grid::after {
+	display: none !important;
+	content: none !important;
+}
+
+.jwellery-product-grid > li.product {
+	display: block !important;
+}
+
 .jwellery-product-grid .product {
 	margin: 0;
 	padding: 0;

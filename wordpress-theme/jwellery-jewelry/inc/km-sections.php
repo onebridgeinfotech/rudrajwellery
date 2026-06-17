@@ -234,8 +234,10 @@ function jwellery_home_product_grid( $title, $args, $link = '', $products = null
 
 /**
  * Popular products with filter tabs (Gemstone-style).
+ *
+ * @param string $context `home` or `shop`.
  */
-function jwellery_home_popular_tabs() {
+function jwellery_home_popular_tabs( $context = 'home' ) {
 	if ( ! function_exists( 'wc_get_products' ) || ! function_exists( 'jwellery_render_product_card' ) ) {
 		return;
 	}
@@ -301,8 +303,12 @@ function jwellery_home_popular_tabs() {
 	if ( empty( $panels['featured'] ) && empty( $panels['new'] ) && empty( $panels['sale'] ) ) {
 		return;
 	}
+	$section_class = 'jwellery-home-section jwellery-home-section--popular-tabs';
+	if ( 'shop' === $context ) {
+		$section_class .= ' jwellery-shop-section--popular-tabs';
+	}
 	?>
-	<section class="jwellery-home-section jwellery-home-section--popular-tabs" data-popular-tabs>
+	<section class="<?php echo esc_attr( $section_class ); ?>" data-popular-tabs>
 		<div class="container">
 			<?php
 			if ( function_exists( 'jwellery_section_header' ) ) {
@@ -853,7 +859,7 @@ function jwellery_footer_about_text() {
 	if ( $custom ) {
 		return $custom;
 	}
-	return __( 'Elegant artificial and fashion jewelry inspired by traditional Indian designs â€” timeless beauty, style, and affordability for every occasion.', 'jwellery-jewelry' );
+	return __( 'Elegant artificial and fashion jewelry inspired by traditional Indian designs — timeless beauty, style, and affordability for every occasion.', 'jwellery-jewelry' );
 }
 
 

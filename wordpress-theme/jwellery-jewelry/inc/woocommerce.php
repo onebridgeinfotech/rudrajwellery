@@ -54,8 +54,31 @@ function jwellery_register_wc_hooks() {
 	add_action( 'woocommerce_before_shop_loop', 'jwellery_shop_toolbar_close', 31 );
 	add_filter( 'pre_option_woocommerce_enable_myaccount_registration', 'jwellery_force_account_registration' );
 	add_filter( 'pre_option_woocommerce_enable_signup_and_login_from_checkout', 'jwellery_force_account_registration' );
+	add_filter( 'wc_get_template', 'jwellery_wc_get_template', 10, 5 );
 }
 add_action( 'woocommerce_init', 'jwellery_register_wc_hooks' );
+
+/**
+ * Force safe WooCommerce template overrides (cart / order line items).
+ *
+ * @param string $template       Path.
+ * @param string $template_name  Name.
+ * @param array  $args           Args.
+ * @param string $template_path  Path.
+ * @param string $default_path   Default path.
+ * @return string
+ */
+function jwellery_wc_get_template( $template, $template_name, $args, $template_path, $default_path ) {
+	$overrides = array(
+		'cart/cart-item.php',
+		'order/order-details-item.php',
+	);
+	if ( ! in_array( $template_name, $overrides, true ) ) {
+		return $template;
+	}
+	$custom = JWELLERY_THEME_DIR . '/woocommerce/' . $template_name;
+	return is_readable( $custom ) ? $custom : $template;
+}
 
 /**
  * Always allow customer registration on My Account page.
@@ -74,6 +97,9 @@ function jwellery_shop_toolbar_open() {
 	if ( ! function_exists( 'is_shop' ) || ! ( is_shop() || is_product_category() || is_product_tag() ) ) {
 		return;
 	}
+	if ( function_exists( 'jwellery_is_main_shop_catalog' ) && jwellery_is_main_shop_catalog() ) {
+		return;
+	}
 	echo '<div class="jwellery-shop-toolbar">';
 }
 
@@ -82,6 +108,9 @@ function jwellery_shop_toolbar_open() {
  */
 function jwellery_shop_toolbar_close() {
 	if ( ! function_exists( 'is_shop' ) || ! ( is_shop() || is_product_category() || is_product_tag() ) ) {
+		return;
+	}
+	if ( function_exists( 'jwellery_is_main_shop_catalog' ) && jwellery_is_main_shop_catalog() ) {
 		return;
 	}
 	echo '</div>';
@@ -112,6 +141,10 @@ function jwellery_products_per_page() {
  * Wrap WooCommerce content.
  */
 function jwellery_woocommerce_wrapper_start() {
+	if ( function_exists( 'jwellery_is_main_shop_catalog' ) && jwellery_is_main_shop_catalog() ) {
+		echo '<div class="jwellery-shop-wrap jwellery-shop-wrap--catalog">';
+		return;
+	}
 	echo '<div class="jwellery-shop-wrap container">';
 }
 

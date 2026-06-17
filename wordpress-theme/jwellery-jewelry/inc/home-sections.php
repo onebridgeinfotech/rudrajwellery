@@ -26,6 +26,7 @@ function jwellery_home_section_enabled( $key ) {
 		'product_of_day'   => 'jwellery_home_enable_product_of_day',
 		'follow_journey'   => 'jwellery_home_enable_follow_journey',
 		'instagram'        => 'jwellery_home_enable_instagram',
+		'all_products'     => 'jwellery_home_enable_all_products',
 		'testimonials'     => 'jwellery_home_enable_testimonials',
 		'faq'              => 'jwellery_home_enable_faq',
 	);
@@ -56,6 +57,7 @@ function jwellery_home_section_default( $key ) {
 		'product_of_day'   => true,
 		'follow_journey'   => true,
 		'instagram'        => true,
+		'all_products'     => true,
 		'testimonials'     => true,
 		'faq'              => true,
 	);

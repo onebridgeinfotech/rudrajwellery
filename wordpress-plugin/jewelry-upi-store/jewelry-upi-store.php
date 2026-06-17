@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Jewelry UPI Store
  * Description: Manual UPI payment gateway, pending order workflow, and order emails.
- * Version: 1.2.1
+ * Version: 1.2.3
  * Author: Jewelry E-commerce
  * Requires at least: 6.0
  * Requires PHP: 7.4
@@ -15,7 +15,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'JUS_VERSION', '1.2.1' );
+define( 'JUS_VERSION', '1.2.3' );
 define( 'JUS_PLUGIN_FILE', __FILE__ );
 define( 'JUS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -73,7 +73,9 @@ function jus_ensure_gateway_settings() {
  */
 function jus_activate_plugin() {
 	jus_ensure_gateway_settings();
+	require_once JUS_PLUGIN_DIR . 'includes/class-jus-mail.php';
 	require_once JUS_PLUGIN_DIR . 'includes/class-jus-notifications.php';
+	JUS_Mail::apply_from_settings();
 	JUS_Notifications::apply_store_email_settings();
 	update_option( JUS_Notifications::OPTION_APPLIED, JUS_VERSION, false );
 }
@@ -97,6 +99,7 @@ function jus_bootstrap() {
 
 	jus_ensure_gateway_settings();
 
+	require_once JUS_PLUGIN_DIR . 'includes/class-jus-mail.php';
 		require_once JUS_PLUGIN_DIR . 'includes/class-jus-notifications.php';
 		require_once JUS_PLUGIN_DIR . 'includes/class-jus-checkout.php';
 		require_once JUS_PLUGIN_DIR . 'includes/class-jus-orders.php';
@@ -104,6 +107,8 @@ function jus_bootstrap() {
 		require_once JUS_PLUGIN_DIR . 'includes/class-jus-accounts.php';
 		require_once JUS_PLUGIN_DIR . 'includes/class-jus-payment-tracking.php';
 
+		JUS_Mail::init();
+		JUS_Mail::apply_from_settings();
 		JUS_Notifications::init();
 		JUS_Checkout::init();
 		JUS_Orders::init();

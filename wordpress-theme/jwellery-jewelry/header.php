@@ -91,7 +91,7 @@ if ( function_exists( 'jwellery_render_announcement_marquee' ) ) {
 					}
 					?>
 				</div>
-				<a class="jwellery-btn jwellery-btn-shop" href="<?php echo esc_url( jwellery_get_shop_url() ); ?>"><?php esc_html_e( 'Shop Now', 'jwellery-jewelry' ); ?></a>
+				<a class="jwellery-btn jwellery-btn-shop" href="<?php echo esc_url( function_exists( 'jwellery_all_products_url' ) ? jwellery_all_products_url() : jwellery_get_shop_url() ); ?>"><?php esc_html_e( 'Shop Now', 'jwellery-jewelry' ); ?></a>
 			<?php endif; ?>
 		</div>
 	</div>

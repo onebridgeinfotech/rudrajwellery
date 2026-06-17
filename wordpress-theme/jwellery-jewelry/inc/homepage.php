@@ -28,8 +28,9 @@ function jwellery_term_link( $slug ) {
  * Render product card.
  *
  * @param WC_Product $product Product.
+ * @param string     $extra_class Optional extra class on the li.
  */
-function jwellery_render_product_card( $product ) {
+function jwellery_render_product_card( $product, $extra_class = '' ) {
 	if ( ! $product || ! is_a( $product, 'WC_Product' ) ) {
 		return;
 	}
@@ -37,8 +38,12 @@ function jwellery_render_product_card( $product ) {
 		return;
 	}
 	$out_of_stock = ! $product->is_in_stock();
+	$li_class     = 'product' . ( $out_of_stock ? ' is-sold-out' : '' );
+	if ( $extra_class ) {
+		$li_class .= ' ' . $extra_class;
+	}
 	?>
-	<li class="product<?php echo $out_of_stock ? ' is-sold-out' : ''; ?>">
+	<li class="<?php echo esc_attr( $li_class ); ?>">
 		<span class="product-image-wrap">
 			<?php
 			if ( function_exists( 'jwellery_wishlist_button' ) ) {
@@ -357,8 +362,8 @@ function jwellery_home_hero() {
 			<h1 class="jwellery-hero-reveal"><?php echo esc_html( jwellery_brand_name() ); ?></h1>
 			<p class="jwellery-hero-desc jwellery-hero-reveal"><?php echo esc_html( $tagline ); ?></p>
 			<div class="jwellery-hero-actions jwellery-hero-reveal">
-				<a class="jwellery-btn jwellery-btn-primary" href="<?php echo esc_url( jwellery_get_shop_url() ); ?>"><?php esc_html_e( 'Shop Now', 'jwellery-jewelry' ); ?></a>
-				<a class="jwellery-btn jwellery-btn-hero-secondary" href="<?php echo esc_url( jwellery_get_shop_url() ); ?>"><?php esc_html_e( 'All Products', 'jwellery-jewelry' ); ?></a>
+				<a class="jwellery-btn jwellery-btn-primary" href="<?php echo esc_url( function_exists( 'jwellery_all_products_url' ) ? jwellery_all_products_url() : jwellery_get_shop_url() ); ?>"><?php esc_html_e( 'Shop Now', 'jwellery-jewelry' ); ?></a>
+				<a class="jwellery-btn jwellery-btn-hero-secondary" href="<?php echo esc_url( function_exists( 'jwellery_all_products_url' ) ? jwellery_all_products_url() : jwellery_get_shop_url() ); ?>"><?php esc_html_e( 'All Products', 'jwellery-jewelry' ); ?></a>
 			</div>
 		</div>
 		<?php if ( $slide_count > 1 ) : ?>

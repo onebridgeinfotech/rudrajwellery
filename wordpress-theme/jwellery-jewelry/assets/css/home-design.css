@@ -659,7 +659,9 @@
 /* ——— Popular Products tabs: exactly 4 per row on desktop ——— */
 @media (min-width: 1025px) {
 	.jwellery-home-section--popular-tabs .jwellery-product-grid--cols-4,
-	.jwellery-home-section--popular-tabs .jwellery-product-grid--static {
+	.jwellery-home-section--popular-tabs .jwellery-product-grid--static,
+	.jwellery-home-section--grid .jwellery-product-grid--cols-4,
+	.jwellery-home-section--all-products .jwellery-product-grid--cols-4 {
 		display: grid !important;
 		grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
 		gap: 20px;

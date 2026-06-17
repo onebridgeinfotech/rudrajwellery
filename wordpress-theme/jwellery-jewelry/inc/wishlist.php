@@ -40,7 +40,13 @@ function jwellery_wishlist_product_is_valid( $product_id ) {
 		return false;
 	}
 	$product = wc_get_product( $product_id );
-	return $product && $product->is_visible();
+	if ( ! $product || 'publish' !== $product->get_status() ) {
+		return false;
+	}
+	if ( function_exists( 'jwellery_product_has_image' ) && ! jwellery_product_has_image( $product ) ) {
+		return false;
+	}
+	return true;
 }
 
 /**
@@ -118,7 +124,6 @@ function jwellery_wishlist_bootstrap() {
 	add_filter( 'woocommerce_account_menu_items', 'jwellery_wishlist_account_menu_item' );
 	add_action( 'woocommerce_account_wishlist_endpoint', 'jwellery_wishlist_account_endpoint_content' );
 	add_action( 'woocommerce_after_add_to_cart_button', 'jwellery_single_product_wishlist_button', 12 );
-	add_action( 'woocommerce_before_shop_loop_item_title', 'jwellery_loop_product_wishlist_button', 9 );
 }
 add_action( 'woocommerce_init', 'jwellery_wishlist_bootstrap' );
 
@@ -176,7 +181,7 @@ function jwellery_wishlist_account_endpoint_content() {
 		<?php if ( empty( $ids ) ) : ?>
 			<div class="jwellery-uda-empty">
 				<p><?php esc_html_e( 'Your wishlist is empty. Browse the shop and tap the heart on pieces you love.', 'jwellery-jewelry' ); ?></p>
-				<a class="jwellery-btn jwellery-btn-primary" href="<?php echo esc_url( jwellery_get_shop_url() ); ?>"><?php esc_html_e( 'Shop now', 'jwellery-jewelry' ); ?></a>
+				<a class="jwellery-btn jwellery-btn-primary" href="<?php echo esc_url( function_exists( 'jwellery_all_products_url' ) ? jwellery_all_products_url() : jwellery_get_shop_url() ); ?>"><?php esc_html_e( 'Shop now', 'jwellery-jewelry' ); ?></a>
 			</div>
 		<?php else : ?>
 			<p class="jwellery-wishlist-count">
@@ -394,12 +399,3 @@ function jwellery_single_product_wishlist_button() {
 	}
 }
 
-/**
- * Default WooCommerce loop wishlist (shop archive).
- */
-function jwellery_loop_product_wishlist_button() {
-	global $product;
-	if ( $product && function_exists( 'jwellery_wishlist_button' ) ) {
-		jwellery_wishlist_button( $product, 'loop' );
-	}
-}

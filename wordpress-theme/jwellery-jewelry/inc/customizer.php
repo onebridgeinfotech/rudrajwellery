@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Theme Customizer â€” brand, social, hero, WhatsApp, announcements.
  *
@@ -338,6 +338,7 @@ function jwellery_customize_register( $wp_customize ) {
 		'jwellery_home_enable_product_of_day'  => __( 'Product of the Day', 'jwellery-jewelry' ),
 		'jwellery_home_enable_follow_journey'  => __( 'Follow Our Journey', 'jwellery-jewelry' ),
 		'jwellery_home_enable_instagram'       => __( 'Instagram Collection', 'jwellery-jewelry' ),
+		'jwellery_home_enable_all_products'    => __( 'All Products (full catalog on homepage)', 'jwellery-jewelry' ),
 		'jwellery_home_enable_testimonials'    => __( 'Customer Reviews', 'jwellery-jewelry' ),
 		'jwellery_home_enable_faq'             => __( 'FAQ', 'jwellery-jewelry' ),
 	);
@@ -363,6 +364,60 @@ function jwellery_customize_register( $wp_customize ) {
 			)
 		);
 	}
+
+	$wp_customize->add_section(
+		'jwellery_shop_catalog',
+		array(
+			'title'       => __( 'Shop & Catalog', 'jwellery-jewelry' ),
+			'description' => __( 'Homepage-first shopping: customers browse and add to cart on the homepage. Shop page shows the same style grouped by category.', 'jwellery-jewelry' ),
+			'priority'    => 120,
+		)
+	);
+
+	$catalog_toggles = array(
+		'jwellery_homepage_first_storefront' => __( 'Homepage-first: Shop Now links to All Products on home', 'jwellery-jewelry' ),
+		'jwellery_shop_grouped_catalog'      => __( 'Shop page: grouped by category (main shop)', 'jwellery-jewelry' ),
+	);
+
+	foreach ( $catalog_toggles as $key => $label ) {
+		$wp_customize->add_setting(
+			$key,
+			array(
+				'sanitize_callback' => 'wp_validate_boolean',
+				'default'           => true,
+			)
+		);
+		$wp_customize->add_control(
+			$key,
+			array(
+				'label'   => $label,
+				'section' => 'jwellery_shop_catalog',
+				'type'    => 'checkbox',
+			)
+		);
+	}
+
+	$wp_customize->add_setting(
+		'jwellery_all_products_per_page',
+		array(
+			'sanitize_callback' => 'absint',
+			'default'           => 12,
+		)
+	);
+	$wp_customize->add_control(
+		'jwellery_all_products_per_page',
+		array(
+			'label'       => __( 'Homepage All Products: show first N items', 'jwellery-jewelry' ),
+			'description' => __( 'Remaining products use a Load more button.', 'jwellery-jewelry' ),
+			'section'     => 'jwellery_shop_catalog',
+			'type'        => 'number',
+			'input_attrs' => array(
+				'min'  => 4,
+				'max'  => 48,
+				'step' => 4,
+			),
+		)
+	);
 
 	$wp_customize->add_section(
 		'jwellery_hero',

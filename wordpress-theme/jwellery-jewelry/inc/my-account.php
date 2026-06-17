@@ -94,6 +94,10 @@ function jwellery_uda_is_dashboard() {
  */
 function jwellery_uda_section_meta() {
 	$map = array(
+		'view-order'   => array(
+			__( 'Order details', 'jwellery-jewelry' ),
+			__( 'Items, payment status and delivery address.', 'jwellery-jewelry' ),
+		),
 		'orders'       => array(
 			__( 'Orders', 'jwellery-jewelry' ),
 			__( 'Track purchases, payment status and delivery.', 'jwellery-jewelry' ),
@@ -139,6 +143,25 @@ function jwellery_uda_setup() {
 	add_action( 'woocommerce_account_dashboard', 'jwellery_uda_dashboard', 10 );
 }
 add_action( 'woocommerce_init', 'jwellery_uda_setup' );
+
+/**
+ * Ensure default dashboard copy is removed (WC may register hook after woocommerce_init).
+ */
+function jwellery_uda_remove_default_dashboard() {
+	remove_action( 'woocommerce_account_dashboard', 'woocommerce_account_dashboard_content', 10 );
+}
+add_action( 'wp', 'jwellery_uda_remove_default_dashboard', 20 );
+
+/**
+ * Strip WooCommerce default dashboard paragraph (runs after all plugins register hooks).
+ */
+function jwellery_uda_strip_default_dashboard() {
+	if ( ! function_exists( 'is_account_page' ) || ! is_account_page() || ! is_user_logged_in() ) {
+		return;
+	}
+	remove_action( 'woocommerce_account_dashboard', 'woocommerce_account_dashboard_content', 10 );
+}
+add_action( 'template_redirect', 'jwellery_uda_strip_default_dashboard', 99 );
 
 /**
  * Menu cleanup.

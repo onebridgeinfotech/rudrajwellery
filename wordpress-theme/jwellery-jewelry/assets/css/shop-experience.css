@@ -907,3 +907,164 @@ body.jwellery-qv-open {
 	display: inline-flex;
 	margin-top: 4px;
 }
+
+/* ——— Homepage-first catalog (Option 3) ——— */
+#all-products {
+	scroll-margin-top: 96px;
+}
+
+.jwellery-home-section--all-products .jwellery-catalog-load-more-wrap {
+	text-align: center;
+	margin-top: 28px;
+}
+
+.products .product.is-catalog-hidden {
+	display: none !important;
+}
+
+.jwellery-shop-catalog-intro {
+	padding: 36px 0 12px;
+	text-align: center;
+	background: linear-gradient(180deg, var(--jwellery-cream) 0%, #fff 100%);
+	border-bottom: 1px solid var(--jwellery-border);
+}
+
+.jwellery-shop-catalog-eyebrow {
+	margin: 0 0 8px;
+	font-size: 0.78rem;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--jwellery-maroon);
+}
+
+.jwellery-shop-catalog-title {
+	margin: 0 0 10px;
+	font-family: var(--jwellery-font-heading);
+	font-size: clamp(1.8rem, 4vw, 2.4rem);
+	color: var(--jwellery-maroon);
+}
+
+.jwellery-shop-catalog-desc {
+	max-width: 640px;
+	margin: 0 auto 8px;
+	color: #555;
+	line-height: 1.6;
+}
+
+.jwellery-shop-catalog-home-link {
+	margin: 12px 0 0;
+}
+
+.jwellery-shop-catalog-home-link a {
+	color: var(--jwellery-maroon);
+	font-weight: 600;
+}
+
+.jwellery-shop-grouped-catalog {
+	padding-bottom: 24px;
+}
+
+.jwellery-shop-category-group {
+	padding-top: 8px;
+	padding-bottom: 8px;
+}
+
+.jwellery-shop-section--popular-tabs {
+	padding-top: 28px;
+}
+
+.post-type-archive-product .jwellery-shop-wrap.container {
+	max-width: 100%;
+	padding-left: 0;
+	padding-right: 0;
+}
+
+/* Shop catalog page — same 4-column product grid as homepage sections */
+.jwellery-shop-wrap--catalog {
+	max-width: 100%;
+	padding: 0;
+}
+
+.jwellery-shop-catalog-page .jwellery-shop-catalog-intro .container {
+	padding-top: 8px;
+}
+
+@media (min-width: 1025px) {
+	.jwellery-shop-catalog-page .jwellery-shop-category-group .jwellery-product-grid--cols-4,
+	.jwellery-shop-catalog-page .jwellery-home-section--all-products .jwellery-product-grid--cols-4,
+	.jwellery-shop-catalog-page .jwellery-home-section--grid .jwellery-product-grid--static {
+		display: grid !important;
+		grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+		gap: 20px;
+	}
+}
+
+@media (max-width: 1024px) {
+	.jwellery-shop-catalog-page .jwellery-product-grid--cols-4 {
+		display: grid !important;
+		grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+		gap: 14px;
+	}
+}
+
+.jwellery-shop-catalog-page .jwellery-shop-category-group .product-image-wrap,
+.jwellery-shop-catalog-page .jwellery-home-section--all-products .product-image-wrap {
+	aspect-ratio: 1;
+	overflow: hidden;
+	border-radius: 10px;
+}
+
+.jwellery-shop-catalog-page .jwellery-shop-category-group .product-image-wrap img,
+.jwellery-shop-catalog-page .jwellery-home-section--all-products .product-image-wrap img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.jwellery-shop-catalog-page .jwellery-shop-grouped-catalog .jwellery-shop-category-group {
+	padding-top: 12px;
+	padding-bottom: 20px;
+}
+
+.jwellery-shop-catalog-page .woocommerce-result-count,
+.jwellery-shop-catalog-page .woocommerce-ordering,
+.jwellery-shop-catalog-page .woocommerce-pagination,
+.jwellery-shop-catalog-page .woocommerce-no-products-found {
+	display: none !important;
+}
+
+/* WooCommerce sets li.product to ~22% width — breaks CSS grid cells on shop/home grids */
+.jwellery-shop-catalog-page ul.products.jwellery-product-grid > li.product,
+.jwellery-home-section ul.products.jwellery-product-grid--cols-4 > li.product,
+.jwellery-home-section--all-products ul.products > li.product {
+	width: 100% !important;
+	max-width: none !important;
+	flex: none !important;
+	float: none !important;
+	margin: 0 !important;
+	clear: none !important;
+}
+
+.jwellery-shop-catalog-page ul.products.jwellery-product-grid,
+.jwellery-home-section ul.products.jwellery-product-grid--cols-4 {
+	width: 100%;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+/* WC clearfix pseudo-elements must not occupy grid cells on shop catalog */
+.jwellery-shop-catalog-page ul.products.jwellery-product-grid::before,
+.jwellery-shop-catalog-page ul.products.jwellery-product-grid::after {
+	display: none !important;
+	content: none !important;
+}
+
+.jwellery-shop-catalog-page ul.products.jwellery-product-grid > li.product {
+	display: block !important;
+}
+
+.jwellery-shop-catalog-page .woocommerce-breadcrumb {
+	display: none !important;
+}

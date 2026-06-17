@@ -162,6 +162,14 @@ if ( function_exists( 'wc_get_products' ) && class_exists( 'WooCommerce' ) ) {
 
 
 
+	if ( ( ! function_exists( 'jwellery_home_section_enabled' ) || jwellery_home_section_enabled( 'all_products' ) ) && function_exists( 'jwellery_home_all_products' ) ) {
+
+		jwellery_home_all_products();
+
+	}
+
+
+
 	if ( ( ! function_exists( 'jwellery_home_section_enabled' ) || jwellery_home_section_enabled( 'testimonials' ) ) ) {
 
 		if ( function_exists( 'jwellery_home_testimonials_km' ) ) {

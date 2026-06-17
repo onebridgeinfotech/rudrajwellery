@@ -90,17 +90,34 @@
 	margin: 0 !important;
 	padding: 0 !important;
 	list-style: none !important;
+	width: 100%;
+}
+
+.jwellery-uda .woocommerce-MyAccount-navigation,
+.jwellery-uda__nav.woocommerce-MyAccount-navigation {
+	width: 100% !important;
+	max-width: none !important;
+	float: none !important;
+}
+
+.jwellery-uda__main .woocommerce-MyAccount-content {
+	width: 100% !important;
+	max-width: none !important;
+	float: none !important;
 }
 
 .jwellery-uda__nav li {
 	margin: 0 !important;
 	padding: 0 !important;
+	width: 100%;
 }
 
 .jwellery-uda__nav a {
 	display: flex;
 	align-items: center;
 	gap: 10px;
+	width: 100%;
+	box-sizing: border-box;
 	padding: 10px 12px;
 	border-radius: 10px;
 	color: #444;
@@ -123,10 +140,30 @@
 	outline: none;
 }
 
-.jwellery-uda__nav li.is-active a {
-	background: var(--jwellery-rose, #f8eef0);
-	color: var(--jwellery-maroon);
-	box-shadow: inset 3px 0 0 var(--jwellery-maroon);
+.jwellery-uda__nav li.is-active a,
+.jwellery-uda__nav.woocommerce-MyAccount-navigation li.is-active a {
+	background: var(--jwellery-maroon);
+	color: #fff;
+	box-shadow: none;
+	border: none;
+	border-radius: 10px;
+}
+
+.jwellery-uda__nav li.is-active a svg,
+.jwellery-uda__nav.woocommerce-MyAccount-navigation li.is-active a svg {
+	color: #fff;
+	opacity: 1;
+}
+
+.jwellery-uda__nav.woocommerce-MyAccount-navigation ul li {
+	border: none !important;
+	background: transparent !important;
+}
+
+.jwellery-uda__nav.woocommerce-MyAccount-navigation ul li a::before,
+.jwellery-uda__nav.woocommerce-MyAccount-navigation ul li a::after {
+	display: none !important;
+	content: none !important;
 }
 
 .jwellery-uda__nav-foot {
@@ -204,6 +241,10 @@
 	display: none;
 }
 
+.jwellery-uda__panel.woocommerce-MyAccount-content:has(.jwellery-uda-dashboard) > p {
+	display: none !important;
+}
+
 /* ——— Dashboard ——— */
 .jwellery-uda-dashboard {
 	padding: 0;
@@ -275,12 +316,20 @@
 }
 
 .jwellery-uda-wa-btn {
-	border-color: rgba(255, 255, 255, 0.6) !important;
+	border: 2px solid rgba(255, 255, 255, 0.85) !important;
 	color: #fff !important;
+	background: transparent !important;
+	min-width: 120px;
 }
 
 .jwellery-uda-wa-btn:hover {
-	background: rgba(255, 255, 255, 0.12) !important;
+	background: rgba(255, 255, 255, 0.15) !important;
+	color: #fff !important;
+}
+
+/* Hide default WooCommerce dashboard blurb when custom dashboard is present */
+.jwellery-uda__panel.woocommerce-MyAccount-content:has(.jwellery-uda-dashboard) > p {
+	display: none !important;
 }
 
 /* Metrics */
@@ -1185,8 +1234,9 @@
 
 	.jwellery-uda__mobnav-link.is-active {
 		background: var(--jwellery-maroon);
-		border-color: var(--jwellery-maroon);
 		color: #fff;
+		border-color: var(--jwellery-maroon);
+		box-shadow: none;
 	}
 
 	.jwellery-uda__panel {
@@ -1345,6 +1395,19 @@
 		flex: 1 1 100%;
 		justify-content: center;
 		text-align: center;
+	}
+}
+
+@media (max-width: 768px) {
+	body.jwellery-has-mobile-bar.woocommerce-account .jwellery-uda-guest__card .woocommerce-form-login,
+	body.jwellery-has-mobile-bar.woocommerce-account .jwellery-uda-guest__card .woocommerce-form-register {
+		padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+	}
+
+	body.jwellery-has-mobile-bar.woocommerce-account .woocommerce-form-login .woocommerce-form-login__submit,
+	body.jwellery-has-mobile-bar.woocommerce-account .woocommerce-form-login button[name="login"] {
+		position: relative;
+		z-index: 2;
 	}
 }
 

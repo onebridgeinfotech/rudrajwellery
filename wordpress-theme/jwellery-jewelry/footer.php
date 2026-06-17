@@ -61,7 +61,7 @@ if ( ! $address ) {
 				<ul class="jwellery-footer-links">
 					<li><a href="<?php echo esc_url( home_url( '/' ) ); ?>?s=&post_type=product"><?php esc_html_e( 'Search', 'jwellery-jewelry' ); ?></a></li>
 					<li><a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php esc_html_e( 'Home', 'jwellery-jewelry' ); ?></a></li>
-					<li><a href="<?php echo esc_url( jwellery_get_shop_url() ); ?>"><?php esc_html_e( 'All Products', 'jwellery-jewelry' ); ?></a></li>
+					<li><a href="<?php echo esc_url( function_exists( 'jwellery_all_products_url' ) ? jwellery_all_products_url() : jwellery_get_shop_url() ); ?>"><?php esc_html_e( 'All Products', 'jwellery-jewelry' ); ?></a></li>
 					<?php
 					foreach ( array( 'about' => 'About Us', 'contact' => 'Contact Us' ) as $slug => $label ) {
 						$url = function_exists( 'jwellery_get_store_page_url' ) ? jwellery_get_store_page_url( $slug ) : home_url( '/' . $slug . '/' );

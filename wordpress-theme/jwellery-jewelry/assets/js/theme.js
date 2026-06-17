@@ -532,7 +532,15 @@
 			body: body.toString()
 		})
 			.then(function (res) {
-				return res.json();
+				return res.text();
+			})
+			.then(function (text) {
+				text = text.replace(/^\uFEFF+/, '').trim();
+				try {
+					return JSON.parse(text);
+				} catch (err) {
+					return null;
+				}
 			})
 			.then(function (data) {
 				btn.classList.remove('is-loading');
@@ -805,7 +813,15 @@
 		var url = cfg.ajaxUrl + '?action=jwellery_quick_view&product_id=' + encodeURIComponent(productId) + '&nonce=' + encodeURIComponent(cfg.nonce);
 		fetch(url, { credentials: 'same-origin' })
 			.then(function (res) {
-				return res.json();
+				return res.text();
+			})
+			.then(function (text) {
+				text = text.replace(/^\uFEFF+/, '').trim();
+				try {
+					return JSON.parse(text);
+				} catch (err) {
+					return null;
+				}
 			})
 			.then(function (data) {
 				if (data && data.success && data.data && data.data.html) {
@@ -999,4 +1015,53 @@
 			window.addEventListener('load', scrollAccountToContent);
 		}
 	}
+
+	/* Homepage All Products — load more */
+	document.querySelectorAll('[data-all-products-load-more]').forEach(function (btn) {
+		btn.addEventListener('click', function () {
+			var grid = document.querySelector('[data-all-products-grid]');
+			if (!grid) {
+				return;
+			}
+			grid.querySelectorAll('.is-catalog-hidden').forEach(function (item) {
+				item.classList.remove('is-catalog-hidden');
+			});
+			btn.closest('.jwellery-catalog-load-more-wrap').setAttribute('hidden', '');
+		});
+	});
+
+	/* Smooth scroll to #all-products (header offset) */
+	function scrollToAllProducts() {
+		var target = document.getElementById('all-products');
+		if (!target) {
+			return;
+		}
+		var top = target.getBoundingClientRect().top + (window.pageYOffset || 0) - 88;
+		window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+	}
+
+	if (window.location.hash === '#all-products') {
+		window.addEventListener('load', scrollToAllProducts);
+	}
+
+	document.querySelectorAll('a[href*="#all-products"]').forEach(function (link) {
+		link.addEventListener('click', function (e) {
+			var href = link.getAttribute('href') || '';
+			var onHome = href.indexOf('#all-products') === 0 || href.indexOf('/#all-products') !== -1;
+			if (!onHome || !document.getElementById('all-products')) {
+				return;
+			}
+			var path = href.split('#')[0];
+			if (path && path !== window.location.pathname && path !== window.location.pathname + '/') {
+				return;
+			}
+			e.preventDefault();
+			if (path && window.location.pathname !== path.replace(/\/$/, '') && window.location.pathname !== path) {
+				window.location.href = href;
+				return;
+			}
+			history.replaceState(null, '', '#all-products');
+			scrollToAllProducts();
+		});
+	});
 })();

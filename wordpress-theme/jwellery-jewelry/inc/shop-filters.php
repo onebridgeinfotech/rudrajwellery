@@ -17,6 +17,9 @@ function jwellery_shop_category_filters() {
 	if ( ! is_shop() && ! is_product_category() && ! is_product_tag() ) {
 		return;
 	}
+	if ( function_exists( 'jwellery_is_main_shop_catalog' ) && jwellery_is_main_shop_catalog() ) {
+		return;
+	}
 	if ( ! function_exists( 'jwellery_get_shop_categories' ) ) {
 		return;
 	}

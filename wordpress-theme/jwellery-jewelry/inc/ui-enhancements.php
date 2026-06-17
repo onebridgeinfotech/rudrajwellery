@@ -212,6 +212,15 @@ function jwellery_hide_products_without_images( $visible, $id, $product ) {
 	if ( ! $visible || is_admin() ) {
 		return $visible;
 	}
+	if ( function_exists( 'is_account_page' ) && is_account_page() ) {
+		return $visible;
+	}
+	if ( function_exists( 'is_cart' ) && is_cart() ) {
+		return $visible;
+	}
+	if ( function_exists( 'is_checkout' ) && is_checkout() ) {
+		return $visible;
+	}
 	if ( function_exists( 'is_product' ) && is_product() && (int) get_queried_object_id() === (int) $id ) {
 		return $visible;
 	}

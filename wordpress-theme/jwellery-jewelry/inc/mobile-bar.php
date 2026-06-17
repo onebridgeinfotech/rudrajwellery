@@ -39,7 +39,7 @@ function jwellery_mobile_icon_bar() {
 			<?php echo jwellery_icon_svg( 'home', 22 ); // phpcs:ignore ?>
 			<span><?php esc_html_e( 'Home', 'jwellery-jewelry' ); ?></span>
 		</a>
-		<a class="jwellery-mobile-bar-item" href="<?php echo esc_url( jwellery_get_shop_url() ); ?>">
+		<a class="jwellery-mobile-bar-item" href="<?php echo esc_url( function_exists( 'jwellery_all_products_url' ) ? jwellery_all_products_url() : jwellery_get_shop_url() ); ?>">
 			<?php echo jwellery_icon_svg( 'shop', 22 ); // phpcs:ignore ?>
 			<span><?php esc_html_e( 'Shop', 'jwellery-jewelry' ); ?></span>
 		</a>

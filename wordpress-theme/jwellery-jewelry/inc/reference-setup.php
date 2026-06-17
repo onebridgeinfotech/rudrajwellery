@@ -145,7 +145,7 @@ function jwellery_create_reference_menu() {
 		'Best Sellers'         => add_query_arg( 'featured', '1', $shop_url ),
 		'Latest Collection'    => jwellery_term_link( 'latest-collection' ),
 		'All Collections'      => $shop_url,
-		'All Products'         => $shop_url,
+		'All Products'         => function_exists( 'jwellery_all_products_url' ) ? jwellery_all_products_url() : $shop_url,
 	);
 
 	foreach ( $submenus as $title => $url ) {
