@@ -1,0 +1,909 @@
+/**
+ * Shop experience — mega menu, quick view, mini cart drawer.
+ */
+
+.jwellery-header {
+	position: sticky;
+}
+
+.jwellery-nav {
+	position: static;
+}
+
+/* ——— Mega menu ——— */
+.jwellery-menu .menu-item-has-mega {
+	position: static;
+}
+
+.jwellery-menu .menu-item-has-mega > .sub-menu {
+	display: none !important;
+}
+
+.jwellery-mega-menu {
+	display: none;
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 100%;
+	z-index: 200;
+	background: #fff;
+	border-top: 1px solid var(--jwellery-border);
+	box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
+	padding: 24px 0;
+}
+
+.jwellery-menu .menu-item-has-mega:hover .jwellery-mega-menu,
+.jwellery-menu .menu-item-has-mega.mega-open .jwellery-mega-menu {
+	display: block;
+}
+
+.jwellery-mega-menu-inner {
+	max-width: var(--jwellery-container, 1200px);
+	margin: 0 auto;
+	padding: 0 20px;
+	display: grid;
+	grid-template-columns: 1fr 1fr 1.2fr;
+	gap: 28px;
+}
+
+.jwellery-mega-label {
+	font-size: 0.72rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+	color: var(--jwellery-maroon);
+	margin: 0 0 12px;
+}
+
+.jwellery-mega-cats,
+.jwellery-mega-links {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.jwellery-mega-cats {
+	max-height: 320px;
+	overflow-y: auto;
+}
+
+.jwellery-mega-cats a,
+.jwellery-mega-links a {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 8px 0;
+	text-decoration: none;
+	color: var(--jwellery-black);
+	font-weight: 600;
+	font-size: 0.9rem;
+}
+
+.jwellery-mega-cats a:hover,
+.jwellery-mega-links a:hover {
+	color: var(--jwellery-maroon);
+}
+
+.jwellery-mega-count {
+	font-size: 0.8rem;
+	color: #888;
+	font-weight: 400;
+}
+
+.jwellery-mega-products {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 12px;
+}
+
+.jwellery-mega-product {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	text-decoration: none;
+	color: inherit;
+	padding: 10px;
+	border: 1px solid var(--jwellery-border);
+	border-radius: 8px;
+	transition: box-shadow 0.2s;
+}
+
+.jwellery-mega-product:hover {
+	box-shadow: 0 6px 16px rgba(123, 30, 58, 0.1);
+}
+
+.jwellery-mega-product img {
+	width: 100%;
+	aspect-ratio: 1;
+	object-fit: cover;
+	border-radius: 6px;
+}
+
+.jwellery-mega-product-name {
+	font-size: 0.85rem;
+	font-weight: 600;
+	line-height: 1.3;
+}
+
+.jwellery-mega-product-price {
+	font-size: 0.8rem;
+	color: var(--jwellery-maroon);
+}
+
+/* ——— Wishlist heart on product cards ——— */
+.product-image-wrap {
+	position: relative;
+	overflow: visible;
+}
+
+/* Sale badge left so wishlist heart can sit top-right without overlap */
+.product-image-wrap .jwellery-sale-badge {
+	top: 10px;
+	left: 10px;
+	right: auto;
+}
+
+.jwellery-wishlist-btn {
+	box-sizing: border-box;
+	padding: 0;
+	margin: 0;
+	border: none;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.96);
+	color: var(--jwellery-icon-color-muted);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+	transition: color 0.2s ease, transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.jwellery-wishlist-btn .jwellery-icon {
+	display: block;
+	flex-shrink: 0;
+	pointer-events: none;
+}
+
+.jwellery-wishlist-btn--loop {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	left: auto;
+	z-index: 5;
+	width: 40px;
+	height: 40px;
+	min-width: 40px;
+	min-height: 40px;
+}
+
+.jwellery-wishlist-btn--loop .jwellery-icon {
+	width: 18px;
+	height: 18px;
+}
+
+.jwellery-wishlist-btn:hover,
+.jwellery-wishlist-btn:focus-visible {
+	color: var(--jwellery-maroon);
+	transform: scale(1.04);
+	outline: none;
+	box-shadow: 0 3px 12px rgba(123, 30, 58, 0.18);
+}
+
+.jwellery-wishlist-btn.is-active {
+	color: var(--jwellery-maroon);
+	background: #fff;
+}
+
+.jwellery-wishlist-btn.is-loading {
+	opacity: 0.65;
+	pointer-events: none;
+}
+
+/* Single product — inline with quantity + add to cart row */
+.jwellery-wishlist-btn--single {
+	position: static;
+	flex: 0 0 48px;
+	width: 48px;
+	height: 48px;
+	min-width: 48px;
+	min-height: 48px;
+	border-radius: 10px;
+	border: 1px solid var(--jwellery-border);
+	box-shadow: none;
+	align-self: stretch;
+}
+
+.jwellery-wishlist-btn--single .jwellery-icon {
+	width: 20px;
+	height: 20px;
+}
+
+.jwellery-wishlist-page .jwellery-wishlist-count {
+	color: #666;
+	margin-bottom: 20px;
+}
+
+/* Tablet */
+@media (min-width: 769px) and (max-width: 1024px) {
+	.jwellery-wishlist-btn--loop {
+		top: 11px;
+		right: 11px;
+		width: 38px;
+		height: 38px;
+		min-width: 38px;
+		min-height: 38px;
+	}
+
+	.jwellery-wishlist-btn--single {
+		flex: 0 0 46px;
+		width: 46px;
+		height: 46px;
+		min-width: 46px;
+		min-height: 46px;
+	}
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+	.jwellery-wishlist-btn--loop {
+		top: 8px;
+		right: 8px;
+		width: 44px;
+		height: 44px;
+		min-width: 44px;
+		min-height: 44px;
+	}
+
+	.jwellery-wishlist-btn--loop .jwellery-icon {
+		width: 19px;
+		height: 19px;
+	}
+
+	.jwellery-wishlist-btn--single {
+		flex: 0 0 48px;
+		width: 48px;
+		height: 48px;
+		min-width: 48px;
+		min-height: 48px;
+	}
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+	.jwellery-wishlist-btn--loop {
+		top: 8px;
+		right: 8px;
+		width: 42px;
+		height: 42px;
+		min-width: 42px;
+		min-height: 42px;
+	}
+
+	.single-product .summary form.cart:not(.variations_form),
+	.single-product .summary form.cart .woocommerce-variation-add-to-cart {
+		gap: 8px;
+	}
+
+	.jwellery-wishlist-btn--single {
+		flex: 0 0 46px;
+		width: 46px;
+		height: 46px;
+		min-width: 46px;
+		min-height: 46px;
+		border-radius: 8px;
+	}
+}
+
+/* ——— Quick view button on cards ——— */
+.jwellery-card-hover-actions {
+	position: absolute;
+	inset: auto 0 0 0;
+	display: flex;
+	justify-content: center;
+	padding: 10px;
+	background: linear-gradient(transparent, rgba(0, 0, 0, 0.55));
+	opacity: 0;
+	transform: translateY(6px);
+	transition: opacity 0.25s ease, transform 0.25s ease;
+	pointer-events: none;
+}
+
+.product-image-wrap:hover .jwellery-card-hover-actions {
+	opacity: 1;
+	transform: translateY(0);
+	pointer-events: auto;
+}
+
+.jwellery-quick-view-btn {
+	padding: 8px 16px;
+	border: none;
+	border-radius: 4px;
+	background: #fff;
+	color: var(--jwellery-maroon);
+	font-size: 0.78rem;
+	font-weight: 700;
+	cursor: pointer;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.jwellery-quick-view-btn:hover {
+	background: var(--jwellery-maroon);
+	color: #fff;
+}
+
+/* ——— Quick view modal ——— */
+.jwellery-quick-view {
+	position: fixed;
+	inset: 0;
+	z-index: 10000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+}
+
+.jwellery-quick-view[hidden] {
+	display: none !important;
+}
+
+.jwellery-quick-view-backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.55);
+}
+
+.jwellery-quick-view-panel {
+	position: relative;
+	z-index: 1;
+	width: min(920px, 100%);
+	max-height: 90vh;
+	overflow: auto;
+	background: #fff;
+	border-radius: 12px;
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.jwellery-quick-view-close {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	z-index: 2;
+	width: 36px;
+	height: 36px;
+	border: none;
+	background: #fff;
+	border-radius: 50%;
+	font-size: 1.5rem;
+	line-height: 1;
+	cursor: pointer;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.jwellery-quick-view-inner {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 24px;
+	padding: 28px;
+}
+
+.jwellery-qv-gallery {
+	position: relative;
+}
+
+.jwellery-qv-gallery img {
+	width: 100%;
+	height: auto;
+	border-radius: 8px;
+}
+
+.jwellery-qv-title {
+	font-family: var(--jwellery-font-heading);
+	font-size: 1.5rem;
+	margin: 0 0 12px;
+}
+
+.jwellery-qv-price {
+	font-size: 1.2rem;
+	font-weight: 700;
+	color: var(--jwellery-maroon);
+	margin: 0 0 16px;
+}
+
+.jwellery-qv-desc {
+	font-size: 0.9rem;
+	color: #555;
+	margin-bottom: 20px;
+	line-height: 1.5;
+}
+
+.jwellery-qv-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	align-items: stretch;
+}
+
+.jwellery-qv-actions .jwellery-btn-outline,
+.jwellery-qv-actions .jwellery-qv-full {
+	border: 2px solid var(--jwellery-maroon);
+	color: var(--jwellery-maroon) !important;
+	background: #fff;
+}
+
+.jwellery-qv-actions .jwellery-btn-outline:hover,
+.jwellery-qv-actions .jwellery-qv-full:hover {
+	background: var(--jwellery-maroon);
+	color: #fff !important;
+}
+
+.jwellery-qv-actions .jwellery-btn-primary,
+.jwellery-qv-actions .add_to_cart_button {
+	background: var(--jwellery-maroon);
+	color: #fff !important;
+	border: 2px solid var(--jwellery-maroon);
+}
+
+.jwellery-qv-actions .jwellery-btn-primary:hover,
+.jwellery-qv-actions .add_to_cart_button:hover {
+	background: var(--jwellery-maroon-dark);
+	border-color: var(--jwellery-maroon-dark);
+	color: #fff !important;
+}
+
+/* ——— Mini cart drawer ——— */
+.jwellery-cart-drawer {
+	position: fixed;
+	inset: 0;
+	z-index: 9999;
+}
+
+.jwellery-cart-drawer[hidden] {
+	display: none !important;
+}
+
+.jwellery-cart-drawer.is-open {
+	display: block;
+}
+
+.jwellery-cart-drawer-backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.45);
+}
+
+.jwellery-cart-drawer-panel {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: min(400px, 100%);
+	height: 100%;
+	background: #fff;
+	display: flex;
+	flex-direction: column;
+	box-shadow: -8px 0 32px rgba(0, 0, 0, 0.12);
+	transform: translateX(100%);
+	transition: transform 0.3s ease;
+}
+
+.jwellery-cart-drawer.is-open .jwellery-cart-drawer-panel {
+	transform: translateX(0);
+}
+
+.jwellery-cart-drawer-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 18px 20px;
+	border-bottom: 1px solid var(--jwellery-border);
+}
+
+.jwellery-cart-drawer-head h2 {
+	margin: 0;
+	font-size: 1.15rem;
+	font-family: var(--jwellery-font-heading);
+}
+
+.jwellery-cart-drawer-close {
+	border: none;
+	background: none;
+	font-size: 1.75rem;
+	line-height: 1;
+	cursor: pointer;
+	color: var(--jwellery-black);
+}
+
+.jwellery-cart-drawer-inner {
+	flex: 1;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+	padding: 16px 20px 0;
+	min-height: 0;
+}
+
+.jwellery-shipping-progress {
+	margin-bottom: 20px;
+	padding: 14px;
+	background: var(--jwellery-cream);
+	border-radius: 8px;
+}
+
+.jwellery-shipping-progress-msg {
+	margin: 0 0 10px;
+	font-size: 0.85rem;
+	line-height: 1.4;
+}
+
+.jwellery-shipping-progress-msg--success {
+	color: var(--jwellery-maroon);
+	font-weight: 700;
+}
+
+.jwellery-shipping-progress-track {
+	height: 6px;
+	background: #e8e0d0;
+	border-radius: 100px;
+	overflow: hidden;
+}
+
+.jwellery-shipping-progress-fill {
+	display: block;
+	height: 100%;
+	background: linear-gradient(90deg, var(--jwellery-maroon), var(--jwellery-gold));
+	border-radius: 100px;
+	transition: width 0.4s ease;
+}
+
+.jwellery-cart-drawer-items {
+	list-style: none;
+	margin: 0 0 16px;
+	padding: 0;
+}
+
+.jwellery-cart-drawer-item {
+	display: grid;
+	grid-template-columns: 64px 1fr;
+	gap: 12px;
+	padding: 12px 0;
+	border-bottom: 1px solid var(--jwellery-border);
+}
+
+.jwellery-cart-drawer-thumb img {
+	width: 64px;
+	height: 64px;
+	object-fit: cover;
+	border-radius: 6px;
+}
+
+.jwellery-cart-drawer-item-body a {
+	font-weight: 600;
+	text-decoration: none;
+	color: var(--jwellery-black);
+	font-size: 0.9rem;
+}
+
+.jwellery-cart-drawer-qty,
+.jwellery-cart-drawer-line-price {
+	display: block;
+	font-size: 0.82rem;
+	color: #666;
+	margin-top: 4px;
+}
+
+.jwellery-cart-drawer-subtotal {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin: 0 0 14px;
+	padding: 0;
+	font-size: 1.05rem;
+}
+
+.jwellery-cart-drawer-subtotal strong {
+	font-weight: 700;
+	color: var(--jwellery-black);
+}
+
+.jwellery-cart-drawer-subtotal span {
+	font-weight: 700;
+	color: var(--jwellery-maroon);
+	font-size: 1.1rem;
+}
+
+.jwellery-cart-drawer-footer {
+	margin-top: auto;
+	padding: 16px 0 20px;
+	border-top: 1px solid var(--jwellery-border);
+	background: #fff;
+	flex-shrink: 0;
+}
+
+.jwellery-cart-drawer-actions {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.jwellery-cart-drawer-checkout {
+	background: var(--jwellery-maroon);
+	color: #fff !important;
+	border: 2px solid var(--jwellery-maroon);
+	font-weight: 700;
+	letter-spacing: 0.02em;
+}
+
+.jwellery-cart-drawer-checkout:hover {
+	background: var(--jwellery-maroon-dark);
+	border-color: var(--jwellery-maroon-dark);
+	color: #fff !important;
+}
+
+.jwellery-cart-drawer-empty {
+	text-align: center;
+	color: #666;
+	margin-bottom: 16px;
+}
+
+.jwellery-cart-drawer-shop {
+	margin-top: 8px;
+}
+
+.jwellery-cart-toggle {
+	border: none;
+	background: none;
+	cursor: pointer;
+	padding: 0;
+}
+
+body.jwellery-cart-open,
+body.jwellery-qv-open {
+	overflow: hidden;
+}
+
+@media (max-width: 900px) {
+	.jwellery-mega-menu-inner {
+		grid-template-columns: 1fr 1fr;
+	}
+
+	.jwellery-mega-col--products {
+		grid-column: 1 / -1;
+	}
+}
+
+@media (max-width: 1024px) {
+	.jwellery-mega-menu {
+		position: static;
+		box-shadow: none;
+		border: none;
+		padding: 12px 0 0;
+	}
+
+	.jwellery-menu .menu-item-has-mega.mega-open .jwellery-mega-menu {
+		display: block;
+	}
+
+	.jwellery-mega-menu-inner {
+		grid-template-columns: 1fr;
+		padding: 0;
+	}
+
+	.jwellery-quick-view-inner {
+		grid-template-columns: 1fr;
+		padding: 20px 16px;
+	}
+
+	.jwellery-qv-actions .jwellery-btn,
+	.jwellery-qv-actions .add_to_cart_button,
+	.jwellery-qv-actions .jwellery-qv-full {
+		flex: 1 1 100%;
+	}
+
+	.jwellery-card-hover-actions {
+		opacity: 1;
+		transform: none;
+		pointer-events: auto;
+		position: static;
+		background: none;
+		padding: 8px 0 0;
+	}
+
+	.jwellery-shop-filters-pills {
+		gap: 8px;
+	}
+
+	.jwellery-checkout-steps ol {
+		font-size: 0.72rem;
+		gap: 4px;
+	}
+}
+
+/* ——— Shop category pills ——— */
+.jwellery-shop-filters {
+	margin: 0 0 20px;
+	padding: 16px 18px;
+	background: var(--jwellery-rose, #f8eef0);
+	border: 1px solid var(--jwellery-border);
+	border-radius: 12px;
+}
+
+.jwellery-shop-filters-label {
+	margin: 0 0 10px;
+	font-size: 0.78rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--jwellery-maroon);
+}
+
+.jwellery-shop-filters-pills {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.jwellery-shop-filter-pill {
+	display: inline-flex;
+	align-items: center;
+	padding: 8px 16px;
+	border-radius: 999px;
+	border: 1px solid var(--jwellery-border);
+	background: #fff;
+	color: var(--jwellery-black);
+	font-size: 0.85rem;
+	font-weight: 600;
+	text-decoration: none;
+	transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.jwellery-shop-filter-pill:hover,
+.jwellery-shop-filter-pill.is-active {
+	background: var(--jwellery-maroon);
+	border-color: var(--jwellery-maroon);
+	color: #fff;
+}
+
+/* ——— Product details box ——— */
+.jwellery-product-details {
+	margin: 18px 0 8px;
+	padding: 16px 18px;
+	background: var(--jwellery-cream);
+	border: 1px solid var(--jwellery-border);
+	border-radius: 12px;
+}
+
+.jwellery-product-details-title {
+	margin: 0 0 12px;
+	font-family: var(--jwellery-font-heading);
+	font-size: 1.2rem;
+	color: var(--jwellery-maroon);
+}
+
+.jwellery-product-details-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.jwellery-product-details-list li {
+	display: grid;
+	grid-template-columns: 100px 1fr;
+	gap: 10px;
+	padding: 8px 0;
+	border-bottom: 1px solid rgba(232, 223, 200, 0.7);
+	font-size: 0.92rem;
+}
+
+.jwellery-product-details-list li:last-child {
+	border-bottom: none;
+}
+
+.jwellery-product-details-list strong {
+	color: var(--jwellery-maroon);
+}
+
+.jwellery-product-details-note {
+	margin: 12px 0 0;
+	font-size: 0.82rem;
+	color: #666;
+}
+
+/* ——— Similar products ——— */
+.jwellery-similar-products {
+	margin: 40px 0 20px;
+	padding-top: 28px;
+	border-top: 1px solid var(--jwellery-border);
+}
+
+.jwellery-similar-title {
+	margin: 0 0 20px;
+	font-family: var(--jwellery-font-heading);
+	font-size: 1.6rem;
+	text-align: center;
+	color: var(--jwellery-maroon);
+}
+
+/* ——— Checkout steps ——— */
+.jwellery-checkout-steps {
+	margin: 0 0 24px;
+}
+
+.jwellery-checkout-steps ol {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 12px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	counter-reset: checkout-step;
+}
+
+.jwellery-checkout-steps li {
+	display: inline-flex;
+	align-items: center;
+	padding: 8px 14px;
+	border-radius: 999px;
+	background: var(--jwellery-cream);
+	border: 1px solid var(--jwellery-border);
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: #666;
+}
+
+.jwellery-checkout-steps li.is-done {
+	background: #fff;
+	color: var(--jwellery-maroon);
+}
+
+.jwellery-checkout-steps li.is-active {
+	background: var(--jwellery-maroon);
+	border-color: var(--jwellery-maroon);
+	color: #fff;
+}
+
+.jwellery-checkout-steps li a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.jwellery-upi-helper {
+	margin: 0 0 16px;
+	padding: 12px 16px;
+	background: var(--jwellery-rose, #f8eef0);
+	border-left: 4px solid var(--jwellery-gold);
+	border-radius: 0 8px 8px 0;
+	font-size: 0.92rem;
+}
+
+.jus-thankyou-upi {
+	margin: 1.5em 0 !important;
+	padding: 1.5em !important;
+	border: 1px solid var(--jwellery-gold-light) !important;
+	background: var(--jwellery-cream) !important;
+	border-radius: 12px !important;
+	box-shadow: var(--jwellery-shadow-soft);
+}
+
+.jus-thankyou-upi h2 {
+	font-family: var(--jwellery-font-heading);
+	color: var(--jwellery-maroon);
+}
+
+.jwellery-copy-upi {
+	margin-top: 10px;
+}
+
+/* ——— Footer WhatsApp CTA ——— */
+.jwellery-footer-wa-cta {
+	margin: 0 0 12px;
+	color: #ccc;
+	font-size: 0.92rem;
+	line-height: 1.5;
+}
+
+.jwellery-footer-wa-btn {
+	display: inline-flex;
+	margin-top: 4px;
+}

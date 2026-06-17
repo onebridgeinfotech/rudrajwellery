@@ -136,6 +136,11 @@ if ( ! $address ) {
 		<p class="jwellery-copyright">
 			&copy; <?php echo esc_html( gmdate( 'Y' ) ); ?> <?php echo esc_html( function_exists( 'jwellery_footer_brand' ) ? jwellery_footer_brand() : get_bloginfo( 'name' ) ); ?>. <?php esc_html_e( 'All rights reserved.', 'jwellery-jewelry' ); ?>
 		</p>
+		<p class="jwellery-footer-credit">
+			<a href="https://www.onebridgeinfotech.com" target="_blank" rel="noopener noreferrer">
+				<?php esc_html_e( 'Designed by Onebridge Infotech', 'jwellery-jewelry' ); ?>
+			</a>
+		</p>
 	</div>
 </footer>
 

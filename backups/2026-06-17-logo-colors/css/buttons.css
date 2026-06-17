@@ -1,0 +1,730 @@
+/**
+ * Jwellery Jewelry — unified button sizes (desktop + mobile).
+ * Touch targets: 48px primary, 44px compact, 40px header/meta.
+ */
+
+:root {
+	--jwellery-btn-h: 48px;
+	--jwellery-btn-h-md: 44px;
+	--jwellery-btn-h-sm: 40px;
+	--jwellery-input-h: 42px;
+	--jwellery-btn-px: 20px;
+	--jwellery-btn-px-sm: 16px;
+	--jwellery-btn-font: 0.9rem;
+	--jwellery-btn-font-sm: 0.85rem;
+	--jwellery-btn-radius: 6px;
+}
+
+/* ——— Shared base ——— */
+.jwellery-btn,
+.woocommerce a.button,
+.woocommerce button.button,
+.woocommerce input.button,
+.woocommerce #respond input#submit,
+.jwellery-loop-actions .button,
+.woocommerce ul.products li.product .button,
+.woocommerce ul.products li.product a.add_to_cart_button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: var(--jwellery-btn-h-md);
+	padding: 0 var(--jwellery-btn-px);
+	font-family: inherit;
+	font-size: var(--jwellery-btn-font);
+	font-weight: 700;
+	line-height: 1.25;
+	text-decoration: none;
+	text-align: center;
+	border-radius: var(--jwellery-btn-radius);
+	box-sizing: border-box;
+	cursor: pointer;
+	transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+	border: 2px solid transparent;
+	white-space: normal;
+}
+
+/* ——— Theme button variants ——— */
+.jwellery-btn-primary,
+.woocommerce a.button.alt,
+.woocommerce button.button.alt,
+.woocommerce input.button.alt {
+	background: var(--jwellery-maroon) !important;
+	color: #fff !important;
+	border-color: var(--jwellery-maroon) !important;
+}
+
+.jwellery-btn-primary:hover,
+.woocommerce a.button.alt:hover,
+.woocommerce button.button.alt:hover,
+.woocommerce input.button.alt:hover {
+	background: var(--jwellery-maroon-dark) !important;
+	border-color: var(--jwellery-maroon-dark) !important;
+	color: #fff !important;
+}
+
+.jwellery-btn-outline {
+	display: inline-flex;
+	margin-top: 0;
+	padding: 0 var(--jwellery-btn-px);
+	min-height: var(--jwellery-btn-h-md);
+	border: 2px solid var(--jwellery-black);
+	color: var(--jwellery-black) !important;
+	background: #fff;
+	border-radius: var(--jwellery-btn-radius);
+	font-weight: 700;
+}
+
+.jwellery-btn-outline:hover {
+	background: var(--jwellery-cream);
+	color: var(--jwellery-black) !important;
+	border-color: var(--jwellery-black);
+}
+
+.jwellery-btn.jwellery-btn-shop {
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	min-height: unset;
+	height: auto;
+	padding: 11px 18px;
+	font-size: 0.75rem;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	line-height: 1.2;
+	border: none;
+	background: var(--jwellery-maroon);
+	color: #fff !important;
+	white-space: nowrap;
+	flex-shrink: 0;
+	vertical-align: middle;
+}
+
+.jwellery-header-actions .jwellery-btn.jwellery-btn-shop {
+	height: 44px;
+	min-height: 44px;
+	padding: 0 20px;
+	border-radius: 999px;
+	font-size: 0.72rem;
+	letter-spacing: 0.07em;
+	line-height: 1;
+	align-self: center;
+}
+
+.jwellery-btn-shop:hover {
+	background: var(--jwellery-maroon-dark);
+	color: #fff !important;
+}
+
+.jwellery-btn.jwellery-btn-viewall,
+.section-link.jwellery-btn-viewall,
+a.jwellery-btn-viewall {
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	min-height: 44px;
+	height: 44px;
+	padding: 0 26px;
+	font-size: 0.8rem;
+	font-weight: 700;
+	letter-spacing: 0.03em;
+	line-height: 1.2;
+	text-decoration: none !important;
+	text-transform: none;
+	border: none;
+	border-radius: 999px;
+	background: var(--jwellery-maroon);
+	color: #fff !important;
+	white-space: nowrap;
+	box-sizing: border-box;
+	transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.jwellery-btn.jwellery-btn-viewall:hover,
+.section-link.jwellery-btn-viewall:hover,
+a.jwellery-btn-viewall:hover {
+	background: var(--jwellery-maroon-dark);
+	color: #fff !important;
+	text-decoration: none !important;
+	transform: translateY(-1px);
+	box-shadow: 0 4px 14px rgba(123, 30, 58, 0.22);
+}
+
+/* Section header placement */
+.jwellery-section-head--center .jwellery-btn-viewall {
+	margin-top: 20px;
+}
+
+.jwellery-section-head:not(.jwellery-section-head--center) .jwellery-btn-viewall {
+	grid-area: link;
+	align-self: center;
+	justify-self: end;
+}
+
+.jwellery-tab-viewall {
+	text-align: center;
+	margin: 24px 0 0;
+}
+
+.jwellery-tab-viewall .jwellery-btn-viewall {
+	min-width: 160px;
+}
+
+.jwellery-btn-hero-secondary {
+	min-height: var(--jwellery-btn-h);
+	padding: 0 24px;
+	border: 2px solid #fff;
+	color: #fff !important;
+	background: transparent;
+}
+
+.jwellery-btn-hero-secondary:hover {
+	background: rgba(255, 255, 255, 0.15);
+	color: #fff !important;
+}
+
+.jwellery-btn-wa {
+	background: #25d366 !important;
+	color: #fff !important;
+	border-color: #25d366 !important;
+}
+
+.jwellery-btn-wa:hover {
+	background: #1da851 !important;
+	border-color: #1da851 !important;
+	color: #fff !important;
+}
+
+.jwellery-btn-block,
+.jwellery-loop-actions .button,
+.jwellery-cart-drawer-actions .jwellery-btn,
+.jwellery-cart-drawer-shop,
+.jwellery-faq-cta-actions .jwellery-btn,
+.jwellery-page-cta-band .jwellery-btn,
+.woocommerce-account form.login .button,
+.woocommerce-account form.register .button {
+	width: 100%;
+}
+
+/* ——— Product loop: Add to cart ——— */
+.jwellery-loop-actions {
+	margin-top: 10px;
+}
+
+.jwellery-loop-actions .button,
+.woocommerce ul.products li.product .button,
+.woocommerce ul.products li.product a.add_to_cart_button {
+	width: 100%;
+	min-height: var(--jwellery-btn-h-md);
+	padding: 0 var(--jwellery-btn-px-sm);
+	font-size: var(--jwellery-btn-font-sm);
+	background: var(--jwellery-maroon) !important;
+	color: #fff !important;
+	border: 2px solid var(--jwellery-maroon) !important;
+}
+
+.jwellery-loop-actions .button:hover,
+.woocommerce ul.products li.product .button:hover,
+.woocommerce ul.products li.product a.add_to_cart_button:hover {
+	background: var(--jwellery-maroon-dark) !important;
+	border-color: var(--jwellery-maroon-dark) !important;
+	color: #fff !important;
+}
+
+/* ——— Product of the day ——— */
+.product-of-day-actions {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 10px;
+	width: 100%;
+	margin-top: 10px;
+}
+
+.product-of-day-actions .jwellery-btn,
+.product-of-day-actions .badge-sold-out,
+.product-of-day-actions .add_to_cart_button {
+	width: 100%;
+	min-height: var(--jwellery-btn-h-md);
+	height: auto;
+	max-height: none;
+	margin: 0 !important;
+	padding: 0 var(--jwellery-btn-px-sm) !important;
+	font-size: var(--jwellery-btn-font-sm) !important;
+}
+
+.product-of-day-view.jwellery-btn-outline {
+	color: var(--jwellery-maroon) !important;
+	border-color: var(--jwellery-maroon);
+	background: #fff !important;
+}
+
+.product-of-day-view.jwellery-btn-outline:hover {
+	background: var(--jwellery-maroon) !important;
+	color: #fff !important;
+	border-color: var(--jwellery-maroon) !important;
+}
+
+/* ——— Single product ——— */
+.single-product .summary form.cart .quantity .qty {
+	min-height: var(--jwellery-btn-h);
+	height: var(--jwellery-btn-h);
+}
+
+.single-product .summary form.cart .single_add_to_cart_button,
+.single-product .summary form.cart button.button.alt.single_add_to_cart_button {
+	flex: 1 1 180px;
+	min-width: 0;
+	min-height: var(--jwellery-btn-h) !important;
+	height: auto !important;
+	padding: 0 var(--jwellery-btn-px) !important;
+	margin: 0 !important;
+	font-size: var(--jwellery-btn-font) !important;
+	border-radius: var(--jwellery-btn-radius) !important;
+}
+
+.jwellery-single-product-actions .jwellery-single-wa-btn,
+.jwellery-wa-share .jwellery-btn-wa {
+	width: 100%;
+	min-height: var(--jwellery-btn-h);
+	padding: 0 var(--jwellery-btn-px-sm) !important;
+	font-size: var(--jwellery-btn-font);
+	border-radius: var(--jwellery-btn-radius);
+}
+
+/* ——— Quick view modal ——— */
+.jwellery-qv-actions .jwellery-btn,
+.jwellery-qv-actions .add_to_cart_button,
+.jwellery-qv-actions .jwellery-qv-full {
+	flex: 1 1 calc(50% - 5px);
+	min-width: min(100%, 160px);
+	min-height: var(--jwellery-btn-h);
+	padding: 0 var(--jwellery-btn-px-sm) !important;
+	margin: 0 !important;
+	font-size: var(--jwellery-btn-font);
+	border-radius: var(--jwellery-btn-radius);
+}
+
+/* ——— Cart drawer ——— */
+.jwellery-cart-drawer-actions .jwellery-btn {
+	width: 100%;
+	min-height: var(--jwellery-btn-h);
+	padding: 0 var(--jwellery-btn-px-sm);
+	font-size: var(--jwellery-btn-font);
+	border-radius: var(--jwellery-btn-radius);
+}
+
+.jwellery-cart-drawer-view {
+	background: #fff;
+	border: 1px solid var(--jwellery-border) !important;
+	color: var(--jwellery-black) !important;
+	font-weight: 600;
+}
+
+.jwellery-cart-drawer-view:hover {
+	background: var(--jwellery-cream);
+	border-color: var(--jwellery-black) !important;
+	color: var(--jwellery-black) !important;
+}
+
+.jwellery-cart-drawer-shop {
+	min-height: var(--jwellery-btn-h);
+	padding: 0 var(--jwellery-btn-px-sm);
+	margin-top: 8px;
+}
+
+/* ——— WooCommerce cart / checkout / account ——— */
+.woocommerce .button,
+.woocommerce button.button,
+.woocommerce input.button,
+.woocommerce #respond input#submit,
+.wc-block-cart__submit-button,
+.wc-block-components-checkout-place-order-button,
+#place_order {
+	min-height: var(--jwellery-btn-h-md);
+	padding: 0 var(--jwellery-btn-px) !important;
+	font-size: var(--jwellery-btn-font) !important;
+	border-radius: var(--jwellery-btn-radius) !important;
+}
+
+#place_order,
+.wc-block-components-checkout-place-order-button {
+	min-height: var(--jwellery-btn-h);
+	width: 100%;
+}
+
+/* Cart page — Proceed to checkout (primary CTA) */
+.woocommerce-cart .wc-proceed-to-checkout {
+	padding: 0;
+	margin: 16px 0 0;
+}
+
+.woocommerce-cart .wc-proceed-to-checkout .checkout-button,
+.woocommerce-cart a.checkout-button.button.alt.wc-forward {
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	width: 100% !important;
+	min-height: var(--jwellery-btn-h) !important;
+	height: auto !important;
+	padding: 0 var(--jwellery-btn-px) !important;
+	margin: 0 !important;
+	font-size: var(--jwellery-btn-font) !important;
+	font-weight: 700 !important;
+	line-height: 1.25 !important;
+	text-align: center !important;
+	text-decoration: none !important;
+	border-radius: var(--jwellery-btn-radius) !important;
+	border: 2px solid var(--jwellery-maroon) !important;
+	background: var(--jwellery-maroon) !important;
+	color: #fff !important;
+	box-sizing: border-box;
+	white-space: normal;
+}
+
+.woocommerce-cart .wc-proceed-to-checkout .checkout-button:hover,
+.woocommerce-cart a.checkout-button.button.alt.wc-forward:hover {
+	background: var(--jwellery-maroon-dark) !important;
+	border-color: var(--jwellery-maroon-dark) !important;
+	color: #fff !important;
+}
+
+/* Inline form buttons — match input height (promo, search, etc.) */
+.woocommerce-cart .coupon,
+.woocommerce-checkout form.checkout_coupon,
+.wc-block-components-totals-coupon__form {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px;
+}
+
+.woocommerce-cart .coupon input.input-text,
+.woocommerce-checkout .checkout_coupon input.input-text,
+.wc-block-components-totals-coupon input[type="text"] {
+	flex: 1 1 200px;
+	min-width: 0;
+	width: auto !important;
+	float: none !important;
+	margin: 0 !important;
+	min-height: var(--jwellery-input-h);
+	height: var(--jwellery-input-h);
+	padding: 0 12px;
+	font-size: 0.95rem;
+	box-sizing: border-box;
+	border: 1px solid var(--jwellery-border);
+	border-radius: var(--jwellery-btn-radius);
+}
+
+.woocommerce-cart .coupon button,
+.woocommerce-checkout .checkout_coupon button,
+.wc-block-components-totals-coupon__button {
+	flex: 0 0 auto;
+	float: none !important;
+	min-height: var(--jwellery-input-h) !important;
+	height: var(--jwellery-input-h) !important;
+	padding: 0 16px !important;
+	font-size: 0.84rem !important;
+	line-height: 1 !important;
+	border: none !important;
+	border-radius: var(--jwellery-btn-radius) !important;
+	margin: 0 !important;
+	white-space: nowrap;
+	background: var(--jwellery-gold) !important;
+	color: #fff !important;
+}
+
+.woocommerce-cart .coupon button:hover,
+.woocommerce-checkout .checkout_coupon button:hover,
+.wc-block-components-totals-coupon__button:hover {
+	background: #b8921f !important;
+	color: #fff !important;
+}
+
+.woocommerce-checkout form.checkout_coupon > p:first-child,
+.woocommerce-cart .coupon > label {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+.woocommerce-cart .actions .button,
+.woocommerce-cart button[name="update_cart"] {
+	min-height: var(--jwellery-input-h) !important;
+	height: var(--jwellery-input-h) !important;
+	padding: 0 16px !important;
+	font-size: 0.84rem !important;
+}
+
+/* Checkout / cart / account — form fields match input height */
+.woocommerce form .form-row input.input-text,
+.woocommerce form .form-row select,
+.woocommerce form .form-row .select2-container .select2-selection--single {
+	min-height: var(--jwellery-input-h);
+	height: var(--jwellery-input-h);
+	padding: 0 12px;
+	font-size: 0.95rem;
+	border: 1px solid var(--jwellery-border);
+	border-radius: var(--jwellery-btn-radius);
+	box-sizing: border-box;
+}
+
+.woocommerce form .form-row select {
+	padding-right: 28px;
+}
+
+.woocommerce form .form-row textarea {
+	min-height: 100px;
+	padding: 12px;
+	font-size: 0.95rem;
+	border: 1px solid var(--jwellery-border);
+	border-radius: var(--jwellery-btn-radius);
+	box-sizing: border-box;
+}
+
+.woocommerce form .form-row .select2-container .select2-selection--single .select2-selection__rendered {
+	line-height: calc(var(--jwellery-input-h) - 2px);
+	padding-left: 12px;
+}
+
+.woocommerce form .form-row .select2-container .select2-selection--single .select2-selection__arrow {
+	height: var(--jwellery-input-h);
+}
+
+/* Duplicate label row hidden — promo hint + placeholder cover a11y */
+.woocommerce-checkout form.checkout_coupon > p.form-row-first {
+	display: none;
+}
+
+/* ——— Newsletter, track order, page CTAs ——— */
+.jwellery-newsletter-inner .jwellery-btn,
+.jwellery-track-form-wrap .button,
+.jwellery-track-form-wrap button {
+	min-height: var(--jwellery-btn-h-md);
+	padding: 0 var(--jwellery-btn-px) !important;
+	border-radius: var(--jwellery-btn-radius) !important;
+}
+
+.jwellery-subscribe-form {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	align-items: stretch;
+	width: 100%;
+}
+
+.jwellery-subscribe-form input[type="email"] {
+	height: var(--jwellery-input-h, 42px);
+	min-height: var(--jwellery-input-h, 42px);
+	max-height: var(--jwellery-input-h, 42px);
+	padding: 0 12px;
+	box-sizing: border-box;
+	flex: 1 1 0;
+	min-width: 0;
+	width: 100%;
+}
+
+.jwellery-subscribe-form .jwellery-btn {
+	height: var(--jwellery-input-h, 42px);
+	min-height: var(--jwellery-input-h, 42px);
+	max-height: var(--jwellery-input-h, 42px);
+	padding: 0 12px !important;
+	width: 100%;
+	font-size: 0.84rem !important;
+	flex: 1 1 0;
+	min-width: 0;
+	box-sizing: border-box;
+}
+
+/* ——— FAQ CTA (dark band — light outline) ——— */
+.jwellery-faq-cta .jwellery-btn-outline {
+	border-color: rgba(255, 255, 255, 0.85);
+	color: #fff !important;
+	background: transparent;
+}
+
+.jwellery-faq-cta .jwellery-btn-outline:hover {
+	background: rgba(255, 255, 255, 0.12);
+	color: #fff !important;
+}
+
+.jwellery-faq-cta-actions {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+/* ——— Sticky add to cart (mobile) ——— */
+.jwellery-sticky-atc .jwellery-btn {
+	flex: 1;
+	min-height: var(--jwellery-btn-h-md);
+	padding: 0 var(--jwellery-btn-px-sm);
+	font-size: var(--jwellery-btn-font-sm);
+}
+
+/* ——— Quick view on cards ——— */
+.jwellery-quick-view-btn {
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	min-height: 36px;
+	padding: 0 14px;
+	font-size: 0.82rem;
+	line-height: 1.25;
+	text-align: center;
+}
+
+/*
+ * Global CTA centering — wins over WooCommerce / plugin defaults.
+ * Every store button must vertically + horizontally center its label.
+ */
+.jwellery-btn,
+.jwellery-btn-primary,
+.jwellery-btn-outline,
+.jwellery-btn-shop,
+.jwellery-btn-viewall,
+.jwellery-btn-hero-secondary,
+.jwellery-btn-wa,
+.jwellery-scroll-btn,
+.jwellery-floating-btn,
+.jwellery-quick-view-btn,
+.jwellery-cart-drawer-actions .jwellery-btn,
+.jwellery-cart-drawer-checkout,
+.jwellery-cart-drawer-view,
+.jwellery-cart-drawer-shop,
+.jwellery-qv-actions .jwellery-btn,
+.jwellery-qv-actions .add_to_cart_button,
+.jwellery-qv-actions .jwellery-qv-full,
+.jwellery-loop-actions .button,
+.jwellery-sticky-atc .jwellery-btn,
+.jwellery-subscribe-form .jwellery-btn,
+.jwellery-newsletter-inner .jwellery-btn,
+.jwellery-track-form-wrap .button,
+.jwellery-track-form-wrap button,
+.jwellery-faq-cta-actions .jwellery-btn,
+.jwellery-page-cta-band .jwellery-btn,
+.product-of-day-actions .jwellery-btn,
+.product-of-day-actions .add_to_cart_button,
+.single-product .summary form.cart .single_add_to_cart_button,
+.single-product .summary form.cart button.button.alt,
+.woocommerce a.button,
+.woocommerce button.button,
+.woocommerce input.button,
+.woocommerce #respond input#submit,
+.woocommerce-cart .wc-proceed-to-checkout .checkout-button,
+.woocommerce-cart a.checkout-button,
+.woocommerce-cart .actions .button,
+.woocommerce-cart .coupon button,
+.woocommerce-checkout .checkout_coupon button,
+.woocommerce-account form .button,
+.woocommerce-account form .woocommerce-Button,
+#place_order,
+.wc-block-cart__submit-button,
+.wc-block-components-checkout-place-order-button,
+.woocommerce ul.products li.product .button,
+.woocommerce ul.products li.product a.add_to_cart_button {
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	text-align: center !important;
+	line-height: 1.25 !important;
+	vertical-align: middle;
+}
+
+/* Cart — Update cart matches promo row height but stays centered */
+.woocommerce-cart .actions .button[name="update_cart"] {
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	min-height: var(--jwellery-input-h) !important;
+	height: var(--jwellery-input-h) !important;
+	padding: 0 16px !important;
+	font-size: 0.84rem !important;
+	line-height: 1 !important;
+	background: var(--jwellery-maroon) !important;
+	color: #fff !important;
+	border: none !important;
+	border-radius: var(--jwellery-btn-radius) !important;
+}
+
+.woocommerce-cart .actions .button[name="update_cart"]:hover {
+	background: var(--jwellery-maroon-dark) !important;
+	color: #fff !important;
+}
+
+/* ——— Mobile adjustments ——— */
+@media (max-width: 768px) {
+	:root {
+		--jwellery-btn-h: 48px;
+		--jwellery-btn-h-md: 44px;
+		--jwellery-btn-h-sm: 40px;
+		--jwellery-btn-font: 0.88rem;
+		--jwellery-btn-font-sm: 0.84rem;
+	}
+
+	.jwellery-btn,
+	.jwellery-loop-actions .button,
+	.woocommerce ul.products li.product .button,
+	.woocommerce ul.products li.product a.add_to_cart_button {
+		min-height: var(--jwellery-btn-h-md);
+	}
+
+	.jwellery-hero .jwellery-btn {
+		min-height: var(--jwellery-btn-h);
+		width: 100%;
+		max-width: 280px;
+	}
+
+	.product-of-day-actions {
+		grid-template-columns: 1fr;
+	}
+
+	.product-of-day-actions .jwellery-btn,
+	.product-of-day-actions .add_to_cart_button {
+		min-height: var(--jwellery-btn-h);
+	}
+
+	.jwellery-qv-actions .jwellery-btn,
+	.jwellery-qv-actions .add_to_cart_button,
+	.jwellery-qv-actions .jwellery-qv-full {
+		flex: 1 1 100%;
+		min-height: var(--jwellery-btn-h);
+	}
+
+	.jwellery-cart-drawer-actions .jwellery-btn {
+		min-height: var(--jwellery-btn-h);
+	}
+
+	.jwellery-page-cta-band .jwellery-btn {
+		width: 100%;
+		min-height: var(--jwellery-btn-h-md);
+	}
+
+	.jwellery-track-form-wrap .button {
+		width: 100%;
+		min-height: var(--jwellery-btn-h);
+	}
+
+	#place_order {
+		min-height: var(--jwellery-btn-h);
+	}
+}
+
+@media (max-width: 480px) {
+	.jwellery-home-section--popular-tabs .jwellery-loop-actions .button,
+	.jwellery-home-section--steal-deals .jwellery-loop-actions .button {
+		min-height: var(--jwellery-btn-h-md);
+		padding: 0 10px;
+		font-size: var(--jwellery-btn-font-sm);
+	}
+
+	.woocommerce-cart .coupon button,
+	.woocommerce-checkout .checkout_coupon button {
+		flex: 1 1 auto;
+		min-width: 120px;
+	}
+}
