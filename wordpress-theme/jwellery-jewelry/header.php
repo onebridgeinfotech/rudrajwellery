@@ -11,6 +11,11 @@ defined( 'ABSPATH' ) || exit;
 <head>
 	<meta charset="<?php bloginfo( 'charset' ); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<?php
+	if ( function_exists( 'jwellery_early_favicon_link' ) ) {
+		jwellery_early_favicon_link();
+	}
+	?>
 	<?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>

@@ -7,9 +7,14 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$phone   = trim( (string) get_theme_mod( 'jwellery_phone', '+91 7036837243' ) );
-$address = trim( (string) get_theme_mod( 'jwellery_address', 'H no 7-7-11/8, New Sri Ram Nagar Colony, Peerzadiguda, Hyderabad - 500098' ) );
-$emails  = function_exists( 'jwellery_footer_contact_emails' ) ? jwellery_footer_contact_emails() : array( 'kalpanayadav503@gmail.com', 'info@rudrajwelelry.co.in' );
+$phone        = trim( (string) get_theme_mod( 'jwellery_phone', '+91 7036837243' ) );
+$address      = trim( (string) get_theme_mod( 'jwellery_address', 'H no 7-7-11/8, New Sri Ram Nagar Colony, Peerzadiguda, Hyderabad - 500098' ) );
+$footer_emails = function_exists( 'jwellery_footer_contact_email_rows' )
+	? jwellery_footer_contact_email_rows()
+	: array(
+		'info'     => 'info@rudrajewellery.co.in',
+		'personal' => 'kalpanayadav503@gmail.com',
+	);
 if ( ! $phone ) {
 	$phone = '+91 7036837243';
 }
@@ -107,7 +112,7 @@ if ( ! $address ) {
 							<a href="tel:<?php echo esc_attr( preg_replace( '/\D+/', '', $phone ) ); ?>"><?php echo esc_html( $phone ); ?></a>
 						</li>
 					<?php endif; ?>
-					<?php foreach ( $emails as $email ) : ?>
+					<?php if ( ! empty( $footer_emails['info'] ) && is_email( $footer_emails['info'] ) ) : ?>
 						<li>
 							<span class="jwellery-footer-stay-icon" aria-hidden="true">
 								<?php
@@ -116,9 +121,17 @@ if ( ! $address ) {
 								}
 								?>
 							</span>
-							<a href="mailto:<?php echo esc_attr( $email ); ?>"><?php echo esc_html( $email ); ?></a>
+							<a href="mailto:<?php echo esc_attr( $footer_emails['info'] ); ?>"><?php echo esc_html( $footer_emails['info'] ); ?></a>
 						</li>
-					<?php endforeach; ?>
+					<?php endif; ?>
+					<?php
+					$personal_email = isset( $footer_emails['personal'] ) ? strtolower( trim( (string) $footer_emails['personal'] ) ) : '';
+					if ( $personal_email && is_email( $personal_email ) && $personal_email !== strtolower( $footer_emails['info'] ) ) :
+						?>
+						<li class="jwellery-footer-stay-contact__item--plain">
+							<a href="mailto:<?php echo esc_attr( $personal_email ); ?>"><?php echo esc_html( $personal_email ); ?></a>
+						</li>
+					<?php endif; ?>
 					<?php if ( $address ) : ?>
 						<li>
 							<span class="jwellery-footer-stay-icon" aria-hidden="true">

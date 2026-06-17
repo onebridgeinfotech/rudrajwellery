@@ -196,20 +196,42 @@ function jwellery_store_email() {
  * @return string
  */
 function jwellery_info_email() {
-	$email = (string) get_theme_mod( 'jwellery_info_email', 'info@rudrajwelelry.co.in' );
-	return is_email( $email ) ? $email : 'info@rudrajwelelry.co.in';
+	$email = (string) get_theme_mod( 'jwellery_info_email', 'info@rudrajewellery.co.in' );
+	if ( ! is_email( $email ) ) {
+		return 'info@rudrajewellery.co.in';
+	}
+	// Fix legacy typo saved in customizer.
+	if ( 'info@rudrajwelelry.co.in' === strtolower( $email ) ) {
+		return 'info@rudrajewellery.co.in';
+	}
+	return $email;
 }
 
 /**
- * Unique footer contact emails (store + info).
+ * Footer emails: info inbox first, personal store email second.
+ *
+ * @return array{info: string, personal: string}
+ */
+function jwellery_footer_contact_email_rows() {
+	$info     = strtolower( trim( jwellery_info_email() ) );
+	$personal = strtolower( trim( jwellery_store_email() ) );
+
+	return array(
+		'info'     => is_email( $info ) ? $info : 'info@rudrajewellery.co.in',
+		'personal' => is_email( $personal ) ? $personal : 'kalpanayadav503@gmail.com',
+	);
+}
+
+/**
+ * Unique footer contact emails (info first, then personal).
  *
  * @return string[]
  */
 function jwellery_footer_contact_emails() {
+	$rows   = jwellery_footer_contact_email_rows();
 	$emails = array();
 
-	foreach ( array( jwellery_store_email(), jwellery_info_email() ) as $email ) {
-		$email = strtolower( trim( (string) $email ) );
+	foreach ( array( $rows['info'], $rows['personal'] ) as $email ) {
 		if ( is_email( $email ) && ! in_array( $email, $emails, true ) ) {
 			$emails[] = $email;
 		}
@@ -274,17 +296,44 @@ function jwellery_theme_favicon_asset_url( $filename ) {
 }
 
 /**
+ * Stop WordPress Site Icon JPEG from overriding theme favicon.
+ */
+function jwellery_disable_wp_site_icon() {
+	remove_action( 'wp_head', 'wp_site_icon', 99 );
+}
+add_action( 'init', 'jwellery_disable_wp_site_icon', 20 );
+
+/**
+ * Early favicon in document head (before wp_head cache/plugins).
+ */
+function jwellery_early_favicon_link() {
+	$ver      = defined( 'JWELLERY_THEME_VERSION' ) ? JWELLERY_THEME_VERSION : '1';
+	$root_ico = add_query_arg( 'v', $ver, home_url( '/favicon.ico' ) );
+	$png_32   = add_query_arg( 'v', $ver, jwellery_theme_favicon_asset_url( 'favicon-32x32.png' ) );
+
+	printf( '<link rel="icon" href="%s" type="image/x-icon" sizes="any" />' . "\n", esc_url( $root_ico ) );
+	printf( '<link rel="shortcut icon" href="%s" type="image/x-icon" />' . "\n", esc_url( $root_ico ) );
+	if ( file_exists( JWELLERY_THEME_DIR . '/assets/images/favicon-32x32.png' ) ) {
+		printf(
+			'<link rel="icon" href="%s" type="image/png" sizes="32x32" />' . "\n",
+			esc_url( $png_32 )
+		);
+	}
+}
+
+/**
  * Output favicon tags (root ICO + PNG/SVG fallbacks).
  *
  * Browsers often request /favicon.ico before HTML; Hostinger CDN serves a static
  * file at the site root, so theme PHP cannot intercept that request reliably.
  */
 function jwellery_render_favicon_tags() {
-	$root_ico  = home_url( '/favicon.ico' );
-	$root_apple = home_url( '/apple-touch-icon.png' );
-	$png_32    = jwellery_theme_favicon_asset_url( 'favicon-32x32.png' );
-	$png_192   = jwellery_theme_favicon_asset_url( 'favicon-192x192.png' );
-	$svg       = jwellery_theme_favicon_asset_url( 'favicon.svg' );
+	$ver       = defined( 'JWELLERY_THEME_VERSION' ) ? JWELLERY_THEME_VERSION : '1';
+	$root_ico  = add_query_arg( 'v', $ver, home_url( '/favicon.ico' ) );
+	$root_apple = add_query_arg( 'v', $ver, home_url( '/apple-touch-icon.png' ) );
+	$png_32    = add_query_arg( 'v', $ver, jwellery_theme_favicon_asset_url( 'favicon-32x32.png' ) );
+	$png_192   = add_query_arg( 'v', $ver, jwellery_theme_favicon_asset_url( 'favicon-192x192.png' ) );
+	$svg       = add_query_arg( 'v', $ver, jwellery_theme_favicon_asset_url( 'favicon.svg' ) );
 
 	printf( '<link rel="icon" href="%s" sizes="any" />' . "\n", esc_url( $root_ico ) );
 	printf( '<link rel="shortcut icon" href="%s" />' . "\n", esc_url( $root_ico ) );

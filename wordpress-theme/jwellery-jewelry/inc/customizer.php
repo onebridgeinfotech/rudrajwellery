@@ -86,7 +86,7 @@ function jwellery_customize_register( $wp_customize ) {
 		'jwellery_info_email',
 		array(
 			'sanitize_callback' => 'sanitize_email',
-			'default'           => 'info@rudrajwelelry.co.in',
+			'default'           => 'info@rudrajewellery.co.in',
 		)
 	);
 	$wp_customize->add_control(

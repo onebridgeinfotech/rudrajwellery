@@ -2375,6 +2375,10 @@ body.jwellery-keyboard-nav *:focus-visible {
 	color: var(--jwellery-gold-light);
 }
 
+.jwellery-footer-stay-contact__item--plain {
+	padding-left: 38px;
+}
+
 .jwellery-subscribe-form {
 	display: flex;
 	flex-direction: column;

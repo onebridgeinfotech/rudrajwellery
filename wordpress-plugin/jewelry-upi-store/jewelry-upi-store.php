@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Jewelry UPI Store
  * Description: Manual UPI payment gateway, pending order workflow, and order emails.
- * Version: 1.2.4
+ * Version: 1.2.5
  * Author: Jewelry E-commerce
  * Requires at least: 6.0
  * Requires PHP: 7.4
@@ -15,7 +15,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'JUS_VERSION', '1.2.4' );
+define( 'JUS_VERSION', '1.2.5' );
 define( 'JUS_PLUGIN_FILE', __FILE__ );
 define( 'JUS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 

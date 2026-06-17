@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || exit;
 function jwellery_page_content_tokens() {
 	$brand = function_exists( 'jwellery_brand_name' ) ? jwellery_brand_name() : get_bloginfo( 'name' );
 	$email = function_exists( 'jwellery_store_email' ) ? jwellery_store_email() : 'kalpanayadav503@gmail.com';
-	$info_email = function_exists( 'jwellery_info_email' ) ? jwellery_info_email() : 'info@rudrajwelelry.co.in';
+	$info_email = function_exists( 'jwellery_info_email' ) ? jwellery_info_email() : 'info@rudrajewellery.co.in';
 	$phone = trim( (string) get_theme_mod( 'jwellery_phone', '+91 7036837243' ) );
 	$wa    = trim( (string) get_theme_mod( 'jwellery_whatsapp', '7730817950' ) );
 	$addr  = trim( (string) get_theme_mod( 'jwellery_address', 'H no 7-7-11/8, New Sri Ram Nagar Colony, Peerzadiguda, Hyderabad - 500098' ) );
@@ -638,6 +638,7 @@ function jwellery_should_refresh_page_content( $page, $key = null ) {
 		'YOUR_STORE_NAME',
 		'your@email.com',
 		'udayach123@gmail.com',
+		'info@rudrajwelelry.co.in',
 		'XXXXXXXXXX',
 		'yourdomain.com',
 		'yourhandle',

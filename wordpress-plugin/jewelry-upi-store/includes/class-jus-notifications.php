@@ -160,8 +160,8 @@ class JUS_Notifications {
 		}
 
 		$info_email = (string) get_theme_mod( 'jwellery_info_email', '' );
-		if ( '' === $info_email || ! is_email( $info_email ) ) {
-			set_theme_mod( 'jwellery_info_email', 'info@rudrajwelelry.co.in' );
+		if ( '' === $info_email || ! is_email( $info_email ) || 'info@rudrajwelelry.co.in' === strtolower( $info_email ) ) {
+			set_theme_mod( 'jwellery_info_email', 'info@rudrajewellery.co.in' );
 		}
 
 		$from_address = class_exists( 'JUS_Mail' ) ? JUS_Mail::transactional_from_email() : self::DEFAULT_EMAIL;
