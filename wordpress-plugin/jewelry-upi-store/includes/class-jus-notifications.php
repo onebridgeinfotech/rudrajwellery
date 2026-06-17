@@ -17,10 +17,23 @@ class JUS_Notifications {
 	const OPTION_APPLIED = 'jus_notifications_applied_version';
 
 	/**
+	 * Former admin / store emails to replace on migrate.
+	 *
+	 * @return string[]
+	 */
+	private static function legacy_admin_emails() {
+		return array(
+			'udayach123@gmail.com',
+		);
+	}
+
+	/**
 	 * Init hooks.
 	 */
 	public static function init() {
+		add_filter( 'pre_option_admin_email', array( __CLASS__, 'filter_admin_email' ) );
 		add_action( 'init', array( __CLASS__, 'maybe_apply_settings' ), 5 );
+		add_action( 'init', array( __CLASS__, 'maybe_migrate_legacy_email' ), 6 );
 
 		add_filter( 'woocommerce_email_recipient_new_order', array( __CLASS__, 'admin_recipient' ), 20, 2 );
 		add_filter( 'woocommerce_email_recipient_cancelled_order', array( __CLASS__, 'admin_recipient' ), 20, 2 );
@@ -48,6 +61,68 @@ class JUS_Notifications {
 	}
 
 	/**
+	 * Force WordPress administration email to the store inbox.
+	 *
+	 * @param mixed $value Current option value.
+	 * @return string
+	 */
+	public static function filter_admin_email( $value ) {
+		unset( $value );
+		return self::store_email();
+	}
+
+	/**
+	 * Replace legacy admin email values stored in options/theme mods.
+	 */
+	public static function maybe_migrate_legacy_email() {
+		if ( ! self::site_has_legacy_admin_email() ) {
+			return;
+		}
+		self::apply_store_email_settings();
+	}
+
+	/**
+	 * @return bool
+	 */
+	private static function site_has_legacy_admin_email() {
+		if ( self::is_legacy_email( get_option( 'admin_email' ) ) ) {
+			return true;
+		}
+		if ( self::is_legacy_email( get_theme_mod( 'jwellery_email' ) ) ) {
+			return true;
+		}
+		if ( self::is_legacy_email( get_option( 'woocommerce_email_from_address' ) ) ) {
+			return true;
+		}
+
+		foreach ( array( 'new_order', 'cancelled_order', 'failed_order' ) as $email_id ) {
+			$settings = get_option( 'woocommerce_' . $email_id . '_settings', array() );
+			if ( is_array( $settings ) && ! empty( $settings['recipient'] ) && self::is_legacy_email( $settings['recipient'] ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * @param mixed $email Email.
+	 * @return bool
+	 */
+	private static function is_legacy_email( $email ) {
+		$email = strtolower( trim( (string) $email ) );
+		if ( ! $email ) {
+			return false;
+		}
+		foreach ( self::legacy_admin_emails() as $legacy ) {
+			if ( $email === strtolower( $legacy ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Apply email settings after deploy / version bump.
 	 */
 	public static function maybe_apply_settings() {
@@ -62,7 +137,7 @@ class JUS_Notifications {
 	 * Set WordPress + WooCommerce notification recipients.
 	 */
 	public static function apply_store_email_settings() {
-		$email = self::store_email();
+		$email = self::DEFAULT_EMAIL;
 
 		update_option( 'admin_email', $email );
 		update_option( self::OPTION_EMAIL, $email, false );
@@ -77,6 +152,16 @@ class JUS_Notifications {
 			$settings['recipient'] = $email;
 			$settings['enabled']   = 'yes';
 			update_option( $key, $settings );
+		}
+
+		$theme_email = (string) get_theme_mod( 'jwellery_email', '' );
+		if ( '' === $theme_email || self::is_legacy_email( $theme_email ) ) {
+			set_theme_mod( 'jwellery_email', $email );
+		}
+
+		$from_address = (string) get_option( 'woocommerce_email_from_address', '' );
+		if ( self::is_legacy_email( $from_address ) ) {
+			update_option( 'woocommerce_email_from_address', $email );
 		}
 
 		$from_name = get_bloginfo( 'name' );

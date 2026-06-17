@@ -70,7 +70,7 @@ function jwellery_customize_register( $wp_customize ) {
 		'jwellery_email',
 		array(
 			'sanitize_callback' => 'sanitize_email',
-			'default'           => '',
+			'default'           => 'kalpanayadav503@gmail.com',
 		)
 	);
 	$wp_customize->add_control(

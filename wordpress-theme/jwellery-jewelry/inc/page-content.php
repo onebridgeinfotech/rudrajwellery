@@ -14,7 +14,10 @@ defined( 'ABSPATH' ) || exit;
  */
 function jwellery_page_content_tokens() {
 	$brand = function_exists( 'jwellery_brand_name' ) ? jwellery_brand_name() : get_bloginfo( 'name' );
-	$email = (string) get_theme_mod( 'jwellery_email', get_option( 'admin_email' ) );
+	$email = (string) get_theme_mod( 'jwellery_email', '' );
+	if ( ! $email || ! is_email( $email ) ) {
+		$email = class_exists( 'JUS_Notifications' ) ? JUS_Notifications::store_email() : (string) get_option( 'admin_email' );
+	}
 	$phone = trim( (string) get_theme_mod( 'jwellery_phone', '+91 7036837243' ) );
 	$wa    = trim( (string) get_theme_mod( 'jwellery_whatsapp', '7730817950' ) );
 	$addr  = trim( (string) get_theme_mod( 'jwellery_address', 'H no 7-7-11/8, New Sri Ram Nagar Colony, Peerzadiguda, Hyderabad - 500098' ) );

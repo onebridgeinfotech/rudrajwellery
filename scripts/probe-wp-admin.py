@@ -3,7 +3,7 @@ import re
 import requests
 
 BASE = "https://brown-llama-127224.hostingersite.com"
-USER = os.environ.get("JWELLERY_WP_USER", "udayach123@gmail.com")
+USER = os.environ.get("JWELLERY_WP_USER", "kalpanayadav503@gmail.com")
 PASSWORD = os.environ.get("JWELLERY_WP_PASSWORD", "Samyuka123$")
 
 s = requests.Session()
