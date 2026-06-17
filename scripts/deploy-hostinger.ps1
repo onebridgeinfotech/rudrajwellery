@@ -102,6 +102,22 @@ $pluginLocal = Join-Path $root "wordpress-plugin\jewelry-upi-store"
 Deploy-Folder -LocalDir $themeLocal -RemoteDir $config['FTP_REMOTE_THEME'] -Label "theme"
 Deploy-Folder -LocalDir $pluginLocal -RemoteDir $config['FTP_REMOTE_PLUGIN'] -Label "plugin"
 
+$siteRootLocal = Join-Path $root "site-root"
+if (Test-Path $siteRootLocal) {
+    $curl = Get-Command curl.exe -ErrorAction SilentlyContinue
+    if ($curl) {
+        Write-Host "Deploying site-root favicons..." -ForegroundColor Cyan
+        Get-ChildItem -Path $siteRootLocal -File | ForEach-Object {
+            $remoteUrl = "ftp://$($config['FTP_SERVER'])/$($_.Name)"
+            & curl.exe --silent --show-error `
+                --user "$($config['FTP_USERNAME']):$($config['FTP_PASSWORD'])" `
+                -T $_.FullName $remoteUrl
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            Write-Host "  Uploaded /$($_.Name)" -ForegroundColor Gray
+        }
+    }
+}
+
 $purgeScript = Join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) "purge-live-cache.ps1"
 if (Test-Path $purgeScript) {
     & $purgeScript -Config $config

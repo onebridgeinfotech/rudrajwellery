@@ -197,91 +197,66 @@ function jwellery_render_footer_logo() {
 }
 
 /**
- * Theme favicon URL (square SVG mark).
+ * Theme favicon asset URL.
  *
+ * @param string $filename File under assets/images/.
  * @return string
  */
-function jwellery_theme_favicon_url() {
-	return JWELLERY_THEME_URI . '/assets/images/favicon.svg';
+function jwellery_theme_favicon_asset_url( $filename ) {
+	return JWELLERY_THEME_URI . '/assets/images/' . ltrim( $filename, '/' );
 }
 
 /**
- * Output crisp SVG favicon before WordPress site-icon JPEG tags.
+ * Output favicon tags (root ICO + PNG/SVG fallbacks).
+ *
+ * Browsers often request /favicon.ico before HTML; Hostinger CDN serves a static
+ * file at the site root, so theme PHP cannot intercept that request reliably.
  */
-function jwellery_prepend_favicon_meta_tags( $meta_tags ) {
-	if ( ! is_array( $meta_tags ) ) {
-		$meta_tags = array();
+function jwellery_render_favicon_tags() {
+	$root_ico  = home_url( '/favicon.ico' );
+	$root_apple = home_url( '/apple-touch-icon.png' );
+	$png_32    = jwellery_theme_favicon_asset_url( 'favicon-32x32.png' );
+	$png_192   = jwellery_theme_favicon_asset_url( 'favicon-192x192.png' );
+	$svg       = jwellery_theme_favicon_asset_url( 'favicon.svg' );
+
+	printf( '<link rel="icon" href="%s" sizes="any" />' . "\n", esc_url( $root_ico ) );
+	printf( '<link rel="shortcut icon" href="%s" />' . "\n", esc_url( $root_ico ) );
+
+	if ( file_exists( JWELLERY_THEME_DIR . '/assets/images/favicon-32x32.png' ) ) {
+		printf(
+			'<link rel="icon" href="%s" type="image/png" sizes="32x32" />' . "\n",
+			esc_url( $png_32 )
+		);
 	}
 
-	$url = jwellery_theme_favicon_url();
-	if ( ! $url || ! file_exists( JWELLERY_THEME_DIR . '/assets/images/favicon.svg' ) ) {
-		return $meta_tags;
+	if ( file_exists( JWELLERY_THEME_DIR . '/assets/images/favicon.svg' ) ) {
+		printf(
+			'<link rel="icon" href="%s" type="image/svg+xml" sizes="any" />' . "\n",
+			esc_url( $svg )
+		);
 	}
 
-	array_unshift(
-		$meta_tags,
-		sprintf(
-			'<link rel="icon" href="%s" type="image/svg+xml" sizes="any" />',
-			esc_url( $url )
-		),
-		sprintf(
-			'<link rel="shortcut icon" href="%s" type="image/svg+xml" />',
-			esc_url( $url )
-		)
-	);
-
-	return $meta_tags;
-}
-add_filter( 'site_icon_meta_tags', 'jwellery_prepend_favicon_meta_tags', 5 );
-
-/**
- * Fallback favicon when no Site Icon is set in WordPress.
- */
-function jwellery_fallback_favicon_tags() {
-	if ( function_exists( 'has_site_icon' ) && has_site_icon() ) {
-		return;
-	}
-
-	$url = jwellery_theme_favicon_url();
-	if ( ! $url ) {
-		return;
+	if ( file_exists( JWELLERY_THEME_DIR . '/assets/images/favicon-192x192.png' ) ) {
+		printf(
+			'<link rel="icon" href="%s" type="image/png" sizes="192x192" />' . "\n",
+			esc_url( $png_192 )
+		);
 	}
 
 	printf(
-		'<link rel="icon" href="%s" type="image/svg+xml" sizes="any" />' . "\n",
-		esc_url( $url )
-	);
-	printf(
-		'<link rel="apple-touch-icon" href="%s" />' . "\n",
-		esc_url( $url )
+		'<link rel="apple-touch-icon" href="%s" sizes="180x180" />' . "\n",
+		esc_url( $root_apple )
 	);
 }
-add_action( 'wp_head', 'jwellery_fallback_favicon_tags', 0 );
+add_action( 'wp_head', 'jwellery_render_favicon_tags', -100 );
 
 /**
- * Serve /favicon.ico (many browsers request this before parsing HTML).
+ * Replace WordPress Site Icon JPEG tags (we output our own set above).
+ *
+ * @param array<int, string> $meta_tags Site icon link tags.
+ * @return array<int, string>
  */
-function jwellery_serve_favicon_ico() {
-	if ( is_admin() ) {
-		return;
-	}
-
-	$request_path = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-	$request_path = (string) wp_parse_url( $request_path, PHP_URL_PATH );
-	if ( '/favicon.ico' !== $request_path ) {
-		return;
-	}
-
-	$file = JWELLERY_THEME_DIR . '/assets/images/favicon.svg';
-	if ( ! file_exists( $file ) ) {
-		return;
-	}
-
-	status_header( 200 );
-	header( 'Content-Type: image/svg+xml' );
-	header( 'Cache-Control: public, max-age=604800' );
-	// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
-	readfile( $file );
-	exit;
+function jwellery_replace_site_icon_meta_tags( $meta_tags ) {
+	return array();
 }
-add_action( 'init', 'jwellery_serve_favicon_ico', 0 );
+add_filter( 'site_icon_meta_tags', 'jwellery_replace_site_icon_meta_tags', 100 );
