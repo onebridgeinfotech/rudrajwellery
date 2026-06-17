@@ -623,6 +623,39 @@
 	display: none !important;
 }
 
+/* ——— Product carousels (Handmade, New Collection, etc.): 4-col grid on desktop ——— */
+@media (min-width: 1025px) {
+	.jwellery-home-section--carousel .jwellery-carousel {
+		padding: 0;
+	}
+
+	.jwellery-home-section--carousel .jwellery-carousel-track {
+		overflow: visible;
+	}
+
+	.jwellery-home-section--carousel .jwellery-carousel .jwellery-product-grid {
+		display: grid !important;
+		grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+		gap: 20px;
+		flex-wrap: wrap;
+		padding: 0;
+		width: 100%;
+	}
+
+	.jwellery-home-section--carousel .jwellery-carousel .product {
+		flex: none !important;
+		width: auto !important;
+		max-width: none !important;
+		min-width: 0 !important;
+	}
+
+	.jwellery-home-section--carousel .carousel-btn,
+	.jwellery-home-section--carousel .carousel-dots,
+	.jwellery-home-section--carousel .carousel-counter {
+		display: none !important;
+	}
+}
+
 /* ——— Popular Products tabs: exactly 4 per row on desktop ——— */
 @media (min-width: 1025px) {
 	.jwellery-home-section--popular-tabs .jwellery-product-grid--cols-4,
