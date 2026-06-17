@@ -387,16 +387,19 @@ body {
 .jwellery-menu .sub-menu {
 	display: none;
 	position: absolute;
-	top: 100%;
-	left: 0;
-	min-width: 220px;
+	top: calc(100% + 8px);
+	left: 50%;
+	transform: translateX(-50%);
+	min-width: 280px;
 	background: #fff;
 	border: 1px solid var(--jwellery-border);
-	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+	border-top: 3px solid var(--jwellery-maroon);
+	border-radius: 12px;
+	box-shadow: 0 20px 48px rgba(0, 0, 0, 0.14);
 	list-style: none;
 	margin: 0;
-	padding: 8px 0;
-	z-index: 50;
+	padding: 10px;
+	z-index: 200;
 }
 
 .jwellery-menu .menu-item-has-children:hover .sub-menu,
@@ -404,10 +407,64 @@ body {
 	display: block;
 }
 
-.jwellery-menu .sub-menu a {
-	display: block;
-	padding: 8px 16px;
+/* Dropdown links must not inherit header gold (unreadable on white panel). */
+.jwellery-header .jwellery-menu .sub-menu a {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 11px 14px;
 	white-space: nowrap;
+	color: #1a1a1a;
+	font-weight: 600;
+	font-size: 0.92rem;
+	line-height: 1.35;
+	border-radius: 8px;
+	transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+
+.jwellery-header .jwellery-menu .sub-menu a::before {
+	content: "";
+	flex-shrink: 0;
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: var(--jwellery-gold);
+	opacity: 0.55;
+	transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.jwellery-header .jwellery-menu .sub-menu a:hover,
+.jwellery-header .jwellery-menu .sub-menu a:focus-visible {
+	color: var(--jwellery-maroon-dark);
+	background: var(--jwellery-rose);
+}
+
+.jwellery-header .jwellery-menu .sub-menu a:hover::before,
+.jwellery-header .jwellery-menu .sub-menu a:focus-visible::before {
+	opacity: 1;
+	transform: scale(1.15);
+}
+
+.jwellery-shop-submenu__item--divider {
+	margin-top: 6px;
+	padding-top: 6px;
+	border-top: 1px solid var(--jwellery-border);
+}
+
+.jwellery-shop-submenu__item--cta a {
+	color: var(--jwellery-maroon);
+	font-weight: 700;
+}
+
+.jwellery-shop-submenu__item--cta a::before {
+	background: var(--jwellery-maroon);
+	opacity: 1;
+}
+
+.jwellery-shop-submenu__item--cta a:hover,
+.jwellery-shop-submenu__item--cta a:focus-visible {
+	background: var(--jwellery-maroon);
+	color: #fff;
 }
 
 .jwellery-header-icons {

@@ -379,14 +379,54 @@ body.jwellery-menu-open {
 	.jwellery-menu .sub-menu {
 		position: static;
 		display: none;
+		transform: none;
+		left: auto;
+		min-width: 0;
+		margin: 4px 0 0;
+		padding: 6px;
+		border: 1px solid var(--jwellery-header-border);
+		border-radius: 10px;
 		box-shadow: none;
-		border: none;
-		padding: 0 0 8px 12px;
-		background: rgba(255, 255, 255, 0.05);
+		background: rgba(0, 0, 0, 0.42);
 	}
 
-	.jwellery-menu .sub-menu a {
-		color: var(--jwellery-header-text);
+	.jwellery-header .jwellery-menu .sub-menu a {
+		color: #fff;
+		padding: 12px 14px;
+		font-size: 0.95rem;
+		border-radius: 8px;
+	}
+
+	.jwellery-header .jwellery-menu .sub-menu a::before {
+		background: var(--jwellery-gold);
+		opacity: 0.85;
+	}
+
+	.jwellery-header .jwellery-menu .sub-menu a:hover,
+	.jwellery-header .jwellery-menu .sub-menu a:focus-visible {
+		color: #fff;
+		background: rgba(var(--jwellery-gold-rgb), 0.18);
+	}
+
+	.jwellery-shop-submenu__item--divider {
+		margin-top: 4px;
+		padding-top: 4px;
+		border-top-color: rgba(255, 255, 255, 0.14);
+	}
+
+	.jwellery-shop-submenu__item--cta a {
+		color: #fff;
+		background: rgba(var(--jwellery-ruby-rgb), 0.55);
+	}
+
+	.jwellery-shop-submenu__item--cta a::before {
+		background: #fff;
+	}
+
+	.jwellery-shop-submenu__item--cta a:hover,
+	.jwellery-shop-submenu__item--cta a:focus-visible {
+		background: var(--jwellery-maroon);
+		color: #fff;
 	}
 
 	.jwellery-menu .menu-item-has-children.submenu-open > .sub-menu {

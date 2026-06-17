@@ -174,13 +174,13 @@ function jwellery_shop_submenu_html() {
 	$all_url  = function_exists( 'jwellery_all_products_url' ) ? jwellery_all_products_url() : $shop;
 	ob_start();
 	?>
-	<ul class="sub-menu">
-		<li><a href="<?php echo esc_url( jwellery_term_link( 'handmade-collection' ) ); ?>"><?php esc_html_e( 'Handmade Collection', 'jwellery-jewelry' ); ?></a></li>
-		<li><a href="<?php echo esc_url( jwellery_term_link( 'instagram-collection' ) ); ?>"><?php esc_html_e( 'Instagram Collection', 'jwellery-jewelry' ); ?></a></li>
-		<li><a href="<?php echo esc_url( add_query_arg( 'featured', '1', $shop ) ); ?>"><?php esc_html_e( 'Best Sellers', 'jwellery-jewelry' ); ?></a></li>
-		<li><a href="<?php echo esc_url( jwellery_term_link( 'latest-collection' ) ); ?>"><?php esc_html_e( 'Latest Collection', 'jwellery-jewelry' ); ?></a></li>
-		<li><a href="<?php echo esc_url( $shop ); ?>"><?php esc_html_e( 'All Collections', 'jwellery-jewelry' ); ?></a></li>
-		<li><a href="<?php echo esc_url( $all_url ); ?>"><?php esc_html_e( 'All Products', 'jwellery-jewelry' ); ?></a></li>
+	<ul class="sub-menu jwellery-shop-submenu">
+		<li class="jwellery-shop-submenu__item"><a href="<?php echo esc_url( jwellery_term_link( 'handmade-collection' ) ); ?>"><?php esc_html_e( 'Handmade Collection', 'jwellery-jewelry' ); ?></a></li>
+		<li class="jwellery-shop-submenu__item"><a href="<?php echo esc_url( jwellery_term_link( 'instagram-collection' ) ); ?>"><?php esc_html_e( 'Instagram Collection', 'jwellery-jewelry' ); ?></a></li>
+		<li class="jwellery-shop-submenu__item"><a href="<?php echo esc_url( add_query_arg( 'featured', '1', $shop ) ); ?>"><?php esc_html_e( 'Best Sellers', 'jwellery-jewelry' ); ?></a></li>
+		<li class="jwellery-shop-submenu__item"><a href="<?php echo esc_url( jwellery_term_link( 'latest-collection' ) ); ?>"><?php esc_html_e( 'Latest Collection', 'jwellery-jewelry' ); ?></a></li>
+		<li class="jwellery-shop-submenu__item jwellery-shop-submenu__item--divider"><a href="<?php echo esc_url( $shop ); ?>"><?php esc_html_e( 'All Collections', 'jwellery-jewelry' ); ?></a></li>
+		<li class="jwellery-shop-submenu__item jwellery-shop-submenu__item--cta"><a href="<?php echo esc_url( $all_url ); ?>"><?php esc_html_e( 'All Products', 'jwellery-jewelry' ); ?></a></li>
 	</ul>
 	<?php
 	return ob_get_clean();
@@ -294,6 +294,51 @@ function jwellery_nav_menu_mega_class( $items ) {
 	return $items;
 }
 add_filter( 'wp_nav_menu_objects', 'jwellery_nav_menu_mega_class' );
+
+/**
+ * Style class for Shop dropdown panel (WP menu + fallback).
+ *
+ * @param string[] $classes CSS classes.
+ * @param stdClass $args    Menu args.
+ * @param int      $depth   Parent depth.
+ * @return string[]
+ */
+function jwellery_shop_submenu_panel_class( $classes, $args, $depth ) {
+	unset( $args );
+	if ( 0 === (int) $depth ) {
+		$classes[] = 'jwellery-shop-submenu';
+	}
+	return $classes;
+}
+add_filter( 'nav_menu_submenu_css_class', 'jwellery_shop_submenu_panel_class', 10, 3 );
+
+/**
+ * Highlight All Products / divider rows in Shop submenu.
+ *
+ * @param string[] $classes CSS classes.
+ * @param WP_Post  $item    Menu item.
+ * @param stdClass $args    Menu args.
+ * @param int      $depth   Depth.
+ * @return string[]
+ */
+function jwellery_shop_submenu_item_class( $classes, $item, $args, $depth ) {
+	unset( $args );
+	if ( 1 !== (int) $depth || 0 === (int) $item->menu_item_parent ) {
+		return $classes;
+	}
+
+	$classes[] = 'jwellery-shop-submenu__item';
+	$title     = strtolower( trim( (string) $item->title ) );
+
+	if ( false !== strpos( $title, 'all product' ) ) {
+		$classes[] = 'jwellery-shop-submenu__item--cta';
+	} elseif ( false !== strpos( $title, 'all collection' ) ) {
+		$classes[] = 'jwellery-shop-submenu__item--divider';
+	}
+
+	return $classes;
+}
+add_filter( 'nav_menu_css_class', 'jwellery_shop_submenu_item_class', 10, 4 );
 
 /**
  * Append mega menu to Shop nav item.
