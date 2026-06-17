@@ -1062,7 +1062,36 @@ body.jwellery-qv-open {
 }
 
 .jwellery-shop-catalog-page ul.products.jwellery-product-grid > li.product {
-	display: block !important;
+	display: flex !important;
+	flex-direction: column;
+	box-sizing: border-box;
+	background: #fff;
+	border: 1px solid var(--jwellery-border);
+	border-radius: 12px;
+	padding: 10px;
+}
+
+.jwellery-shop-catalog-page .jwellery-shop-category-group .product-image-wrap {
+	flex-shrink: 0;
+	margin-bottom: 8px;
+}
+
+.jwellery-shop-catalog-page .jwellery-shop-category-group .jwellery-product-title {
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	margin: 4px 0;
+	font-size: 0.95rem;
+}
+
+.jwellery-shop-catalog-page .jwellery-shop-category-group .jwellery-loop-actions {
+	margin-top: auto;
+	padding-top: 8px;
+}
+
+.jwellery-shop-catalog-page .jwellery-shop-category-group .jwellery-loop-actions .button {
+	width: 100%;
 }
 
 .jwellery-shop-catalog-page .woocommerce-breadcrumb {

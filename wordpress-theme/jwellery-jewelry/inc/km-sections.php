@@ -415,7 +415,7 @@ function jwellery_home_category_stats() {
 					array(
 						'center'    => true,
 						'eyebrow'   => __( 'Browse collections', 'jwellery-jewelry' ),
-						'subtitle'  => __( 'Earrings, necklaces, bangles & more â€” tap a style to explore', 'jwellery-jewelry' ),
+						'subtitle'  => __( 'Earrings, necklaces, bangles & more — tap a style to explore', 'jwellery-jewelry' ),
 						'link'      => $shop_url,
 						'link_text' => __( 'View all products', 'jwellery-jewelry' ),
 					)

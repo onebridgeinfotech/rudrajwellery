@@ -355,6 +355,16 @@ add_action( 'woocommerce_before_main_content', 'jwellery_shop_catalog_hide_no_pr
 /**
  * Register shop catalog hooks.
  */
+function jwellery_shop_catalog_remove_breadcrumb() {
+	if ( jwellery_is_main_shop_catalog() ) {
+		remove_action( 'woocommerce_before_main_content', 'woocommerce_breadcrumb', 20 );
+	}
+}
+add_action( 'woocommerce_before_main_content', 'jwellery_shop_catalog_remove_breadcrumb', 1 );
+
+/**
+ * Register shop catalog hooks.
+ */
 function jwellery_shop_catalog_init() {
 	if ( ! class_exists( 'WooCommerce' ) ) {
 		return;

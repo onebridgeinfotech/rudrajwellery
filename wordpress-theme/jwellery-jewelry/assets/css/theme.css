@@ -1070,6 +1070,12 @@ ul.products.jwellery-product-grid::after {
 
 .jwellery-product-grid > li.product {
 	display: block !important;
+	width: 100% !important;
+	max-width: none !important;
+	flex: none !important;
+	float: none !important;
+	margin: 0 !important;
+	clear: none !important;
 }
 
 .jwellery-product-grid .product {
