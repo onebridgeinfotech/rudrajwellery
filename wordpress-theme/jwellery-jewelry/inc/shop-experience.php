@@ -103,6 +103,7 @@ function jwellery_get_shop_categories() {
 		'handmade-collection',
 		'instagram-collection',
 		'latest-collection',
+		'combo',
 	);
 
 	$terms = get_terms(

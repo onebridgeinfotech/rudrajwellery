@@ -48,6 +48,10 @@ function jwellery_get_reference_categories() {
 			'name' => 'Latest Collection',
 			'desc' => 'New arrivals and latest designs.',
 		),
+		'combo'                => array(
+			'name' => 'Combo',
+			'desc' => 'Complete jewelry combo sets — short haram, long mala, and matching earrings.',
+		),
 	);
 }
 

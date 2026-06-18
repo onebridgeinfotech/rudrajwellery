@@ -35,6 +35,7 @@ function jwellery_get_demo_products() {
 		array( 'IG-001', 'Nakshi kada', 399, 0, 0, array( 'instagram-collection', 'bangles' ), 'As seen on Instagram — Nakshi kada.' ),
 		array( 'IG-002', 'Green butta', 399, 0, 0, array( 'instagram-collection', 'ear-rings' ), 'Green butta earrings from Instagram collection.' ),
 		array( 'CB-001', 'BB COMBO', 699, 25, 1, array( 'necklaces', 'handmade-collection' ), 'Best-selling BB combo set.' ),
+		array( 'CB-002', 'Laxmi kasulu short + bottu mala', 1300, 15, 0, array( 'combo' ), 'Laxmi kasulu short necklace with bottu mala and matching earrings — complete festive combo set.' ),
 	);
 }
 

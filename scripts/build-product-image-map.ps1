@@ -24,6 +24,7 @@ $map = @{
     'IG-001' = 'nakshi-kada'
     'IG-002' = 'green-butta'
     'CB-001' = 'bb-combo'
+    'CB-002' = 'laxmi-kasulu-short-bottu-mala'
 }
 
 $json = Get-Content $jsonPath -Raw | ConvertFrom-Json

@@ -26,6 +26,7 @@ $entries = @(
     @{ sku = 'IG-001'; handle = 'nakshi-kada' }
     @{ sku = 'IG-002'; handle = 'green-butta' }
     @{ sku = 'CB-001'; handle = 'bb-combo' }
+    @{ sku = 'CB-002'; handle = 'laxmi-kasulu-short-bottu-mala' }
 )
 
 $result = @{}

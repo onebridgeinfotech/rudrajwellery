@@ -25,6 +25,7 @@ $rows = @(
     @{ sku = 'IG-001'; search = 'Nakshi kada' }
     @{ sku = 'IG-002'; search = 'Green butta' }
     @{ sku = 'CB-001'; search = 'BB COMBO' }
+    @{ sku = 'CB-002'; search = 'Laxmi kasulu short' }
 )
 
 $result = @{}

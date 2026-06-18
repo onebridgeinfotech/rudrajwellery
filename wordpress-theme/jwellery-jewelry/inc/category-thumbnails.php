@@ -50,6 +50,10 @@ function jwellery_category_image_sources() {
 			'file' => '',
 			'cdn'  => 'https://cdn.shopify.com/s/files/1/0701/9030/1416/files/WhatsAppImage2026-05-30at7.12.40PM.jpg?v=1780148591',
 		),
+		'combo'                   => array(
+			'file' => '',
+			'cdn'  => 'https://cdn.shopify.com/s/files/1/0701/9030/1416/files/IMG-20260601-WA0087.jpg?v=1780324177',
+		),
 	);
 }
 
