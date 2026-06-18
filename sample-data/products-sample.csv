@@ -1,6 +1,8 @@
 Type,SKU,Name,Published,Categories,Regular price,Stock,In stock?,Featured,Short description
 simple,ER-001,Changeable studs,1,ear-rings,399,50,1,1,Stylish changeable stud earrings for daily wear.
 simple,ER-002,Flower Stud with string earrings,1,ear-rings,399,50,1,1,Flower stud with matching string earrings.
+simple,ER-003,Panchaloham ear rings butta,1,ear-rings,1000,20,1,0,Traditional Panchaloham ear rings butta with ruby and pearl detailing.
+simple,ST-001,Panchaloham j studs,1,studs,350,30,1,0,Panchaloham J-line stud earrings with sparkling stone settings.
 simple,NK-001,5 lines Chandraharam,1,necklaces,699,30,1,1,Traditional five-line Chandraharam necklace.
 simple,NK-002,Pendant with Chandraharam & black beads,1,necklaces,799,25,1,1,Pendant set with Chandraharam and black beads.
 simple,NK-003,Short black beads,1,necklaces,499,0,0,1,Short black bead necklace — classic style.

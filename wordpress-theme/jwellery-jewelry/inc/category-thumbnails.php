@@ -18,6 +18,10 @@ function jwellery_category_image_sources() {
 			'file' => 'ear-rings.jpg',
 			'cdn'  => 'https://cdn.shopify.com/s/files/1/0701/9030/1416/files/IMG-20260523-WA0204_1.jpg?v=1779539903',
 		),
+		'studs'        => array(
+			'file' => '',
+			'cdn'  => 'https://cdn.shopify.com/s/files/1/0701/9030/1416/files/IMG-20260523-WA0204_1.jpg?v=1779539903',
+		),
 		'necklaces'    => array(
 			'file' => 'necklaces.jpg',
 			'cdn'  => 'https://cdn.shopify.com/s/files/1/0701/9030/1416/files/IMG-20260323-WA0035.jpg?v=1774263517',

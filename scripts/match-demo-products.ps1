@@ -6,6 +6,8 @@ $json = Get-Content $jsonPath -Raw | ConvertFrom-Json
 $rows = @(
     @{ sku = 'ER-001'; search = 'Changeable studs' }
     @{ sku = 'ER-002'; search = 'Flower Stud' }
+    @{ sku = 'ER-003'; search = 'Panchaloham ear rings butta' }
+    @{ sku = 'ST-001'; search = 'Panchaloham j studs' }
     @{ sku = 'NK-001'; search = '5 lines Chandraharam' }
     @{ sku = 'NK-002'; search = 'Pendant with Chandraharam' }
     @{ sku = 'NK-003'; search = 'Short black beads' }

@@ -7,6 +7,8 @@ if (-not (Test-Path $outDir)) { New-Item -ItemType Directory -Path $outDir -Forc
 $entries = @(
     @{ sku = 'ER-001'; handle = 'changeable-studs' }
     @{ sku = 'ER-002'; handle = 'flower-stud-with-string-earrings' }
+    @{ sku = 'ER-003'; handle = 'panchaloham-ear-rings-butta' }
+    @{ sku = 'ST-001'; handle = 'panchaloham-j-studs' }
     @{ sku = 'NK-001'; handle = '5-lines-chandraharam' }
     @{ sku = 'NK-002'; handle = 'pendant-with-chandraharam-black-beads' }
     @{ sku = 'NK-003'; handle = 'short-black-beads' }

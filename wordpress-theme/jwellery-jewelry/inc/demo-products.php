@@ -16,6 +16,8 @@ function jwellery_get_demo_products() {
 	return array(
 		array( 'ER-001', 'Changeable studs', 399, 50, 1, array( 'ear-rings' ), 'Stylish changeable stud earrings for daily wear.' ),
 		array( 'ER-002', 'Flower Stud with string earrings', 399, 50, 1, array( 'ear-rings' ), 'Flower stud with matching string earrings.' ),
+		array( 'ER-003', 'Panchaloham ear rings butta', 1000, 20, 0, array( 'ear-rings' ), 'Traditional Panchaloham ear rings butta with ruby and pearl detailing.' ),
+		array( 'ST-001', 'Panchaloham j studs', 350, 30, 0, array( 'studs' ), 'Panchaloham J-line stud earrings with sparkling stone settings.' ),
 		array( 'NK-001', '5 lines Chandraharam', 699, 30, 1, array( 'necklaces' ), 'Traditional five-line Chandraharam necklace.' ),
 		array( 'NK-002', 'Pendant with Chandraharam & black beads', 799, 25, 1, array( 'necklaces' ), 'Pendant set with Chandraharam and black beads.' ),
 		array( 'NK-003', 'Short black beads', 499, 0, 1, array( 'necklaces' ), 'Short black bead necklace — classic style.' ),

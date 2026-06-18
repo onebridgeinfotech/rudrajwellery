@@ -95,6 +95,7 @@ function jwellery_get_shop_categories() {
 
 	$preferred = array(
 		'ear-rings',
+		'studs',
 		'necklaces',
 		'chockers',
 		'bangles',

@@ -16,6 +16,10 @@ function jwellery_get_reference_categories() {
 			'name' => 'Ear Rings',
 			'desc' => 'Discover effortless elegance with our Earrings Collection, where style meets convenience.',
 		),
+		'studs'                => array(
+			'name' => 'Studs',
+			'desc' => 'Everyday Panchaloham and fashion studs — lightweight, elegant, and easy to wear.',
+		),
 		'necklaces'            => array(
 			'name' => 'Necklaces',
 			'desc' => 'Elevate your style with our exquisite Necklace Collection, where each piece tells a story.',
