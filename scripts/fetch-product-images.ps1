@@ -13,6 +13,7 @@ $entries = @(
     @{ sku = 'NK-002'; handle = 'pendant-with-chandraharam-black-beads' }
     @{ sku = 'NK-003'; handle = 'short-black-beads' }
     @{ sku = 'NK-004'; handle = '2lines-long-black-beads' }
+    @{ sku = 'NK-005'; handle = 'laxmi-kasulu-short-necklace' }
     @{ sku = 'CK-001'; handle = 'mini-chocker' }
     @{ sku = 'BG-001'; handle = 'gold-kada-1' }
     @{ sku = 'LH-001'; handle = 'thali-chain-gj-1' }

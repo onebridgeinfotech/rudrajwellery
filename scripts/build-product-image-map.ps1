@@ -11,6 +11,7 @@ $map = @{
     'NK-002' = 'pendant-with-chandraharam-black-beads'
     'NK-003' = 'short-black-beads'
     'NK-004' = '2lines-long-black-beads'
+    'NK-005' = 'laxmi-kasulu-short-necklace'
     'CK-001' = 'mini-chocker'
     'BG-001' = 'gold-kada-1'
     'LH-001' = 'thali-chain-gj-1'

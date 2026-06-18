@@ -12,6 +12,7 @@ $rows = @(
     @{ sku = 'NK-002'; search = 'Pendant with Chandraharam' }
     @{ sku = 'NK-003'; search = 'Short black beads' }
     @{ sku = 'NK-004'; search = '2lines long black beads' }
+    @{ sku = 'NK-005'; search = 'Laxmi kasulu short necklace' }
     @{ sku = 'CK-001'; search = 'Mini chocker' }
     @{ sku = 'BG-001'; search = 'Gold kada' }
     @{ sku = 'LH-001'; search = 'Thali chain (GJ-1)' }

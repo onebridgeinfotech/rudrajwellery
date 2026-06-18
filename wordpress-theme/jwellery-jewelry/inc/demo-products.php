@@ -22,6 +22,7 @@ function jwellery_get_demo_products() {
 		array( 'NK-002', 'Pendant with Chandraharam & black beads', 799, 25, 1, array( 'necklaces' ), 'Pendant set with Chandraharam and black beads.' ),
 		array( 'NK-003', 'Short black beads', 499, 0, 1, array( 'necklaces' ), 'Short black bead necklace — classic style.' ),
 		array( 'NK-004', '2lines long black beads', 799, 40, 0, array( 'necklaces' ), 'Two-line long black beads necklace.' ),
+		array( 'NK-005', 'Laxmi kasulu short necklace', 799, 20, 0, array( 'necklaces' ), 'Traditional Laxmi kasulu short necklace with matching earrings — green stone and pearl drops.' ),
 		array( 'CK-001', 'Mini chocker', 399, 0, 0, array( 'chockers' ), 'Antique finish mini choker.' ),
 		array( 'BG-001', 'Gold kada', 399, 60, 1, array( 'bangles' ), 'Gold-tone kada bangle.' ),
 		array( 'LH-001', 'Thali chain (GJ-1)', 399, 35, 1, array( 'long-harams' ), 'Traditional thali chain design GJ-1.' ),
