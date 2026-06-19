@@ -565,10 +565,29 @@
 
 .jwellery-cart-drawer-item {
 	display: grid;
-	grid-template-columns: 64px 1fr;
+	grid-template-columns: 64px 1fr auto;
 	gap: 12px;
+	align-items: start;
 	padding: 12px 0;
 	border-bottom: 1px solid var(--jwellery-border);
+}
+
+.jwellery-cart-drawer-remove {
+	display: inline-block;
+	margin-top: 8px;
+	padding: 0;
+	border: 0;
+	background: none;
+	font-size: 0.78rem;
+	font-weight: 600;
+	color: var(--jwellery-maroon);
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.jwellery-cart-drawer-remove:hover,
+.jwellery-cart-drawer-remove:focus {
+	color: #8b0000;
 }
 
 .jwellery-cart-drawer-thumb img {

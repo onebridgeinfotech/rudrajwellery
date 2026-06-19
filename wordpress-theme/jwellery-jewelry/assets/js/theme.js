@@ -481,6 +481,10 @@
 			showToast(cfg.addedToCart || 'Added to cart');
 			openCartDrawer();
 		});
+
+		jQuery(document.body).on('removed_from_cart', function () {
+			showToast(cfg.removedFromCart || 'Removed from cart');
+		});
 	}
 
 	/* Wishlist toggle */

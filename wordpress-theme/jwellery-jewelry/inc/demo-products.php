@@ -88,6 +88,7 @@ function jwellery_create_one_demo_product( $row ) {
 	}
 
 	list( $sku, $name, $price, $stock, $featured, $cats, $desc ) = $row;
+	$is_wp_catalog_sku = (bool) preg_match( '/^WP-\d+$/', (string) $sku );
 
 	$existing_ids = function_exists( 'jwellery_get_product_ids_by_sku' )
 		? jwellery_get_product_ids_by_sku( $sku )
@@ -116,7 +117,7 @@ function jwellery_create_one_demo_product( $row ) {
 			}
 
 			$safe_sync = function_exists( 'jwellery_catalog_sync_is_destructive' ) && ! jwellery_catalog_sync_is_destructive();
-			if ( $safe_sync ) {
+			if ( $safe_sync || $is_wp_catalog_sku ) {
 				if ( $changed ) {
 					$product->save();
 				}

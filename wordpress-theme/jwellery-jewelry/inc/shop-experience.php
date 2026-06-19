@@ -471,20 +471,38 @@ function jwellery_cart_drawer_inner_html() {
 	?>
 	<ul class="jwellery-cart-drawer-items">
 		<?php
-		foreach ( WC()->cart->get_cart() as $cart_item ) {
+		foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
 			$product = $cart_item['data'];
 			if ( ! $product || ! is_a( $product, 'WC_Product' ) ) {
 				continue;
 			}
+			$remove_label = sprintf(
+				/* translators: %s: product name */
+				__( 'Remove %s from cart', 'jwellery-jewelry' ),
+				wp_strip_all_tags( $product->get_name() )
+			);
 			?>
 			<li class="jwellery-cart-drawer-item">
-				<a class="jwellery-cart-drawer-thumb" href="<?php echo esc_url( $product->get_permalink() ); ?>">
-					<?php echo $product->get_image( 'thumbnail' ); // phpcs:ignore ?>
-				</a>
+				<span class="jwellery-cart-drawer-thumb jwellery-cart-thumb-fallback" aria-hidden="true">&#9679;</span>
 				<div class="jwellery-cart-drawer-item-body">
 					<a href="<?php echo esc_url( $product->get_permalink() ); ?>"><?php echo esc_html( $product->get_name() ); ?></a>
 					<span class="jwellery-cart-drawer-qty"><?php echo esc_html( sprintf( /* translators: %d: quantity */ __( 'Qty: %d', 'jwellery-jewelry' ), (int) $cart_item['quantity'] ) ); ?></span>
 					<span class="jwellery-cart-drawer-line-price"><?php echo wp_kses_post( WC()->cart->get_product_subtotal( $product, $cart_item['quantity'] ) ); ?></span>
+					<?php
+					echo apply_filters( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						'woocommerce_cart_item_remove_link',
+						sprintf(
+							'<a role="button" href="%s" class="remove remove_from_cart_button jwellery-cart-drawer-remove" aria-label="%s" data-product_id="%s" data-product_sku="%s" data-cart_item_key="%s">%s</a>',
+							esc_url( wc_get_cart_remove_url( $cart_item_key ) ),
+							esc_attr( $remove_label ),
+							esc_attr( (string) $product->get_id() ),
+							esc_attr( (string) $product->get_sku() ),
+							esc_attr( $cart_item_key ),
+							esc_html__( 'Remove', 'jwellery-jewelry' )
+						),
+						$cart_item_key
+					);
+					?>
 				</div>
 			</li>
 			<?php
@@ -599,6 +617,18 @@ function jwellery_shop_experience_script_data( $data ) {
 }
 
 /**
+ * WooCommerce cart fragments (remove-from-cart AJAX in drawer).
+ */
+function jwellery_enqueue_cart_drawer_scripts() {
+	if ( ! class_exists( 'WooCommerce' ) || ! get_theme_mod( 'jwellery_enable_cart_drawer', true ) ) {
+		return;
+	}
+
+	wp_enqueue_script( 'wc-cart-fragments' );
+}
+add_action( 'wp_enqueue_scripts', 'jwellery_enqueue_cart_drawer_scripts', 25 );
+
+/**
  * Hook into localize — replace function in ui-enhancements or add filter.
  */
 function jwellery_localize_shop_experience() {
@@ -609,6 +639,7 @@ function jwellery_localize_shop_experience() {
 			array(
 				'announcements' => function_exists( 'jwellery_announcement_messages' ) ? jwellery_announcement_messages() : array(),
 				'addedToCart'   => __( 'Added to cart ✓', 'jwellery-jewelry' ),
+				'removedFromCart' => __( 'Removed from cart', 'jwellery-jewelry' ),
 				'carouselAuto'  => (bool) get_theme_mod( 'jwellery_carousel_autoplay', true ),
 				'isLoggedIn'    => is_user_logged_in(),
 				'ajaxUrl'       => admin_url( 'admin-ajax.php' ),

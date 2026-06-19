@@ -1,8 +1,4 @@
 {
-  "WP-016": {
-    "name": "Studds Pair 2",
-    "price": "350"
-  },
   "WP-018": {
     "name": "1 Gram Gold Butta",
     "price": "350"
@@ -14,6 +10,10 @@
   "WP-020": {
     "name": "Double Buttalu",
     "price": "400"
+  },
+  "WP-016": {
+    "name": "Studds Pair 2",
+    "price": "350"
   },
   "WP-030": {
     "name": "Panchaloham Jamindar Green Ring",
@@ -27,18 +27,6 @@
     "name": "Panchaloham Pain crown Ring",
     "price": "199"
   },
-  "WP-034": {
-    "name": "Panchaloham Double Kaddi Model",
-    "price": "300"
-  },
-  "WP-035": {
-    "name": "Panchaloham Double Kaddi Model Kids",
-    "price": "350"
-  },
-  "WP-037": {
-    "name": "Panchaloham Balaji Ring",
-    "price": "250"
-  },
   "WP-038": {
     "name": "Panchaloham Muthyam Ring",
     "price": "250"
@@ -46,5 +34,13 @@
   "WP-039": {
     "name": "Six Stones Ring",
     "price": "200"
+  },
+  "WP-037": {
+    "name": "Panchaloham Balaji Ring",
+    "price": "250"
+  },
+  "WP-036": {
+    "name": "Padagam Ring",
+    "price": "250"
   }
 }

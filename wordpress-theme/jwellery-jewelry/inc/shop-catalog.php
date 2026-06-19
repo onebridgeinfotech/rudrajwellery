@@ -100,17 +100,6 @@ function jwellery_home_all_products() {
 	}
 
 	$products = jwellery_get_all_catalog_products( false );
-	if ( function_exists( 'jwellery_homepage_display_registry' ) && is_front_page() ) {
-		$registry = jwellery_homepage_display_registry();
-		$products = array_values(
-			array_filter(
-				$products,
-				static function ( $product ) use ( $registry ) {
-					return ! isset( $registry['ids'][ (int) $product->get_id() ] );
-				}
-			)
-		);
-	}
 	if ( empty( $products ) ) {
 		return;
 	}

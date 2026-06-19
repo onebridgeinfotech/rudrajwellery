@@ -376,6 +376,9 @@ function jwellery_hide_inactive_catalog_products( $visible, $id, $product ) {
 	if ( function_exists( 'is_checkout' ) && is_checkout() ) {
 		return $visible;
 	}
+	if ( function_exists( 'jwellery_product_is_admin_managed' ) && jwellery_product_is_admin_managed( $id ) ) {
+		return $visible;
+	}
 	if ( ! function_exists( 'jwellery_get_active_catalog_skus' ) ) {
 		return $visible;
 	}

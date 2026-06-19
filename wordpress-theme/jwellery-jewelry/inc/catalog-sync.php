@@ -77,10 +77,10 @@ add_action( 'woocommerce_update_product', 'jwellery_on_product_admin_save', 20, 
 add_action( 'woocommerce_new_product', 'jwellery_on_product_admin_save', 20, 1 );
 
 /**
- * One-time: treat existing WP-* catalog products as admin-managed (preserves live edits).
+ * Mark all WP-* catalog SKUs as admin-managed so deploy sync never overwrites them.
  */
 function jwellery_bootstrap_admin_managed_catalog() {
-	if ( get_option( 'jwellery_admin_managed_bootstrap_v1' ) || ! function_exists( 'wc_get_products' ) ) {
+	if ( ! function_exists( 'wc_get_products' ) ) {
 		return;
 	}
 
@@ -90,8 +90,6 @@ function jwellery_bootstrap_admin_managed_catalog() {
 			jwellery_mark_product_admin_managed( (int) $product->get_id() );
 		}
 	}
-
-	update_option( 'jwellery_admin_managed_bootstrap_v1', JWELLERY_THEME_VERSION, false );
 }
 
 /**
@@ -560,7 +558,7 @@ function jwellery_get_whatsapp_catalog_products() {
 }
 
 /**
- * SKUs that should stay published (recent WhatsApp uploads only).
+ * SKUs that should stay visible on shop/homepage (JSON + live wp-admin catalog).
  *
  * @return string[]
  */
@@ -573,6 +571,23 @@ function jwellery_get_active_catalog_skus() {
 	$skus = array();
 	foreach ( jwellery_get_whatsapp_catalog_products() as $row ) {
 		$skus[] = (string) $row[0];
+	}
+
+	if ( class_exists( 'WooCommerce' ) ) {
+		foreach ( wc_get_products(
+			array(
+				'status' => 'publish',
+				'limit'  => -1,
+			)
+		) as $product ) {
+			if ( ! $product instanceof WC_Product ) {
+				continue;
+			}
+			$sku = (string) $product->get_sku();
+			if ( $sku && preg_match( '/^WP-\d+$/', $sku ) ) {
+				$skus[] = $sku;
+			}
+		}
 	}
 
 	return array_values( array_unique( $skus ) );
@@ -704,6 +719,10 @@ function jwellery_sync_catalog_products( $opts = array() ) {
 
 	if ( function_exists( 'jwellery_bootstrap_admin_managed_catalog' ) ) {
 		jwellery_bootstrap_admin_managed_catalog();
+	}
+
+	if ( function_exists( 'jwellery_apply_recovered_catalog_overrides' ) ) {
+		jwellery_apply_recovered_catalog_overrides();
 	}
 
 	wc_delete_product_transients();
@@ -942,7 +961,7 @@ function jwellery_apply_recovered_catalog_overrides() {
 			++$result['names'];
 		}
 
-		if ( $price && '399' === (string) $product->get_regular_price() && (string) $price !== '399' ) {
+		if ( $price && ( jwellery_catalog_is_generic_product_name( $product->get_name() ) || '399' === (string) $product->get_regular_price() ) && (string) $price !== (string) $product->get_regular_price() ) {
 			$product->set_regular_price( $price );
 			$changed = true;
 			++$result['prices'];

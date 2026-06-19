@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Jewelry UPI Store
  * Description: Manual UPI payment gateway, pending order workflow, and order emails.
- * Version: 1.2.5
+ * Version: 1.2.6
  * Author: Jewelry E-commerce
  * Requires at least: 6.0
  * Requires PHP: 7.4
@@ -15,7 +15,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'JUS_VERSION', '1.2.5' );
+define( 'JUS_VERSION', '1.2.6' );
 define( 'JUS_PLUGIN_FILE', __FILE__ );
 define( 'JUS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -102,6 +102,7 @@ function jus_bootstrap() {
 	require_once JUS_PLUGIN_DIR . 'includes/class-jus-mail.php';
 		require_once JUS_PLUGIN_DIR . 'includes/class-jus-notifications.php';
 		require_once JUS_PLUGIN_DIR . 'includes/class-jus-checkout.php';
+		require_once JUS_PLUGIN_DIR . 'includes/class-jus-checkout-reliability.php';
 		require_once JUS_PLUGIN_DIR . 'includes/class-jus-orders.php';
 		require_once JUS_PLUGIN_DIR . 'includes/class-jus-emails.php';
 		require_once JUS_PLUGIN_DIR . 'includes/class-jus-accounts.php';
@@ -111,6 +112,7 @@ function jus_bootstrap() {
 		JUS_Mail::apply_from_settings();
 		JUS_Notifications::init();
 		JUS_Checkout::init();
+		JUS_Checkout_Reliability::init();
 		JUS_Orders::init();
 		JUS_Emails::init();
 		JUS_Accounts::init();

@@ -55,6 +55,8 @@ function jwellery_register_wc_hooks() {
 	add_filter( 'pre_option_woocommerce_enable_myaccount_registration', 'jwellery_force_account_registration' );
 	add_filter( 'pre_option_woocommerce_enable_signup_and_login_from_checkout', 'jwellery_force_account_registration' );
 	add_filter( 'wc_get_template', 'jwellery_wc_get_template', 10, 5 );
+	add_filter( 'woocommerce_cart_item_thumbnail', 'jwellery_safe_cart_item_thumbnail', 10, 3 );
+	add_action( 'woocommerce_cart_loaded_from_session', 'jwellery_remove_invalid_cart_items' );
 }
 add_action( 'woocommerce_init', 'jwellery_register_wc_hooks' );
 
@@ -70,7 +72,6 @@ add_action( 'woocommerce_init', 'jwellery_register_wc_hooks' );
  */
 function jwellery_wc_get_template( $template, $template_name, $args, $template_path, $default_path ) {
 	$overrides = array(
-		'cart/cart-item.php',
 		'order/order-details-item.php',
 	);
 	if ( ! in_array( $template_name, $overrides, true ) ) {
@@ -79,6 +80,91 @@ function jwellery_wc_get_template( $template, $template_name, $args, $template_p
 	$custom = JWELLERY_THEME_DIR . '/woocommerce/' . $template_name;
 	return is_readable( $custom ) ? $custom : $template;
 }
+
+/**
+ * Fallback thumbnail on cart / checkout when product image is missing.
+ *
+ * @param string $image      HTML.
+ * @param array  $cart_item  Item.
+ * @param string $cart_key   Key.
+ * @return string
+ */
+function jwellery_safe_cart_item_thumbnail( $image, $cart_item, $cart_key ) {
+	unset( $cart_key );
+	if ( $image ) {
+		return $image;
+	}
+	$product = isset( $cart_item['data'] ) ? $cart_item['data'] : null;
+	if ( $product instanceof WC_Product && $product->get_image_id() ) {
+		return $product->get_image( 'woocommerce_thumbnail' );
+	}
+	return '<span class="jwellery-cart-thumb-fallback" aria-hidden="true">&#9679;</span>';
+}
+
+/**
+ * Drop broken products from session cart (prevents cart page fatals).
+ *
+ * @param WC_Cart $cart Cart.
+ */
+function jwellery_remove_invalid_cart_items( $cart ) {
+	if ( ! $cart || ! is_a( $cart, 'WC_Cart' ) ) {
+		return;
+	}
+	foreach ( $cart->get_cart() as $key => $item ) {
+		$product = isset( $item['data'] ) ? $item['data'] : null;
+		$remove  = false;
+		if ( ! $product instanceof WC_Product || ! $product->exists() || ! $product->is_purchasable() ) {
+			$remove = true;
+		} elseif ( empty( $item['quantity'] ) || (int) $item['quantity'] <= 0 ) {
+			$remove = true;
+		}
+		if ( $remove ) {
+			$cart->remove_cart_item( $key );
+		}
+	}
+}
+
+/**
+ * Empty cart early (before templates) — ?jwellery-empty-cart=1
+ */
+function jwellery_early_empty_cart_request() {
+	if ( empty( $_GET['jwellery-empty-cart'] ) || '1' !== sanitize_text_field( wp_unslash( $_GET['jwellery-empty-cart'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		return;
+	}
+	if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
+		return;
+	}
+	WC()->cart->empty_cart();
+	wp_safe_redirect( home_url( '/#all-products' ) );
+	exit;
+}
+add_action( 'wp_loaded', 'jwellery_early_empty_cart_request', 1 );
+
+/**
+ * Cart page: skip cross-sells (can fatal on filtered catalog queries).
+ */
+function jwellery_cart_page_tweaks() {
+	if ( ! function_exists( 'is_cart' ) || ! is_cart() ) {
+		return;
+	}
+	remove_action( 'woocommerce_cart_collaterals', 'woocommerce_cross_sell_display' );
+}
+add_action( 'wp', 'jwellery_cart_page_tweaks' );
+
+/**
+ * Broken cart template on host — send shoppers straight to checkout.
+ */
+function jwellery_redirect_cart_to_checkout() {
+	if ( ! function_exists( 'is_cart' ) || ! is_cart() || is_admin() ) {
+		return;
+	}
+	if ( ! function_exists( 'WC' ) || ! WC()->cart || WC()->cart->is_empty() ) {
+		return;
+	}
+	wp_safe_redirect( wc_get_checkout_url() );
+	exit;
+}
+add_action( 'template_redirect', 'jwellery_redirect_cart_to_checkout', 99 );
 
 /**
  * Always allow customer registration on My Account page.

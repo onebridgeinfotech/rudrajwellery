@@ -133,18 +133,31 @@ class JUS_Gateway extends WC_Payment_Gateway {
 			);
 		}
 
-		$order->update_status(
-			'on-hold',
-			__( 'Awaiting UPI payment verification.', 'jewelry-upi-store' )
-		);
+		if ( ! $order->has_status( array( 'on-hold', 'processing', 'completed' ) ) ) {
+			$order->update_status(
+				'on-hold',
+				__( 'Awaiting UPI payment verification.', 'jewelry-upi-store' )
+			);
+		}
 
-		$order->reduce_order_stock();
+		if ( function_exists( 'wc_reduce_stock_levels' ) ) {
+			wc_reduce_stock_levels( $order_id );
+		} elseif ( method_exists( $order, 'reduce_order_stock' ) ) {
+			$order->reduce_order_stock();
+		}
 
-		WC()->cart->empty_cart();
+		if ( function_exists( 'WC' ) && WC()->cart ) {
+			WC()->cart->empty_cart();
+		}
+
+		$redirect = $this->get_return_url( $order );
+		if ( function_exists( 'WC' ) && WC()->session ) {
+			WC()->session->set( 'jus_checkout_redirect', $redirect );
+		}
 
 		return array(
 			'result'   => 'success',
-			'redirect' => $this->get_return_url( $order ),
+			'redirect' => $redirect,
 		);
 	}
 
