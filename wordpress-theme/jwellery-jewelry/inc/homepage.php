@@ -77,17 +77,8 @@ function jwellery_render_product_card( $product, $extra_class = '' ) {
 				$aria         = method_exists( $product, 'add_to_cart_description' )
 					? $product->add_to_cart_description()
 					: $product->add_to_cart_text();
-				$product_type = $product->get_type();
-				$supports_ajax = in_array( $product_type, array( 'simple', 'external' ), true );
-				$btn_classes  = 'button add_to_cart_button product_type_' . esc_attr( $product_type );
-				if ( $supports_ajax ) {
-					$btn_classes .= ' ajax_add_to_cart';
-				}
-				$btn_url = $supports_ajax
-					? $product->add_to_cart_url()
-					: $product->get_permalink();
 				?>
-				<a href="<?php echo esc_url( $btn_url ); ?>" class="<?php echo esc_attr( $btn_classes ); ?>" data-product_id="<?php echo esc_attr( $product->get_id() ); ?>" data-quantity="1" data-product_sku="<?php echo esc_attr( $product->get_sku() ); ?>" aria-label="<?php echo esc_attr( $aria ); ?>"><?php echo esc_html( $product->add_to_cart_text() ); ?></a>
+				<a href="<?php echo esc_url( $product->get_permalink() ); ?>" class="button add_to_cart_button product_type_<?php echo esc_attr( $product->get_type() ); ?>" aria-label="<?php echo esc_attr( $aria ); ?>"><?php esc_html_e( 'Add to cart', 'jwellery-jewelry' ); ?></a>
 			</div>
 		<?php endif; ?>
 	</li>
@@ -312,13 +303,8 @@ function jwellery_home_product_of_day() {
 					</h3>
 					<p class="price product-of-day-spotlight-price"><?php echo wp_kses_post( $product->get_price_html() ); ?></p>
 					<div class="product-of-day-actions">
-						<?php if ( $product->is_in_stock() ) :
-							$pod_type        = $product->get_type();
-							$pod_ajax        = in_array( $pod_type, array( 'simple', 'external' ), true );
-							$pod_url         = $pod_ajax ? $product->add_to_cart_url() : $product->get_permalink();
-							$pod_btn_classes = 'jwellery-btn jwellery-btn-primary add_to_cart_button product_type_' . esc_attr( $pod_type ) . ( $pod_ajax ? ' ajax_add_to_cart' : '' );
-						?>
-							<a href="<?php echo esc_url( $pod_url ); ?>" class="<?php echo esc_attr( $pod_btn_classes ); ?>" data-product_id="<?php echo esc_attr( $product->get_id() ); ?>" data-quantity="1" data-product_sku="<?php echo esc_attr( $product->get_sku() ); ?>"><?php esc_html_e( 'Add to cart', 'jwellery-jewelry' ); ?></a>
+						<?php if ( $product->is_in_stock() ) : ?>
+							<a href="<?php echo esc_url( $product->get_permalink() ); ?>" class="jwellery-btn jwellery-btn-primary add_to_cart_button product_type_<?php echo esc_attr( $product->get_type() ); ?>"><?php esc_html_e( 'Add to cart', 'jwellery-jewelry' ); ?></a>
 						<?php else : ?>
 							<span class="badge-sold-out product-of-day-actions__sold"><?php esc_html_e( 'Sold out', 'jwellery-jewelry' ); ?></span>
 						<?php endif; ?>
