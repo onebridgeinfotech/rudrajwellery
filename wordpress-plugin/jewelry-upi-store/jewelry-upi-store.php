@@ -124,23 +124,25 @@ function jus_bootstrap() {
 add_action( 'woocommerce_loaded', 'jus_bootstrap', 20 );
 
 /**
- * Register Manual UPI with WooCommerce Checkout Blocks.
+ * Force the WooCommerce checkout page to use the classic shortcode instead of blocks.
+ * This ensures our UPI gateway (which supports classic checkout) always works.
  */
-function jus_register_blocks_payment() {
-	if ( ! class_exists( 'Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' ) ) {
-		return;
+function jus_force_classic_checkout( $content ) {
+	if ( ! function_exists( 'is_checkout' ) || ! is_checkout() ) {
+		return $content;
 	}
-	if ( ! class_exists( 'JUS_Blocks_Payment', false ) ) {
-		require_once JUS_PLUGIN_DIR . 'includes/class-jus-blocks.php';
+	if ( function_exists( 'is_wc_endpoint_url' ) && is_wc_endpoint_url( 'order-received' ) ) {
+		return $content;
 	}
-	add_action(
-		'woocommerce_blocks_payment_method_type_registration',
-		static function ( $registry ) {
-			$registry->register( new JUS_Blocks_Payment() );
-		}
-	);
+	if ( has_shortcode( $content, 'woocommerce_checkout' ) ) {
+		return $content;
+	}
+	if ( strpos( $content, 'wp-block-woocommerce-checkout' ) !== false ) {
+		return '[woocommerce_checkout]';
+	}
+	return $content;
 }
-add_action( 'woocommerce_blocks_loaded', 'jus_register_blocks_payment' );
+add_filter( 'the_content', 'jus_force_classic_checkout', 5 );
 
 /**
  * Inject free shipping as a fallback when no shipping methods are available.
