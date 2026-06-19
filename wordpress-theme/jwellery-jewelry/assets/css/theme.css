@@ -554,7 +554,7 @@ body {
 .jwellery-hero-overlay {
 	position: absolute;
 	inset: 0;
-	background: linear-gradient(135deg, rgba(26, 26, 26, 0.55), rgba(184, 134, 11, 0.35));
+	background: linear-gradient(135deg, rgba(26, 26, 26, 0.30), rgba(184, 134, 11, 0.15));
 	z-index: 1;
 }
 

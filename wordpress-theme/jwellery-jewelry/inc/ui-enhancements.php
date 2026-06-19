@@ -641,7 +641,7 @@ function jwellery_hero_slides() {
 			continue;
 		}
 		if ( is_numeric( $val ) ) {
-			$url = wp_get_attachment_image_url( (int) $val, 'large' );
+			$url = wp_get_attachment_image_url( (int) $val, 'full' );
 		} else {
 			$url = (string) $val;
 		}
@@ -650,20 +650,20 @@ function jwellery_hero_slides() {
 		}
 	}
 
-	// 2. Auto-pull product images from Long Haram and Necklace categories.
+	// 2. Auto-pull from Long Haram and Necklace categories (try common slug variations).
 	if ( empty( $slides ) && function_exists( 'wc_get_products' ) ) {
-		$category_slugs = array( 'long-harams', 'necklaces', 'long-haram', 'necklace' );
+		$category_slugs = array( 'long-harams', 'long-haram', 'necklaces', 'necklace', 'chockers', 'bangles' );
 		foreach ( $category_slugs as $slug ) {
 			$term = get_term_by( 'slug', $slug, 'product_cat' );
 			if ( ! $term || is_wp_error( $term ) ) {
 				continue;
 			}
 			$products = wc_get_products( array(
-				'status'     => 'publish',
-				'limit'      => 3,
-				'category'   => array( $slug ),
-				'orderby'    => 'date',
-				'order'      => 'DESC',
+				'status'   => 'publish',
+				'limit'    => 2,
+				'category' => array( $slug ),
+				'orderby'  => 'date',
+				'order'    => 'DESC',
 			) );
 			foreach ( $products as $product ) {
 				$img = wp_get_attachment_image_url( $product->get_image_id(), 'full' );
@@ -677,7 +677,7 @@ function jwellery_hero_slides() {
 		}
 	}
 
-	// 3. Fallback to static theme images.
+	// 3. Static theme images as reliable fallback.
 	if ( empty( $slides ) ) {
 		for ( $i = 1; $i <= 5; $i++ ) {
 			$path = JWELLERY_THEME_DIR . '/assets/images/hero-slide-' . $i . '.jpg';
