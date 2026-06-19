@@ -88,7 +88,6 @@ function jwellery_create_one_demo_product( $row ) {
 	}
 
 	list( $sku, $name, $price, $stock, $featured, $cats, $desc ) = $row;
-	$is_wp_catalog_sku = (bool) preg_match( '/^WP-\d+$/', (string) $sku );
 
 	$existing_ids = function_exists( 'jwellery_get_product_ids_by_sku' )
 		? jwellery_get_product_ids_by_sku( $sku )
@@ -115,27 +114,11 @@ function jwellery_create_one_demo_product( $row ) {
 				$product->set_status( 'publish' );
 				$changed = true;
 			}
-
-			$safe_sync = function_exists( 'jwellery_catalog_sync_is_destructive' ) && ! jwellery_catalog_sync_is_destructive();
-			if ( $safe_sync || $is_wp_catalog_sku ) {
-				if ( $changed ) {
-					$product->save();
-				}
-			} elseif ( ! function_exists( 'jwellery_product_is_admin_managed' ) || ! jwellery_product_is_admin_managed( $existing_id ) ) {
-				jwellery_assign_product_categories( $existing_id, $cats, true );
-				if ( (string) $product->get_regular_price() !== (string) $price ) {
-					$product->set_regular_price( (string) $price );
-					$changed = true;
-				}
-				if ( (string) $product->get_name() !== (string) $name ) {
-					$product->set_name( (string) $name );
-					$changed = true;
-				}
-				if ( $changed ) {
-					$product->save();
-				}
-			} elseif ( $changed ) {
+			if ( $changed ) {
 				$product->save();
+			}
+			if ( function_exists( 'jwellery_mark_product_admin_managed' ) ) {
+				jwellery_mark_product_admin_managed( $existing_id );
 			}
 		}
 

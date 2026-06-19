@@ -32,6 +32,22 @@ function jwellery_catalog_sync_is_destructive() {
 	return (bool) apply_filters( 'jwellery_catalog_sync_destructive', false );
 }
 
+/**
+ * Whether deploy/sync may overwrite an existing product's name, price, or categories.
+ * Default false — wp-admin is always the source of truth for live products.
+ *
+ * @param int $product_id Product ID (0 = new product).
+ * @return bool
+ */
+function jwellery_catalog_may_overwrite_product_data( $product_id = 0 ) {
+	$product_id = (int) $product_id;
+	if ( $product_id <= 0 ) {
+		return true;
+	}
+
+	return (bool) apply_filters( 'jwellery_catalog_overwrite_product_data', false, $product_id );
+}
+
 function jwellery_product_is_admin_managed( $product_id ) {
 	$product_id = (int) $product_id;
 	if ( $product_id <= 0 ) {
@@ -77,18 +93,15 @@ add_action( 'woocommerce_update_product', 'jwellery_on_product_admin_save', 20, 
 add_action( 'woocommerce_new_product', 'jwellery_on_product_admin_save', 20, 1 );
 
 /**
- * Mark all WP-* catalog SKUs as admin-managed so deploy sync never overwrites them.
+ * Mark every live catalog product as admin-managed so deploy never overwrites wp-admin data.
  */
 function jwellery_bootstrap_admin_managed_catalog() {
 	if ( ! function_exists( 'wc_get_products' ) ) {
 		return;
 	}
 
-	foreach ( wc_get_products( array( 'limit' => -1, 'status' => array( 'publish', 'draft' ) ) ) as $product ) {
-		$sku = (string) $product->get_sku();
-		if ( preg_match( '/^WP-\d+$/', $sku ) ) {
-			jwellery_mark_product_admin_managed( (int) $product->get_id() );
-		}
+	foreach ( wc_get_products( array( 'limit' => -1, 'status' => array( 'publish', 'draft', 'pending', 'private' ) ) ) as $product ) {
+		jwellery_mark_product_admin_managed( (int) $product->get_id() );
 	}
 }
 
@@ -375,7 +388,7 @@ function jwellery_get_catalog_row_by_sku( $sku ) {
 }
 
 /**
- * Remove duplicate SKUs / duplicate images; sync catalog names + prices.
+ * Remove duplicate SKUs / duplicate images (never changes names or prices).
  *
  * @return array{trashed: int, prices: int, names: int}
  */
@@ -426,53 +439,17 @@ function jwellery_deduplicate_and_sync_catalog_products() {
 	}
 
 	foreach ( jwellery_get_active_catalog_skus() as $sku ) {
-		$row = jwellery_get_catalog_row_by_sku( $sku );
-		if ( ! $row ) {
-			continue;
-		}
-
-		list( , $name, $price ) = $row;
 		$ids = jwellery_get_product_ids_by_sku( $sku );
-		if ( empty( $ids ) ) {
+		if ( empty( $ids ) || count( $ids ) <= 1 ) {
 			continue;
 		}
 
 		$keep_id = jwellery_pick_canonical_product_id( $ids );
-		if ( count( $ids ) > 1 ) {
-			$result['trashed'] += jwellery_trash_catalog_product_ids( $ids, $keep_id );
-		}
+		$result['trashed'] += jwellery_trash_catalog_product_ids( $ids, $keep_id );
 
 		$product = wc_get_product( $keep_id );
-		if ( ! $product ) {
-			continue;
-		}
-
-		$changed = false;
-		if ( 'publish' !== $product->get_status() ) {
+		if ( $product && 'publish' !== $product->get_status() ) {
 			$product->set_status( 'publish' );
-			$changed = true;
-		}
-
-		if ( function_exists( 'jwellery_product_is_admin_managed' ) && jwellery_product_is_admin_managed( $keep_id ) ) {
-			if ( $changed ) {
-				$product->save();
-			}
-			continue;
-		}
-
-		// Catalog JSON defaults only apply when the product was never edited in wp-admin.
-		if ( (string) $product->get_regular_price() !== (string) $price ) {
-			$product->set_regular_price( (string) $price );
-			$changed = true;
-			++$result['prices'];
-		}
-		if ( (string) $product->get_name() !== (string) $name ) {
-			$product->set_name( (string) $name );
-			$changed = true;
-			++$result['names'];
-		}
-
-		if ( $changed ) {
 			$product->save();
 		}
 	}
@@ -698,12 +675,13 @@ function jwellery_sync_catalog_products( $opts = array() ) {
 		$result['trashed'] += jwellery_enforce_canonical_storefront();
 	}
 
-	if ( function_exists( 'jwellery_hide_products_without_bundled_images' ) ) {
-		jwellery_hide_products_without_bundled_images();
-	}
-
-	if ( function_exists( 'jwellery_cleanup_catalog_storefront' ) ) {
-		jwellery_cleanup_catalog_storefront();
+	if ( jwellery_catalog_sync_is_destructive() ) {
+		if ( function_exists( 'jwellery_hide_products_without_bundled_images' ) ) {
+			jwellery_hide_products_without_bundled_images();
+		}
+		if ( function_exists( 'jwellery_cleanup_catalog_storefront' ) ) {
+			jwellery_cleanup_catalog_storefront();
+		}
 	}
 
 	$force_images = ! empty( $opts['force_images'] );
@@ -721,29 +699,26 @@ function jwellery_sync_catalog_products( $opts = array() ) {
 		jwellery_bootstrap_admin_managed_catalog();
 	}
 
-	if ( function_exists( 'jwellery_apply_recovered_catalog_overrides' ) ) {
-		jwellery_apply_recovered_catalog_overrides();
-	}
-
 	wc_delete_product_transients();
 	return $result;
 }
 
 /**
- * Queue catalog sync when theme version changes (HTTP endpoint or Store Setup only).
+ * Record theme version after deploy. Does not queue catalog sync (wp-admin owns product data).
  */
 function jwellery_schedule_catalog_sync_if_needed() {
 	if ( ! class_exists( 'WooCommerce' ) ) {
 		return;
 	}
+
 	$synced_ver = (string) get_option( 'jwellery_catalog_sync_version', '' );
 	if ( $synced_ver === JWELLERY_THEME_VERSION ) {
 		return;
 	}
-	$pending = (string) get_option( 'jwellery_catalog_sync_pending', '' );
-	if ( $pending !== JWELLERY_THEME_VERSION ) {
-		update_option( 'jwellery_catalog_sync_pending', JWELLERY_THEME_VERSION, false );
-	}
+
+	update_option( 'jwellery_catalog_sync_version', JWELLERY_THEME_VERSION, false );
+	delete_option( 'jwellery_catalog_sync_pending' );
+	delete_option( 'jwellery_catalog_sync_offset' );
 }
 add_action( 'after_setup_theme', 'jwellery_schedule_catalog_sync_if_needed', 25 );
 
@@ -821,11 +796,13 @@ function jwellery_sync_catalog_products_batch( $offset = 0, $limit = 8 ) {
 		if ( jwellery_catalog_sync_is_destructive() && function_exists( 'jwellery_enforce_canonical_storefront' ) ) {
 			$result['trashed'] += jwellery_enforce_canonical_storefront();
 		}
-		if ( function_exists( 'jwellery_hide_products_without_bundled_images' ) ) {
-			jwellery_hide_products_without_bundled_images();
-		}
-		if ( function_exists( 'jwellery_cleanup_catalog_storefront' ) ) {
-			jwellery_cleanup_catalog_storefront();
+		if ( jwellery_catalog_sync_is_destructive() ) {
+			if ( function_exists( 'jwellery_hide_products_without_bundled_images' ) ) {
+				jwellery_hide_products_without_bundled_images();
+			}
+			if ( function_exists( 'jwellery_cleanup_catalog_storefront' ) ) {
+				jwellery_cleanup_catalog_storefront();
+			}
 		}
 		if ( function_exists( 'jwellery_assign_category_thumbnails' ) ) {
 			jwellery_assign_category_thumbnails( false );
@@ -921,7 +898,7 @@ function jwellery_get_recovered_catalog_overrides() {
 }
 
 /**
- * Re-apply recovered catalog names/prices to rows still using demo placeholders.
+ * Re-apply recovered catalog names/prices (manual Store Setup only — never on deploy).
  *
  * @return array{names: int, prices: int}
  */
@@ -1000,16 +977,10 @@ function jwellery_run_catalog_restore() {
 
 	$result['restored']      = jwellery_restore_trashed_catalog_products();
 	$result['trashed_dupes'] = jwellery_resolve_catalog_duplicate_skus();
-	$overrides               = jwellery_apply_recovered_catalog_overrides();
-	$result['names']         = (int) $overrides['names'];
-	$result['prices']        = (int) $overrides['prices'];
 
-	foreach ( wc_get_products( array( 'limit' => -1, 'status' => array( 'publish', 'draft' ) ) ) as $product ) {
-		$sku = (string) $product->get_sku();
-		if ( preg_match( '/^WP-\d+$/', $sku ) ) {
-			jwellery_mark_product_admin_managed( (int) $product->get_id() );
-			++$result['marked'];
-		}
+	if ( function_exists( 'jwellery_bootstrap_admin_managed_catalog' ) ) {
+		jwellery_bootstrap_admin_managed_catalog();
+		$result['marked'] = (int) wp_count_posts( 'product' )->publish + (int) wp_count_posts( 'product' )->draft;
 	}
 
 	wc_delete_product_transients();
@@ -1099,11 +1070,13 @@ function jwellery_catalog_sync_http_endpoint() {
 		if ( function_exists( 'jwellery_enforce_canonical_storefront' ) && jwellery_catalog_sync_is_destructive() ) {
 			jwellery_enforce_canonical_storefront();
 		}
-		if ( function_exists( 'jwellery_hide_products_without_bundled_images' ) ) {
-			jwellery_hide_products_without_bundled_images();
-		}
-		if ( function_exists( 'jwellery_cleanup_catalog_storefront' ) ) {
-			jwellery_cleanup_catalog_storefront();
+		if ( jwellery_catalog_sync_is_destructive() ) {
+			if ( function_exists( 'jwellery_hide_products_without_bundled_images' ) ) {
+				jwellery_hide_products_without_bundled_images();
+			}
+			if ( function_exists( 'jwellery_cleanup_catalog_storefront' ) ) {
+				jwellery_cleanup_catalog_storefront();
+			}
 		}
 		if ( function_exists( 'jwellery_assign_category_thumbnails' ) ) {
 			jwellery_assign_category_thumbnails( false );

@@ -123,14 +123,8 @@ if (Test-Path $purgeScript) {
     & $purgeScript -Config $config
 }
 
-$syncScript = Join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) "sync-live-catalog.ps1"
-$restoreScript = Join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) "restore-live-catalog.ps1"
-if (Test-Path $restoreScript) {
-    & $restoreScript -Config $config
-}
-if (Test-Path $syncScript) {
-    & $syncScript -Config $config
-}
+# Catalog sync/restore disabled on deploy — wp-admin product names and prices are never overwritten.
+# To sync images or create missing SKUs manually, run scripts/sync-live-catalog.ps1
 
 Write-Host ""
 Write-Host "Deploy complete." -ForegroundColor Green
