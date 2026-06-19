@@ -134,7 +134,7 @@ function jwellery_loop_columns() {
  * @return int
  */
 function jwellery_products_per_page() {
-	return 12;
+	return 48;
 }
 
 /**

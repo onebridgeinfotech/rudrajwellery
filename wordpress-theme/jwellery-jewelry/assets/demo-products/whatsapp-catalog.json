@@ -48,18 +48,6 @@
     "stamp": "2026-06-15_at_9.47.56_PM"
   },
   {
-    "sku": "WP-005",
-    "name": "Jewelry item 5",
-    "price": 399,
-    "stock": 10,
-    "featured": 0,
-    "categories": [
-      "combo"
-    ],
-    "description": "Imitation jewelry \u2014 update name and price in admin.",
-    "stamp": "2026-06-15_at_9.47.56_PM__1_"
-  },
-  {
     "sku": "WP-006",
     "name": "Jewelry item 6",
     "price": 399,
@@ -108,18 +96,6 @@
     "stamp": "2026-06-15_at_9.59.52_PM__1_"
   },
   {
-    "sku": "WP-010",
-    "name": "Jewelry item 10",
-    "price": 399,
-    "stock": 10,
-    "featured": 0,
-    "categories": [
-      "ear-rings"
-    ],
-    "description": "Imitation jewelry \u2014 update name and price in admin.",
-    "stamp": "2026-06-15_at_9.59.52_PM__2_"
-  },
-  {
     "sku": "WP-011",
     "name": "Jewelry item 11",
     "price": 399,
@@ -130,18 +106,6 @@
     ],
     "description": "Imitation jewelry \u2014 update name and price in admin.",
     "stamp": "2026-06-15_at_9.59.53_PM"
-  },
-  {
-    "sku": "WP-012",
-    "name": "Jewelry item 12",
-    "price": 399,
-    "stock": 10,
-    "featured": 0,
-    "categories": [
-      "ear-rings"
-    ],
-    "description": "Imitation jewelry \u2014 update name and price in admin.",
-    "stamp": "2026-06-15_at_9.59.53_PM__1_"
   },
   {
     "sku": "WP-013",
@@ -312,18 +276,6 @@
     "stamp": "2026-06-16_at_3.40.02_PM"
   },
   {
-    "sku": "WP-027",
-    "name": "Jewelry item 27",
-    "price": 399,
-    "stock": 10,
-    "featured": 0,
-    "categories": [
-      "instagram-collection"
-    ],
-    "description": "Imitation jewelry \u2014 update name and price in admin.",
-    "stamp": "2026-06-17_at_1.38.07_PM"
-  },
-  {
     "sku": "WP-028",
     "name": "Jewelry item 28",
     "price": 399,
@@ -466,5 +418,42 @@
     ],
     "description": "Imitation jewelry \u2014 update name and price in admin.",
     "stamp": "2026-06-18_at_6.33.10_PM__1_"
+  },
+  {
+    "sku": "WP-040",
+    "name": "Laxmi pendant pearl necklace",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "necklaces"
+    ],
+    "description": "Gold-tone Laxmi pendant necklace with pearl drops.",
+    "stamp": "2026-06-16_at_1.53.10_PM"
+  },
+  {
+    "sku": "WP-041",
+    "name": "Kasulaperu haram set",
+    "price": 2150,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "long-harams",
+      "combo"
+    ],
+    "description": "Traditional kasulaperu haram with matching earrings.",
+    "stamp": "2026-06-16_at_2.27.33_PM"
+  },
+  {
+    "sku": "WP-042",
+    "name": "Black beads kasu necklace",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "necklaces"
+    ],
+    "description": "Gold kasu charms with black beads necklace.",
+    "stamp": "2026-06-16_at_1.58.05_PM"
   }
 ]

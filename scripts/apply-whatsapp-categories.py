@@ -47,6 +47,9 @@ SKU_CATEGORIES = {
     "WP-037": ["rings"],
     "WP-038": ["rings"],
     "WP-039": ["rings"],
+    "WP-040": ["necklaces"],
+    "WP-041": ["long-harams", "combo"],
+    "WP-042": ["necklaces"],
 }
 
 

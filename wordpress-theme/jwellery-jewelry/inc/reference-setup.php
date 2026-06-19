@@ -524,7 +524,7 @@ function jwellery_store_setup_page() {
 		$result = function_exists( 'jwellery_sync_catalog_products' ) ? jwellery_sync_catalog_products() : array( 'created' => 0, 'images' => 0 );
 		update_option( 'jwellery_catalog_sync_version', JWELLERY_THEME_VERSION, false );
 		delete_option( 'jwellery_catalog_sync_pending' );
-		echo '<div class="notice notice-success"><p>' . esc_html( sprintf( __( 'Catalog synced: %1$d new products, %2$d images attached.', 'jwellery-jewelry' ), (int) $result['created'], (int) $result['images'] ) ) . '</p></div>';
+		echo '<div class="notice notice-success"><p>' . esc_html( sprintf( __( 'Catalog synced: %1$d new, %2$d images filled, %3$d duplicates removed, %4$d prices updated. Admin-edited products kept.', 'jwellery-jewelry' ), (int) $result['created'], (int) $result['images'], (int) ( $result['trashed'] ?? 0 ), (int) ( $result['prices'] ?? 0 ) ) ) . '</p></div>';
 	}
 	if ( isset( $_POST['jwellery_demo_products'] ) && check_admin_referer( 'jwellery_setup' ) ) {
 		$n = jwellery_create_demo_products();

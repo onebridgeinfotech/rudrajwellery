@@ -89,9 +89,42 @@ function jwellery_create_one_demo_product( $row ) {
 
 	list( $sku, $name, $price, $stock, $featured, $cats, $desc ) = $row;
 
-	$existing_id = wc_get_product_id_by_sku( $sku );
-	if ( $existing_id ) {
-		jwellery_assign_product_categories( $existing_id, $cats, true );
+	$existing_ids = function_exists( 'jwellery_get_product_ids_by_sku' )
+		? jwellery_get_product_ids_by_sku( $sku )
+		: array_filter( array( (int) wc_get_product_id_by_sku( $sku ) ) );
+
+	if ( ! empty( $existing_ids ) ) {
+		$existing_id = function_exists( 'jwellery_pick_canonical_product_id' )
+			? jwellery_pick_canonical_product_id( $existing_ids )
+			: (int) $existing_ids[0];
+
+		if ( function_exists( 'jwellery_trash_catalog_product_ids' ) && count( $existing_ids ) > 1 ) {
+			jwellery_trash_catalog_product_ids( $existing_ids, $existing_id );
+		}
+
+		$product = wc_get_product( $existing_id );
+		if ( $product ) {
+			$changed = false;
+			if ( 'publish' !== $product->get_status() ) {
+				$product->set_status( 'publish' );
+				$changed = true;
+			}
+			if ( ! function_exists( 'jwellery_product_is_admin_managed' ) || ! jwellery_product_is_admin_managed( $existing_id ) ) {
+				jwellery_assign_product_categories( $existing_id, $cats, true );
+				if ( (string) $product->get_regular_price() !== (string) $price ) {
+					$product->set_regular_price( (string) $price );
+					$changed = true;
+				}
+				if ( (string) $product->get_name() !== (string) $name ) {
+					$product->set_name( (string) $name );
+					$changed = true;
+				}
+			}
+			if ( $changed ) {
+				$product->save();
+			}
+		}
+
 		if ( function_exists( 'jwellery_attach_demo_product_image' ) && ! has_post_thumbnail( $existing_id ) ) {
 			jwellery_attach_demo_product_image( $existing_id, $sku, false );
 		}

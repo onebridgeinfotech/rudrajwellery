@@ -68,11 +68,17 @@ function jwellery_get_all_catalog_products( $instock_only = false ) {
 	$args = array(
 		'status'  => 'publish',
 		'limit'   => -1,
-		'orderby' => 'menu_order',
-		'order'   => 'ASC',
+		'orderby' => 'date',
+		'order'   => 'DESC',
 	);
 	if ( $instock_only ) {
 		$args['stock_status'] = 'instock';
+	}
+	if ( function_exists( 'jwellery_get_active_catalog_product_ids' ) ) {
+		$active_ids = jwellery_get_active_catalog_product_ids();
+		if ( ! empty( $active_ids ) ) {
+			$args['include'] = $active_ids;
+		}
 	}
 
 	$products = wc_get_products( $args );
@@ -95,8 +101,12 @@ function jwellery_home_all_products() {
 		return;
 	}
 
-	$per_page = max( 4, (int) get_theme_mod( 'jwellery_all_products_per_page', 12 ) );
+	$per_page = max( 4, (int) get_theme_mod( 'jwellery_all_products_per_page', 48 ) );
+	$per_page = min( $per_page, count( $products ) );
 	$per_page = (int) floor( $per_page / jwellery_home_grid_columns() ) * jwellery_home_grid_columns();
+	if ( $per_page < 1 ) {
+		$per_page = count( $products );
+	}
 	$total    = count( $products );
 	$shop_url = jwellery_get_shop_url();
 	?>
@@ -219,15 +229,21 @@ function jwellery_get_products_grouped_by_category() {
 			continue;
 		}
 
-		$raw = wc_get_products(
-			array(
-				'status'   => 'publish',
-				'limit'    => -1,
-				'category' => array( $term->slug ),
-				'orderby'  => 'menu_order',
-				'order'    => 'ASC',
-			)
+		$query_args = array(
+			'status'   => 'publish',
+			'limit'    => -1,
+			'category' => array( $term->slug ),
+			'orderby'  => 'date',
+			'order'    => 'DESC',
 		);
+		if ( function_exists( 'jwellery_get_active_catalog_product_ids' ) ) {
+			$active_ids = jwellery_get_active_catalog_product_ids();
+			if ( ! empty( $active_ids ) ) {
+				$query_args['include'] = $active_ids;
+			}
+		}
+
+		$raw = wc_get_products( $query_args );
 
 		$products = array();
 		foreach ( $raw as $product ) {
@@ -246,8 +262,8 @@ function jwellery_get_products_grouped_by_category() {
 		}
 
 		if ( ! empty( $products ) ) {
-			$products = jwellery_shop_section_products( $products );
-			if ( count( $products ) < jwellery_home_grid_columns() ) {
+			$products = jwellery_shop_section_products( $products, 4 );
+			if ( empty( $products ) ) {
 				continue;
 			}
 			$groups[] = array(

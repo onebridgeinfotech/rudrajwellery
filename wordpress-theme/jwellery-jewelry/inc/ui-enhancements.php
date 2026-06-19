@@ -104,6 +104,13 @@ function jwellery_get_products_for_display( $args = array(), $cols = null, $rows
 		$args
 	);
 
+	$active_ids = function_exists( 'jwellery_get_active_catalog_product_ids' )
+		? jwellery_get_active_catalog_product_ids()
+		: array();
+	if ( $active_ids ) {
+		$base['include'] = $active_ids;
+	}
+
 	$offset = 0;
 	$batch  = max( $need * 3, 24 );
 	$picked = array();
@@ -229,6 +236,41 @@ function jwellery_hide_products_without_images( $visible, $id, $product ) {
 add_filter( 'woocommerce_product_is_visible', 'jwellery_hide_products_without_images', 10, 3 );
 
 /**
+ * Hide products outside the recent WhatsApp catalog (old demo / stale uploads).
+ *
+ * @param bool       $visible Visible.
+ * @param int        $id      Product ID.
+ * @param WC_Product $product Product.
+ * @return bool
+ */
+function jwellery_hide_inactive_catalog_products( $visible, $id, $product ) {
+	if ( ! $visible || is_admin() ) {
+		return $visible;
+	}
+	if ( function_exists( 'is_account_page' ) && is_account_page() ) {
+		return $visible;
+	}
+	if ( function_exists( 'is_cart' ) && is_cart() ) {
+		return $visible;
+	}
+	if ( function_exists( 'is_checkout' ) && is_checkout() ) {
+		return $visible;
+	}
+	if ( ! function_exists( 'jwellery_get_active_catalog_skus' ) ) {
+		return $visible;
+	}
+
+	$allowed = array_flip( jwellery_get_active_catalog_skus() );
+	$sku     = $product->get_sku();
+	if ( $sku && ! isset( $allowed[ $sku ] ) ) {
+		return false;
+	}
+
+	return $visible;
+}
+add_filter( 'woocommerce_product_is_visible', 'jwellery_hide_inactive_catalog_products', 12, 3 );
+
+/**
  * Shop archive: only list products with a featured image.
  *
  * @param array $meta_query Meta query.
@@ -250,6 +292,28 @@ function jwellery_shop_meta_query_require_image( $meta_query ) {
 	return $meta_query;
 }
 add_filter( 'woocommerce_product_query_meta_query', 'jwellery_shop_meta_query_require_image' );
+
+/**
+ * Shop / category archives: only show recent WhatsApp catalog products.
+ *
+ * @param WC_Query $query Product query.
+ */
+function jwellery_shop_query_active_catalog_only( $query ) {
+	if ( is_admin() ) {
+		return;
+	}
+	if ( ! function_exists( 'jwellery_get_active_catalog_product_ids' ) ) {
+		return;
+	}
+
+	$ids = jwellery_get_active_catalog_product_ids();
+	if ( empty( $ids ) ) {
+		return;
+	}
+
+	$query->set( 'post__in', $ids );
+}
+add_action( 'woocommerce_product_query', 'jwellery_shop_query_active_catalog_only', 20 );
 
 /**
  * WhatsApp URL (wa.me).

@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'JWELLERY_THEME_VERSION', '4.6.19' );
+define( 'JWELLERY_THEME_VERSION', '4.6.30' );
 define( 'JWELLERY_THEME_DIR', get_template_directory() );
 define( 'JWELLERY_THEME_URI', get_template_directory_uri() );
 define( 'JWELLERY_THEME_SLUG', 'jwellery-jewelry' );

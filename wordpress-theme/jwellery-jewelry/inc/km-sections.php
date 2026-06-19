@@ -777,7 +777,6 @@ function jwellery_home_faq() {
 				</div>
 				<aside class="jwellery-faq-cta">
 					<div class="jwellery-faq-cta-inner">
-						<span class="jwellery-faq-cta-icon" aria-hidden="true">ðŸ’¬</span>
 						<h3><?php esc_html_e( 'Still Have Questions?', 'jwellery-jewelry' ); ?></h3>
 						<p><?php esc_html_e( 'Our team is happy to help with orders, sizing, and styling advice.', 'jwellery-jewelry' ); ?></p>
 						<div class="jwellery-faq-cta-actions">

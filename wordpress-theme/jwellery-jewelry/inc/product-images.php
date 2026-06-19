@@ -191,7 +191,47 @@ function jwellery_product_has_image( $product ) {
 	if ( ! $product || ! is_a( $product, 'WC_Product' ) ) {
 		return false;
 	}
-	return (int) $product->get_image_id() > 0;
+	$image_id = (int) $product->get_image_id();
+	if ( $image_id <= 0 ) {
+		return false;
+	}
+	return ! jwellery_attachment_is_invalid_product_image( $image_id );
+}
+
+/**
+ * Whether an attachment is a logo / placeholder (not a product photo).
+ *
+ * @param int $attachment_id Attachment ID.
+ * @return bool
+ */
+function jwellery_attachment_is_invalid_product_image( $attachment_id ) {
+	$attachment_id = (int) $attachment_id;
+	if ( $attachment_id <= 0 ) {
+		return true;
+	}
+
+	$file = get_attached_file( $attachment_id );
+	if ( $file ) {
+		$base = strtolower( basename( (string) $file ) );
+		if ( false !== strpos( $base, 'rudra-logo' )
+			|| false !== strpos( $base, 'woocommerce-placeholder' )
+			|| false !== strpos( $base, 'placeholder' )
+			|| preg_match( '/^wp-027\.(jpe?g|png|webp)$/i', $base ) ) {
+			return true;
+		}
+	}
+
+	$url = wp_get_attachment_url( $attachment_id );
+	if ( $url ) {
+		$path = strtolower( (string) wp_parse_url( $url, PHP_URL_PATH ) );
+		if ( false !== strpos( $path, 'rudra-logo' )
+			|| false !== strpos( $path, 'woocommerce-placeholder' )
+			|| preg_match( '#/wp-027\.(jpe?g|png|webp)$#i', $path ) ) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 /**
@@ -208,15 +248,20 @@ function jwellery_attach_demo_product_image( $product_id, $sku, $force = false )
 		return false;
 	}
 
+	if ( function_exists( 'jwellery_product_is_admin_managed' ) && jwellery_product_is_admin_managed( $product_id ) ) {
+		if ( has_post_thumbnail( $product_id ) ) {
+			return true;
+		}
+		$force = false;
+	}
+
 	$bundled = jwellery_get_bundled_image_paths( $sku );
-	$map     = jwellery_get_product_image_map();
-	$cdn_url = ! empty( $map[ $sku ]['image'] ) ? $map[ $sku ]['image'] : '';
 
 	if ( ! $force && has_post_thumbnail( $product_id ) ) {
 		return true;
 	}
 
-	if ( ! $bundled && ! $cdn_url ) {
+	if ( ! $bundled ) {
 		return (bool) has_post_thumbnail( $product_id );
 	}
 
@@ -224,13 +269,6 @@ function jwellery_attach_demo_product_image( $product_id, $sku, $force = false )
 	foreach ( $bundled as $index => $path ) {
 		$label = $index ? $sku . '-' . ( $index + 1 ) : $sku;
 		$id    = jwellery_upload_image_from_path( $path, $label, $product_id );
-		if ( $id ) {
-			$attach_ids[] = $id;
-		}
-	}
-
-	if ( ! $attach_ids && $cdn_url ) {
-		$id = jwellery_sideload_image_from_url( $cdn_url, $sku, $product_id );
 		if ( $id ) {
 			$attach_ids[] = $id;
 		}
@@ -307,12 +345,188 @@ function jwellery_import_demo_product_images( $force = false ) {
 		if ( ! $id ) {
 			continue;
 		}
+		if ( $force && function_exists( 'jwellery_product_is_admin_managed' ) && jwellery_product_is_admin_managed( $id ) && has_post_thumbnail( $id ) ) {
+			continue;
+		}
 		if ( jwellery_attach_demo_product_image( $id, $sku, $force ) ) {
 			++$count;
 		}
 	}
 
 	jwellery_repair_missing_product_images();
+	wc_delete_product_transients();
+	return $count;
+}
+
+/**
+ * Whether SKU has a bundled image in the theme (WhatsApp upload).
+ *
+ * @param string $sku Product SKU.
+ * @return bool
+ */
+function jwellery_sku_has_bundled_image( $sku ) {
+	return (bool) jwellery_get_bundled_image_paths( $sku );
+}
+
+/**
+ * Draft published products outside the active catalog (old demo / stale uploads).
+ *
+ * @return int Number of products moved to draft.
+ */
+function jwellery_hide_products_without_bundled_images() {
+	if ( ! class_exists( 'WooCommerce' ) ) {
+		return 0;
+	}
+
+	$allowed = function_exists( 'jwellery_get_active_catalog_skus' )
+		? array_flip( jwellery_get_active_catalog_skus() )
+		: array();
+
+	$count = 0;
+	foreach ( wc_get_products( array( 'limit' => -1, 'status' => array( 'publish' ) ) ) as $product ) {
+		$sku = $product->get_sku();
+		if ( ! $sku ) {
+			$product->set_status( 'draft' );
+			$product->save();
+			++$count;
+			continue;
+		}
+		if ( $allowed && isset( $allowed[ $sku ] ) ) {
+			continue;
+		}
+		if ( ! $allowed && jwellery_sku_has_bundled_image( $sku ) ) {
+			continue;
+		}
+		$product->set_status( 'draft' );
+		$product->save();
+		++$count;
+	}
+
+	return $count;
+}
+
+/**
+ * SKUs removed from catalog (duplicate WhatsApp photos).
+ *
+ * @return string[]
+ */
+function jwellery_get_retired_catalog_skus() {
+	return array( 'WP-005', 'WP-010', 'WP-012', 'WP-027' );
+}
+
+/**
+ * Draft duplicate published products (same SKU) and invalid storefront items.
+ *
+ * @return int Number of products moved to draft.
+ */
+function jwellery_cleanup_catalog_storefront() {
+	if ( ! class_exists( 'WooCommerce' ) ) {
+		return 0;
+	}
+
+	$count   = 0;
+	$allowed = function_exists( 'jwellery_get_active_catalog_skus' )
+		? array_flip( jwellery_get_active_catalog_skus() )
+		: array();
+	$retired = array_flip( jwellery_get_retired_catalog_skus() );
+	$by_sku  = array();
+
+	foreach ( wc_get_products( array( 'limit' => -1, 'status' => array( 'publish', 'draft' ) ) ) as $product ) {
+		$sku = (string) $product->get_sku();
+		if ( $sku ) {
+			$by_sku[ $sku ][] = (int) $product->get_id();
+		}
+	}
+
+	foreach ( $by_sku as $sku => $ids ) {
+		if ( count( $ids ) <= 1 ) {
+			continue;
+		}
+		$keep = function_exists( 'jwellery_pick_canonical_product_id' )
+			? jwellery_pick_canonical_product_id( $ids )
+			: (int) max( $ids );
+		if ( function_exists( 'jwellery_trash_catalog_product_ids' ) ) {
+			$count += jwellery_trash_catalog_product_ids( $ids, $keep );
+		} else {
+			rsort( $ids );
+			array_shift( $ids );
+			foreach ( $ids as $dup_id ) {
+				$dup = wc_get_product( $dup_id );
+				if ( ! $dup ) {
+					continue;
+				}
+				$dup->set_status( 'draft' );
+				$dup->save();
+				++$count;
+			}
+		}
+	}
+
+	foreach ( wc_get_products( array( 'limit' => -1, 'status' => array( 'publish' ) ) ) as $product ) {
+		$sku = (string) $product->get_sku();
+		$id  = (int) $product->get_id();
+
+		if ( $sku && isset( $retired[ $sku ] ) ) {
+			$product->set_status( 'draft' );
+			$product->save();
+			++$count;
+			continue;
+		}
+
+		if ( $allowed && $sku && ! isset( $allowed[ $sku ] ) ) {
+			$product->set_status( 'draft' );
+			$product->save();
+			++$count;
+			continue;
+		}
+
+		if ( function_exists( 'jwellery_product_has_image' ) && ! jwellery_product_has_image( $product ) ) {
+			if ( $sku && isset( $allowed[ $sku ] ) && function_exists( 'jwellery_attach_demo_product_image' ) ) {
+				if ( jwellery_attach_demo_product_image( $id, $sku, true ) && jwellery_product_has_image( $product ) ) {
+					continue;
+				}
+			}
+			$product->set_status( 'draft' );
+			$product->save();
+			++$count;
+		}
+	}
+
+	wc_delete_product_transients();
+	return $count;
+}
+
+/**
+ * Re-import bundled images for all catalog SKUs (replaces old CDN thumbnails).
+ *
+ * @return int
+ */
+function jwellery_refresh_bundled_catalog_images() {
+	if ( ! class_exists( 'WooCommerce' ) ) {
+		return 0;
+	}
+
+	$count = 0;
+	$rows  = function_exists( 'jwellery_get_bundled_catalog_rows' )
+		? jwellery_get_bundled_catalog_rows()
+		: jwellery_get_demo_products();
+	foreach ( $rows as $row ) {
+		$sku = $row[0];
+		if ( ! jwellery_sku_has_bundled_image( $sku ) ) {
+			continue;
+		}
+		$id = wc_get_product_id_by_sku( $sku );
+		if ( ! $id ) {
+			continue;
+		}
+		if ( function_exists( 'jwellery_product_is_admin_managed' ) && jwellery_product_is_admin_managed( $id ) && has_post_thumbnail( $id ) ) {
+			continue;
+		}
+		if ( jwellery_attach_demo_product_image( $id, $sku, true ) ) {
+			++$count;
+		}
+	}
+
 	wc_delete_product_transients();
 	return $count;
 }
