@@ -255,7 +255,7 @@ function jwellery_uda_guest_shell_open() {
 					</div>
 					<div class="jwellery-uda-guest__hero-actions">
 						<div class="jwellery-uda-guest__trust">
-							<span><?php esc_html_e( 'Free shipping ₹999+', 'jwellery-jewelry' ); ?></span>
+							<span><?php esc_html_e( 'Free shipping on all orders', 'jwellery-jewelry' ); ?></span>
 							<span><?php esc_html_e( 'Easy returns', 'jwellery-jewelry' ); ?></span>
 							<span><?php esc_html_e( 'UPI & COD', 'jwellery-jewelry' ); ?></span>
 						</div>

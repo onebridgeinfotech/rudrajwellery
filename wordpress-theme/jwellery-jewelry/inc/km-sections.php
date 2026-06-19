@@ -757,7 +757,7 @@ function jwellery_home_faq() {
 		),
 		array(
 			'q' => __( 'Do you offer free shipping?', 'jwellery-jewelry' ),
-			'a' => __( 'Free shipping on orders above â‚¹999 (configure exact rules in WooCommerce â†’ Shipping).', 'jwellery-jewelry' ),
+			‘a’ => __( ‘We offer free shipping on all orders across India.’, ‘jwellery-jewelry’ ),
 		),
 		array(
 			'q' => __( 'Will the color fade?', 'jwellery-jewelry' ),
