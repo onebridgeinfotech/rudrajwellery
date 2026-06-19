@@ -13,6 +13,25 @@ defined( 'ABSPATH' ) || exit;
  * @param int $product_id Product ID.
  * @return bool
  */
+/**
+ * Default demo placeholder title from bundled catalog (not a real storefront name).
+ *
+ * @param string $name Product title.
+ * @return bool
+ */
+function jwellery_catalog_is_generic_product_name( $name ) {
+	return (bool) preg_match( '/^Jewelry item \d+$/i', trim( (string) $name ) );
+}
+
+/**
+ * When false (default), deploy sync only creates missing SKUs and missing images.
+ *
+ * @return bool
+ */
+function jwellery_catalog_sync_is_destructive() {
+	return (bool) apply_filters( 'jwellery_catalog_sync_destructive', false );
+}
+
 function jwellery_product_is_admin_managed( $product_id ) {
 	$product_id = (int) $product_id;
 	if ( $product_id <= 0 ) {
@@ -262,6 +281,9 @@ function jwellery_score_catalog_product( $product_id ) {
 	if ( function_exists( 'jwellery_product_is_admin_managed' ) && jwellery_product_is_admin_managed( $product_id ) ) {
 		$score += 500;
 	}
+	if ( ! jwellery_catalog_is_generic_product_name( $product->get_name() ) ) {
+		$score += 1000;
+	}
 	if ( function_exists( 'jwellery_product_has_image' ) && jwellery_product_has_image( $product ) ) {
 		$score += 30;
 	}
@@ -327,6 +349,10 @@ function jwellery_trash_catalog_product_ids( $ids, $keep_id ) {
 		if ( 'trash' === get_post_status( $id ) ) {
 			continue;
 		}
+		$product = wc_get_product( $id );
+		if ( $product && ! jwellery_catalog_is_generic_product_name( $product->get_name() ) ) {
+			continue;
+		}
 		if ( wp_trash_post( $id ) ) {
 			++$count;
 		}
@@ -362,7 +388,7 @@ function jwellery_deduplicate_and_sync_catalog_products() {
 		'names'   => 0,
 	);
 
-	if ( ! class_exists( 'WooCommerce' ) ) {
+	if ( ! class_exists( 'WooCommerce' ) || ! jwellery_catalog_sync_is_destructive() ) {
 		return $result;
 	}
 
@@ -463,7 +489,7 @@ function jwellery_deduplicate_and_sync_catalog_products() {
  * @return int
  */
 function jwellery_enforce_canonical_storefront() {
-	if ( ! class_exists( 'WooCommerce' ) ) {
+	if ( ! class_exists( 'WooCommerce' ) || ! jwellery_catalog_sync_is_destructive() ) {
 		return 0;
 	}
 
@@ -487,6 +513,9 @@ function jwellery_enforce_canonical_storefront() {
 		$ids  = jwellery_get_product_ids_by_sku( $sku );
 		$keep = jwellery_pick_canonical_product_id( $ids );
 		if ( $keep && $id !== $keep && 'trash' !== $product->get_status() ) {
+			if ( ! jwellery_catalog_is_generic_product_name( $product->get_name() ) ) {
+				continue;
+			}
 			if ( wp_trash_post( $id ) ) {
 				++$trashed;
 			}
@@ -644,17 +673,13 @@ function jwellery_sync_catalog_products( $opts = array() ) {
 		}
 	}
 
-	if ( function_exists( 'jwellery_deduplicate_and_sync_catalog_products' ) ) {
+	if ( function_exists( 'jwellery_deduplicate_and_sync_catalog_products' ) && jwellery_catalog_sync_is_destructive() ) {
 		$dedupe = jwellery_deduplicate_and_sync_catalog_products();
 		$result['trashed'] += (int) $dedupe['trashed'];
 		$result['prices']  += (int) $dedupe['prices'];
 	}
 
-	if ( function_exists( 'jwellery_enforce_canonical_storefront' ) ) {
-		$result['trashed'] += jwellery_enforce_canonical_storefront();
-	}
-
-	if ( function_exists( 'jwellery_enforce_canonical_storefront' ) ) {
+	if ( jwellery_catalog_sync_is_destructive() && function_exists( 'jwellery_enforce_canonical_storefront' ) ) {
 		$result['trashed'] += jwellery_enforce_canonical_storefront();
 	}
 
@@ -737,7 +762,7 @@ function jwellery_sync_catalog_products_batch( $offset = 0, $limit = 8 ) {
 		jwellery_create_reference_categories();
 	}
 
-	if ( 0 === $offset && function_exists( 'jwellery_deduplicate_and_sync_catalog_products' ) ) {
+	if ( 0 === $offset && function_exists( 'jwellery_deduplicate_and_sync_catalog_products' ) && jwellery_catalog_sync_is_destructive() ) {
 		$dedupe = jwellery_deduplicate_and_sync_catalog_products();
 		$result['trashed'] = (int) $dedupe['trashed'];
 		$result['prices']  = (int) $dedupe['prices'];
@@ -766,19 +791,16 @@ function jwellery_sync_catalog_products_batch( $offset = 0, $limit = 8 ) {
 	$result['done']   = $result['offset'] >= $result['total'];
 
 	if ( $result['done'] ) {
-		if ( function_exists( 'jwellery_deduplicate_and_sync_catalog_products' ) ) {
+		if ( function_exists( 'jwellery_deduplicate_and_sync_catalog_products' ) && jwellery_catalog_sync_is_destructive() ) {
 			$dedupe = jwellery_deduplicate_and_sync_catalog_products();
 			$result['trashed'] += (int) $dedupe['trashed'];
 			$result['prices']  += (int) $dedupe['prices'];
 		}
-		if ( function_exists( 'jwellery_enforce_canonical_storefront' ) ) {
-			$result['trashed'] += jwellery_enforce_canonical_storefront();
-		}
 		if ( function_exists( 'jwellery_bootstrap_admin_managed_catalog' ) ) {
 			jwellery_bootstrap_admin_managed_catalog();
 		}
-		if ( function_exists( 'jwellery_enforce_canonical_storefront' ) ) {
-			jwellery_enforce_canonical_storefront();
+		if ( jwellery_catalog_sync_is_destructive() && function_exists( 'jwellery_enforce_canonical_storefront' ) ) {
+			$result['trashed'] += jwellery_enforce_canonical_storefront();
 		}
 		if ( function_exists( 'jwellery_hide_products_without_bundled_images' ) ) {
 			jwellery_hide_products_without_bundled_images();
@@ -794,6 +816,225 @@ function jwellery_sync_catalog_products_batch( $offset = 0, $limit = 8 ) {
 
 	return $result;
 }
+
+/**
+ * Untrash all WooCommerce products removed by catalog dedupe.
+ *
+ * @return int
+ */
+function jwellery_restore_trashed_catalog_products() {
+	global $wpdb;
+
+	$ids = $wpdb->get_col(
+		"SELECT ID FROM {$wpdb->posts} WHERE post_type = 'product' AND post_status = 'trash'"
+	);
+
+	$restored = 0;
+	foreach ( (array) $ids as $id ) {
+		$id = (int) $id;
+		if ( $id > 0 && wp_untrash_post( $id ) ) {
+			jwellery_mark_product_admin_managed( $id );
+			++$restored;
+		}
+	}
+
+	return $restored;
+}
+
+/**
+ * Keep one row per WP-* SKU; trash generic placeholder duplicates only.
+ *
+ * @return int
+ */
+function jwellery_resolve_catalog_duplicate_skus() {
+	if ( ! class_exists( 'WooCommerce' ) ) {
+		return 0;
+	}
+
+	$by_sku  = array();
+	$trashed = 0;
+
+	foreach ( wc_get_products( array( 'limit' => -1, 'status' => array( 'publish', 'draft', 'pending', 'private' ) ) ) as $product ) {
+		$sku = (string) $product->get_sku();
+		if ( $sku && preg_match( '/^WP-\d+$/', $sku ) ) {
+			$by_sku[ $sku ][] = (int) $product->get_id();
+		}
+	}
+
+	foreach ( $by_sku as $ids ) {
+		if ( count( $ids ) <= 1 ) {
+			continue;
+		}
+		$keep    = jwellery_pick_canonical_product_id( $ids );
+		$trashed += jwellery_trash_catalog_product_ids( $ids, $keep );
+	}
+
+	return $trashed;
+}
+
+/**
+ * Snapshot-backed names/prices recovered from older live HTML exports.
+ *
+ * @return array<string, array{name?: string, price?: string}>
+ */
+function jwellery_get_recovered_catalog_overrides() {
+	static $rows = null;
+	if ( null !== $rows ) {
+		return $rows;
+	}
+
+	$path = get_template_directory() . '/assets/demo-products/recovered-catalog-overrides.json';
+	if ( ! is_readable( $path ) ) {
+		$rows = array();
+		return $rows;
+	}
+
+	$raw = (string) file_get_contents( $path );
+	if ( strncmp( $raw, "\xFF\xFE", 2 ) === 0 ) {
+		$raw = mb_convert_encoding( $raw, 'UTF-8', 'UTF-16LE' );
+	} elseif ( strncmp( $raw, "\xFE\xFF", 2 ) === 0 ) {
+		$raw = mb_convert_encoding( $raw, 'UTF-8', 'UTF-16BE' );
+	}
+
+	$decoded = json_decode( $raw, true );
+	$rows    = is_array( $decoded ) ? $decoded : array();
+	return $rows;
+}
+
+/**
+ * Re-apply recovered catalog names/prices to rows still using demo placeholders.
+ *
+ * @return array{names: int, prices: int}
+ */
+function jwellery_apply_recovered_catalog_overrides() {
+	$result = array(
+		'names'  => 0,
+		'prices' => 0,
+	);
+
+	if ( ! class_exists( 'WooCommerce' ) ) {
+		return $result;
+	}
+
+	foreach ( jwellery_get_recovered_catalog_overrides() as $sku => $row ) {
+		if ( ! is_array( $row ) ) {
+			continue;
+		}
+
+		$ids = jwellery_get_product_ids_by_sku( (string) $sku );
+		if ( empty( $ids ) ) {
+			continue;
+		}
+
+		$product_id = jwellery_pick_canonical_product_id( $ids );
+		$product    = wc_get_product( $product_id );
+		if ( ! $product ) {
+			continue;
+		}
+
+		$changed = false;
+		$name    = isset( $row['name'] ) ? (string) $row['name'] : '';
+		$price   = isset( $row['price'] ) ? (string) $row['price'] : '';
+
+		if ( $name && jwellery_catalog_is_generic_product_name( $product->get_name() ) ) {
+			$product->set_name( $name );
+			$changed = true;
+			++$result['names'];
+		}
+
+		if ( $price && '399' === (string) $product->get_regular_price() && (string) $price !== '399' ) {
+			$product->set_regular_price( $price );
+			$changed = true;
+			++$result['prices'];
+		}
+
+		if ( $changed ) {
+			$product->save();
+			jwellery_mark_product_admin_managed( $product_id );
+		}
+	}
+
+	return $result;
+}
+
+/**
+ * Restore wp-admin catalog edits from trash and resolve duplicate SKUs safely.
+ *
+ * @return array{restored: int, trashed_dupes: int, marked: int}
+ */
+function jwellery_run_catalog_restore() {
+	$result = array(
+		'restored'      => 0,
+		'trashed_dupes' => 0,
+		'marked'        => 0,
+		'names'         => 0,
+		'prices'        => 0,
+	);
+
+	if ( ! class_exists( 'WooCommerce' ) ) {
+		return $result;
+	}
+
+	if ( ! defined( 'JWELLERY_CATALOG_SYNC' ) ) {
+		define( 'JWELLERY_CATALOG_SYNC', true );
+	}
+
+	$result['restored']      = jwellery_restore_trashed_catalog_products();
+	$result['trashed_dupes'] = jwellery_resolve_catalog_duplicate_skus();
+	$overrides               = jwellery_apply_recovered_catalog_overrides();
+	$result['names']         = (int) $overrides['names'];
+	$result['prices']        = (int) $overrides['prices'];
+
+	foreach ( wc_get_products( array( 'limit' => -1, 'status' => array( 'publish', 'draft' ) ) ) as $product ) {
+		$sku = (string) $product->get_sku();
+		if ( preg_match( '/^WP-\d+$/', $sku ) ) {
+			jwellery_mark_product_admin_managed( (int) $product->get_id() );
+			++$result['marked'];
+		}
+	}
+
+	wc_delete_product_transients();
+
+	if ( function_exists( 'jwellery_purge_hosting_cache' ) ) {
+		jwellery_purge_hosting_cache();
+	}
+
+	return $result;
+}
+
+/**
+ * HTTP catalog restore (same key file as sync). Key file: uploads/jwellery-catalog-sync.key
+ */
+function jwellery_catalog_restore_http_endpoint() {
+	if ( empty( $_GET['jwellery_catalog_restore'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		return;
+	}
+
+	if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+		define( 'DONOTCACHEPAGE', true );
+	}
+	if ( ! defined( 'LSCACHE_NO_CACHE' ) ) {
+		define( 'LSCACHE_NO_CACHE', true );
+	}
+	nocache_headers();
+
+	$key_file = WP_CONTENT_DIR . '/uploads/jwellery-catalog-sync.key';
+	if ( ! is_readable( $key_file ) ) {
+		wp_die( esc_html__( 'Catalog restore key missing.', 'jwellery-jewelry' ), '', array( 'response' => 403 ) );
+	}
+	$expected = trim( (string) file_get_contents( $key_file ) );
+	$given    = sanitize_text_field( wp_unslash( $_GET['jwellery_catalog_restore'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( ! $expected || ! hash_equals( $expected, $given ) ) {
+		wp_die( esc_html__( 'Forbidden.', 'jwellery-jewelry' ), '', array( 'response' => 403 ) );
+	}
+	@unlink( $key_file );
+
+	@set_time_limit( 120 );
+	@ini_set( 'memory_limit', '512M' );
+
+	wp_send_json_success( jwellery_run_catalog_restore() );
+}
+add_action( 'template_redirect', 'jwellery_catalog_restore_http_endpoint', 0 );
 
 /**
  * HTTP catalog sync (bypasses admin-ajax / page cache). Key file: uploads/jwellery-catalog-sync.key
@@ -836,7 +1077,7 @@ function jwellery_catalog_sync_http_endpoint() {
 		delete_option( 'jwellery_catalog_sync_pending' );
 		delete_option( 'jwellery_catalog_sync_offset' );
 		update_option( 'jwellery_theme_deploy_version', JWELLERY_THEME_VERSION, false );
-		if ( function_exists( 'jwellery_enforce_canonical_storefront' ) ) {
+		if ( function_exists( 'jwellery_enforce_canonical_storefront' ) && jwellery_catalog_sync_is_destructive() ) {
 			jwellery_enforce_canonical_storefront();
 		}
 		if ( function_exists( 'jwellery_hide_products_without_bundled_images' ) ) {

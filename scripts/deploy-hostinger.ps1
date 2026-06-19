@@ -124,6 +124,10 @@ if (Test-Path $purgeScript) {
 }
 
 $syncScript = Join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) "sync-live-catalog.ps1"
+$restoreScript = Join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) "restore-live-catalog.ps1"
+if (Test-Path $restoreScript) {
+    & $restoreScript -Config $config
+}
 if (Test-Path $syncScript) {
     & $syncScript -Config $config
 }
