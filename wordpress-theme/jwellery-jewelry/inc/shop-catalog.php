@@ -100,6 +100,17 @@ function jwellery_home_all_products() {
 	}
 
 	$products = jwellery_get_all_catalog_products( false );
+	if ( function_exists( 'jwellery_homepage_display_registry' ) && is_front_page() ) {
+		$registry = jwellery_homepage_display_registry();
+		$products = array_values(
+			array_filter(
+				$products,
+				static function ( $product ) use ( $registry ) {
+					return ! isset( $registry['ids'][ (int) $product->get_id() ] );
+				}
+			)
+		);
+	}
 	if ( empty( $products ) ) {
 		return;
 	}
@@ -221,6 +232,7 @@ function jwellery_shop_section_products( $products, $rows = null ) {
 function jwellery_get_products_grouped_by_category() {
 	$groups   = array();
 	$assigned = array();
+	$seen_images = array();
 
 	if ( ! function_exists( 'jwellery_get_shop_categories' ) ) {
 		return $groups;
@@ -260,8 +272,17 @@ function jwellery_get_products_grouped_by_category() {
 			if ( isset( $assigned[ $pid ] ) ) {
 				continue;
 			}
+			$img_key = function_exists( 'jwellery_product_image_fingerprint' )
+				? jwellery_product_image_fingerprint( $pid )
+				: '';
+			if ( $img_key && isset( $seen_images[ $img_key ] ) ) {
+				continue;
+			}
 			$assigned[ $pid ] = true;
-			$products[]       = $product;
+			if ( $img_key ) {
+				$seen_images[ $img_key ] = true;
+			}
+			$products[] = $product;
 		}
 
 		if ( function_exists( 'jwellery_dedupe_products_by_image' ) ) {
