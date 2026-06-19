@@ -13,8 +13,7 @@ defined( 'ABSPATH' ) || exit;
  * @return float
  */
 function jwellery_free_shipping_threshold() {
-	$min = (float) get_theme_mod( 'jwellery_free_shipping_min', 999 );
-	return $min > 0 ? $min : 999;
+	return 0;
 }
 
 /**
