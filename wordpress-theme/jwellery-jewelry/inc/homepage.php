@@ -87,7 +87,7 @@ function jwellery_render_product_card( $product, $extra_class = '' ) {
 					? $product->add_to_cart_url()
 					: $product->get_permalink();
 				?>
-				<a href="<?php echo esc_url( $btn_url ); ?>" class="<?php echo esc_attr( $btn_classes ); ?>" data-product_id="<?php echo esc_attr( $product->get_id() ); ?>" aria-label="<?php echo esc_attr( $aria ); ?>"><?php echo esc_html( $product->add_to_cart_text() ); ?></a>
+				<a href="<?php echo esc_url( $btn_url ); ?>" class="<?php echo esc_attr( $btn_classes ); ?>" data-product_id="<?php echo esc_attr( $product->get_id() ); ?>" data-quantity="1" data-product_sku="<?php echo esc_attr( $product->get_sku() ); ?>" aria-label="<?php echo esc_attr( $aria ); ?>"><?php echo esc_html( $product->add_to_cart_text() ); ?></a>
 			</div>
 		<?php endif; ?>
 	</li>
@@ -318,7 +318,7 @@ function jwellery_home_product_of_day() {
 							$pod_url         = $pod_ajax ? $product->add_to_cart_url() : $product->get_permalink();
 							$pod_btn_classes = 'jwellery-btn jwellery-btn-primary add_to_cart_button product_type_' . esc_attr( $pod_type ) . ( $pod_ajax ? ' ajax_add_to_cart' : '' );
 						?>
-							<a href="<?php echo esc_url( $pod_url ); ?>" class="<?php echo esc_attr( $pod_btn_classes ); ?>" data-product_id="<?php echo esc_attr( $product->get_id() ); ?>"><?php esc_html_e( 'Add to cart', 'jwellery-jewelry' ); ?></a>
+							<a href="<?php echo esc_url( $pod_url ); ?>" class="<?php echo esc_attr( $pod_btn_classes ); ?>" data-product_id="<?php echo esc_attr( $product->get_id() ); ?>" data-quantity="1" data-product_sku="<?php echo esc_attr( $product->get_sku() ); ?>"><?php esc_html_e( 'Add to cart', 'jwellery-jewelry' ); ?></a>
 						<?php else : ?>
 							<span class="badge-sold-out product-of-day-actions__sold"><?php esc_html_e( 'Sold out', 'jwellery-jewelry' ); ?></span>
 						<?php endif; ?>
