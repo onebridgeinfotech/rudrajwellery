@@ -666,7 +666,7 @@ function jwellery_hero_slides() {
 				'order'      => 'DESC',
 			) );
 			foreach ( $products as $product ) {
-				$img = wp_get_attachment_image_url( $product->get_image_id(), 'large' );
+				$img = wp_get_attachment_image_url( $product->get_image_id(), 'full' );
 				if ( $img && ! in_array( $img, $slides, true ) ) {
 					$slides[] = $img;
 				}
