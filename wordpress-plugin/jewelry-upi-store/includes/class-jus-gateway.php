@@ -30,7 +30,7 @@ class JUS_Gateway extends WC_Payment_Gateway {
 		$this->has_fields         = true;
 		$this->method_title       = __( 'Manual UPI (Jewelry Store)', 'jewelry-upi-store' );
 		$this->method_description = __( 'Customers pay via UPI QR or UPI ID after placing the order. Orders stay pending until you verify payment.', 'jewelry-upi-store' );
-		$this->supports           = array( 'products', 'cart_checkout_blocks' );
+		$this->supports           = array( 'products' );
 
 		$this->init_form_fields();
 		$this->init_settings();
