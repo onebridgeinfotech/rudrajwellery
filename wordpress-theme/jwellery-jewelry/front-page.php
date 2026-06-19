@@ -34,6 +34,10 @@ if ( function_exists( 'jwellery_home_section_enabled' ) && jwellery_home_section
 
 if ( function_exists( 'wc_get_products' ) && class_exists( 'WooCommerce' ) ) {
 
+	if ( function_exists( 'jwellery_reset_homepage_display_registry' ) ) {
+		jwellery_reset_homepage_display_registry();
+	}
+
 	if ( function_exists( 'jwellery_home_popular_tabs' ) ) {
 
 		jwellery_home_popular_tabs();

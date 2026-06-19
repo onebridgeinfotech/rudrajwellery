@@ -104,6 +104,16 @@ function jwellery_home_section( $title, $args, $link = '' ) {
 	$products = function_exists( 'jwellery_get_products_for_display' )
 		? jwellery_get_products_for_display( array_merge( $base, $args ), 4, 2 )
 		: wc_get_products( array_merge( array( 'limit' => 8 ), $base, $args ) );
+	if ( function_exists( 'jwellery_filter_unique_display_products' ) && is_front_page() ) {
+		$products = jwellery_filter_unique_display_products(
+			$products,
+			array(
+				'exclude_shown'  => true,
+				'exclude_images' => true,
+				'register'       => true,
+			)
+		);
+	}
 	if ( empty( $products ) ) {
 		return;
 	}

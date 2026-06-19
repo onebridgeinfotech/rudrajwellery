@@ -261,19 +261,18 @@ function jwellery_home_popular_tabs( $context = 'home' ) {
 	);
 
 	$panels = array();
+	$tab_exclude = array();
 	foreach ( $tabs as $key => $tab ) {
+		$query_args = array_merge(
+			array(
+				'status'       => 'publish',
+				'stock_status' => 'instock',
+				'exclude'      => array_keys( $tab_exclude ),
+			),
+			$tab['args']
+		);
 		$products = function_exists( 'jwellery_get_products_for_display' )
-			? jwellery_get_products_for_display(
-				array_merge(
-					array(
-						'status'       => 'publish',
-						'stock_status' => 'instock',
-					),
-					$tab['args']
-				),
-				4,
-				2
-			)
+			? jwellery_get_products_for_display( $query_args, 4, 2 )
 			: array();
 		if ( empty( $products ) && 'featured' === $key ) {
 			$products = function_exists( 'jwellery_get_products_for_display' )
@@ -283,21 +282,43 @@ function jwellery_home_popular_tabs( $context = 'home' ) {
 						'stock_status' => 'instock',
 						'orderby'      => 'date',
 						'order'        => 'DESC',
+						'exclude'      => array_keys( $tab_exclude ),
 					),
 					4,
 					2
 				)
 				: array();
 		}
+		if ( function_exists( 'jwellery_filter_unique_display_products' ) && is_front_page() ) {
+			$products = jwellery_filter_unique_display_products(
+				$products,
+				array(
+					'exclude_shown'  => true,
+					'exclude_images' => true,
+					'register'       => false,
+				)
+			);
+		}
 		$fill_args = array(
 			'status'       => 'publish',
 			'stock_status' => 'instock',
 			'orderby'      => 'date',
 			'order'        => 'DESC',
+			'exclude'      => array_keys( $tab_exclude ),
 		);
 		$panels[ $key ] = function_exists( 'jwellery_supplement_products_for_grid' )
 			? jwellery_supplement_products_for_grid( $products, 4, 2, $fill_args )
 			: $products;
+		foreach ( $panels[ $key ] as $product ) {
+			$tab_exclude[ (int) $product->get_id() ] = true;
+		}
+	}
+	if ( function_exists( 'jwellery_mark_homepage_products_shown' ) && is_front_page() ) {
+		$shown = array();
+		foreach ( $panels as $panel_products ) {
+			$shown = array_merge( $shown, $panel_products );
+		}
+		jwellery_mark_homepage_products_shown( $shown );
 	}
 
 	if ( empty( $panels['featured'] ) && empty( $panels['new'] ) && empty( $panels['sale'] ) ) {

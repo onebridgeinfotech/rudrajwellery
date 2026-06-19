@@ -57,6 +57,115 @@ function jwellery_filter_products_with_images( $products ) {
 }
 
 /**
+ * Registry so homepage sections do not repeat the same product/photo.
+ *
+ * @return array{ids: array<int, bool>, images: array<string, bool>}
+ */
+function jwellery_homepage_display_registry() {
+	static $registry = null;
+	if ( null === $registry ) {
+		$registry = array(
+			'ids'    => array(),
+			'images' => array(),
+		);
+	}
+	return $registry;
+}
+
+/**
+ * Reset homepage duplicate tracking (call once per front page).
+ */
+function jwellery_reset_homepage_display_registry() {
+	$registry = &jwellery_homepage_display_registry();
+	$registry['ids']    = array();
+	$registry['images'] = array();
+}
+
+/**
+ * Filter products already shown on the homepage (by ID and image fingerprint).
+ *
+ * @param WC_Product[] $products Products.
+ * @param array        $opts     exclude_shown, exclude_images, register.
+ * @return WC_Product[]
+ */
+function jwellery_filter_unique_display_products( $products, $opts = array() ) {
+	$exclude_shown  = array_key_exists( 'exclude_shown', $opts ) ? (bool) $opts['exclude_shown'] : true;
+	$exclude_images = array_key_exists( 'exclude_images', $opts ) ? (bool) $opts['exclude_images'] : true;
+	$register       = ! empty( $opts['register'] );
+
+	$registry = &jwellery_homepage_display_registry();
+	$out      = array();
+
+	foreach ( (array) $products as $product ) {
+		if ( ! $product instanceof WC_Product ) {
+			continue;
+		}
+		$pid = (int) $product->get_id();
+		if ( $exclude_shown && isset( $registry['ids'][ $pid ] ) ) {
+			continue;
+		}
+
+		$img_key = function_exists( 'jwellery_product_image_fingerprint' )
+			? jwellery_product_image_fingerprint( $pid )
+			: '';
+		if ( $exclude_images && $img_key && isset( $registry['images'][ $img_key ] ) ) {
+			continue;
+		}
+
+		$out[] = $product;
+		if ( $register ) {
+			$registry['ids'][ $pid ] = true;
+			if ( $img_key ) {
+				$registry['images'][ $img_key ] = true;
+			}
+		}
+	}
+
+	return $out;
+}
+
+/**
+ * Mark products as already displayed on the homepage.
+ *
+ * @param WC_Product[] $products Products.
+ */
+function jwellery_mark_homepage_products_shown( $products ) {
+	jwellery_filter_unique_display_products(
+		$products,
+		array(
+			'exclude_shown'  => false,
+			'exclude_images' => false,
+			'register'       => true,
+		)
+	);
+}
+
+/**
+ * Remove duplicate image fingerprints from a product list.
+ *
+ * @param WC_Product[] $products Products.
+ * @return WC_Product[]
+ */
+function jwellery_dedupe_products_by_image( $products ) {
+	$seen = array();
+	$out  = array();
+	foreach ( (array) $products as $product ) {
+		if ( ! $product instanceof WC_Product ) {
+			continue;
+		}
+		$key = function_exists( 'jwellery_product_image_fingerprint' )
+			? jwellery_product_image_fingerprint( (int) $product->get_id() )
+			: 'id-' . $product->get_id();
+		if ( isset( $seen[ $key ] ) ) {
+			continue;
+		}
+		$seen[ $key ] = true;
+		$out[]        = $product;
+	}
+	return $out;
+}
+
+/**
  * Trim a product list to complete grid rows (no empty slots on the last row).
  *
  * @param WC_Product[] $products Products.
@@ -104,6 +213,12 @@ function jwellery_get_products_for_display( $args = array(), $cols = null, $rows
 		$args
 	);
 
+	$exclude = array();
+	if ( ! empty( $base['exclude'] ) && is_array( $base['exclude'] ) ) {
+		$exclude = array_flip( array_map( 'intval', $base['exclude'] ) );
+		unset( $base['exclude'] );
+	}
+
 	$active_ids = function_exists( 'jwellery_get_active_catalog_product_ids' )
 		? jwellery_get_active_catalog_product_ids()
 		: array();
@@ -131,7 +246,7 @@ function jwellery_get_products_for_display( $args = array(), $cols = null, $rows
 
 		foreach ( $batch_products as $product ) {
 			$pid = $product->get_id();
-			if ( isset( $seen[ $pid ] ) ) {
+			if ( isset( $seen[ $pid ] ) || isset( $exclude[ $pid ] ) ) {
 				continue;
 			}
 			$seen[ $pid ] = true;
@@ -149,7 +264,12 @@ function jwellery_get_products_for_display( $args = array(), $cols = null, $rows
 		}
 	}
 
-	return jwellery_trim_products_to_full_rows( $picked, $cols, $rows );
+	$picked = jwellery_trim_products_to_full_rows( $picked, $cols, $rows );
+	if ( function_exists( 'jwellery_dedupe_products_by_image' ) ) {
+		$picked = jwellery_dedupe_products_by_image( $picked );
+	}
+
+	return $picked;
 }
 
 /**

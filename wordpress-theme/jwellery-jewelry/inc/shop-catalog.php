@@ -85,6 +85,9 @@ function jwellery_get_all_catalog_products( $instock_only = false ) {
 	if ( function_exists( 'jwellery_filter_products_with_images' ) ) {
 		$products = jwellery_filter_products_with_images( $products );
 	}
+	if ( function_exists( 'jwellery_dedupe_products_by_image' ) ) {
+		$products = jwellery_dedupe_products_by_image( $products );
+	}
 	return is_array( $products ) ? $products : array();
 }
 
@@ -259,6 +262,10 @@ function jwellery_get_products_grouped_by_category() {
 			}
 			$assigned[ $pid ] = true;
 			$products[]       = $product;
+		}
+
+		if ( function_exists( 'jwellery_dedupe_products_by_image' ) ) {
+			$products = jwellery_dedupe_products_by_image( $products );
 		}
 
 		if ( ! empty( $products ) ) {
