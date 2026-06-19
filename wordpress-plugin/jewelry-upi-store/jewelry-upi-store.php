@@ -124,8 +124,8 @@ function jus_bootstrap() {
 add_action( 'woocommerce_loaded', 'jus_bootstrap', 20 );
 
 /**
- * Force the WooCommerce checkout page to use the classic shortcode instead of blocks.
- * This ensures our UPI gateway (which supports classic checkout) always works.
+ * Force classic WooCommerce checkout by replacing the blocks checkout with the shortcode.
+ * Blocks are stored as <!-- wp:woocommerce/checkout --> in raw post content.
  */
 function jus_force_classic_checkout( $content ) {
 	if ( ! function_exists( 'is_checkout' ) || ! is_checkout() ) {
@@ -137,12 +137,19 @@ function jus_force_classic_checkout( $content ) {
 	if ( has_shortcode( $content, 'woocommerce_checkout' ) ) {
 		return $content;
 	}
-	if ( strpos( $content, 'wp-block-woocommerce-checkout' ) !== false ) {
-		return '[woocommerce_checkout]';
+	// Raw block markup uses <!-- wp:woocommerce/checkout --> comment syntax.
+	if ( strpos( $content, 'wp:woocommerce/checkout' ) !== false
+		|| strpos( $content, 'wp-block-woocommerce-checkout' ) !== false ) {
+		return '<!-- wp:shortcode -->[woocommerce_checkout]<!-- /wp:shortcode -->';
 	}
 	return $content;
 }
-add_filter( 'the_content', 'jus_force_classic_checkout', 5 );
+add_filter( 'the_content', 'jus_force_classic_checkout', 1 );
+
+/**
+ * Also disable WooCommerce checkout blocks feature flag as a second layer of defence.
+ */
+add_filter( 'woocommerce_feature_cart_checkout_blocks_enabled', '__return_false' );
 
 /**
  * Inject free shipping as a fallback when no shipping methods are available.
