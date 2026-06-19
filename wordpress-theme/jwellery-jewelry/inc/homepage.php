@@ -74,11 +74,20 @@ function jwellery_render_product_card( $product, $extra_class = '' ) {
 		<?php if ( ! $out_of_stock ) : ?>
 			<div class="jwellery-loop-actions">
 				<?php
-				$aria = method_exists( $product, 'add_to_cart_description' )
+				$aria         = method_exists( $product, 'add_to_cart_description' )
 					? $product->add_to_cart_description()
 					: $product->add_to_cart_text();
+				$product_type = $product->get_type();
+				$supports_ajax = in_array( $product_type, array( 'simple', 'external' ), true );
+				$btn_classes  = 'button add_to_cart_button product_type_' . esc_attr( $product_type );
+				if ( $supports_ajax ) {
+					$btn_classes .= ' ajax_add_to_cart';
+				}
+				$btn_url = $supports_ajax
+					? $product->add_to_cart_url()
+					: $product->get_permalink();
 				?>
-				<a href="<?php echo esc_url( $product->add_to_cart_url() ); ?>" class="button add_to_cart_button ajax_add_to_cart product_type_<?php echo esc_attr( $product->get_type() ); ?>" data-product_id="<?php echo esc_attr( $product->get_id() ); ?>" aria-label="<?php echo esc_attr( $aria ); ?>"><?php echo esc_html( $product->add_to_cart_text() ); ?></a>
+				<a href="<?php echo esc_url( $btn_url ); ?>" class="<?php echo esc_attr( $btn_classes ); ?>" data-product_id="<?php echo esc_attr( $product->get_id() ); ?>" aria-label="<?php echo esc_attr( $aria ); ?>"><?php echo esc_html( $product->add_to_cart_text() ); ?></a>
 			</div>
 		<?php endif; ?>
 	</li>
