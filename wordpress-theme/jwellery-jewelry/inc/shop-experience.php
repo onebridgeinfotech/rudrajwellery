@@ -625,6 +625,24 @@ function jwellery_enqueue_cart_drawer_scripts() {
 	}
 
 	wp_enqueue_script( 'wc-cart-fragments' );
+	wp_enqueue_script( 'wc-add-to-cart' );
+
+	// WooCommerce only localizes wc_add_to_cart_params on WooCommerce pages.
+	// Manually provide it on all pages so AJAX add-to-cart works on homepage etc.
+	if ( ! is_woocommerce() && ! is_cart() && ! is_checkout() ) {
+		wp_localize_script(
+			'wc-add-to-cart',
+			'wc_add_to_cart_params',
+			array(
+				'ajax_url'                => admin_url( 'admin-ajax.php' ),
+				'wc_ajax_url'             => WC_AJAX::get_endpoint( '%%endpoint%%' ),
+				'i18n_view_cart'          => esc_attr__( 'View cart', 'woocommerce' ),
+				'cart_url'                => apply_filters( 'woocommerce_add_to_cart_redirect', wc_get_cart_url(), null ),
+				'is_cart'                 => is_cart() ? '1' : '0',
+				'cart_redirect_after_add' => get_option( 'woocommerce_cart_redirect_after_add' ),
+			)
+		);
+	}
 }
 add_action( 'wp_enqueue_scripts', 'jwellery_enqueue_cart_drawer_scripts', 25 );
 
