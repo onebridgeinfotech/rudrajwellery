@@ -99,6 +99,7 @@ function jwellery_get_shop_categories() {
 		'necklaces',
 		'chockers',
 		'bangles',
+		'rings',
 		'long-harams',
 		'handmade-collection',
 		'instagram-collection',

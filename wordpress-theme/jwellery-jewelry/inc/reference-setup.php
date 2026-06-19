@@ -52,6 +52,10 @@ function jwellery_get_reference_categories() {
 			'name' => 'Combo',
 			'desc' => 'Complete jewelry combo sets — short haram, long mala, and matching earrings.',
 		),
+		'rings'                => array(
+			'name' => 'Rings',
+			'desc' => 'Panchaloham and impon rings — wedding bands, crown rings, and stone settings.',
+		),
 	);
 }
 

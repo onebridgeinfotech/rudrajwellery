@@ -374,7 +374,7 @@ function jwellery_home_category_stats() {
 		return;
 	}
 
-	$slugs = array( 'ear-rings', 'studs', 'necklaces', 'chockers', 'bangles', 'long-harams', 'handmade-collection', 'instagram-collection', 'latest-collection', 'combo' );
+	$slugs = array( 'ear-rings', 'studs', 'necklaces', 'chockers', 'bangles', 'rings', 'long-harams', 'handmade-collection', 'instagram-collection', 'latest-collection', 'combo' );
 	$items = array();
 
 	foreach ( $slugs as $slug ) {

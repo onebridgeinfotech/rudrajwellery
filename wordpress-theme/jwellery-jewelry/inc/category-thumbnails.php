@@ -54,6 +54,10 @@ function jwellery_category_image_sources() {
 			'file' => '',
 			'cdn'  => 'https://cdn.shopify.com/s/files/1/0701/9030/1416/files/IMG-20260601-WA0087.jpg?v=1780324177',
 		),
+		'rings'                   => array(
+			'file' => 'rings.png',
+			'cdn'  => '',
+		),
 	);
 }
 

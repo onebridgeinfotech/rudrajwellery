@@ -159,7 +159,7 @@ function jwellery_home_categories() {
 		return;
 	}
 
-	$slugs = array( 'ear-rings', 'studs', 'necklaces', 'chockers', 'bangles', 'long-harams' );
+	$slugs = array( 'ear-rings', 'studs', 'necklaces', 'chockers', 'bangles', 'rings', 'long-harams' );
 	$terms = array();
 	foreach ( $slugs as $slug ) {
 		$t = get_term_by( 'slug', $slug, 'product_cat' );

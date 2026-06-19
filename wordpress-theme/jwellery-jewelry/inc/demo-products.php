@@ -41,6 +41,42 @@ function jwellery_get_demo_products() {
 }
 
 /**
+ * Assign WooCommerce categories to a product by slug list.
+ *
+ * @param int          $product_id Product ID.
+ * @param string[]     $cats       Category slugs.
+ * @param bool         $replace    Replace existing categories when true.
+ */
+function jwellery_assign_product_categories( $product_id, $cats, $replace = true ) {
+	$product_id = (int) $product_id;
+	if ( $product_id <= 0 || empty( $cats ) || ! is_array( $cats ) ) {
+		return;
+	}
+
+	$term_ids = array();
+	foreach ( $cats as $slug ) {
+		$term = get_term_by( 'slug', $slug, 'product_cat' );
+		if ( $term && ! is_wp_error( $term ) ) {
+			$term_ids[] = (int) $term->term_id;
+		}
+	}
+	if ( ! $term_ids ) {
+		return;
+	}
+
+	if ( $replace ) {
+		wp_set_object_terms( $product_id, $term_ids, 'product_cat' );
+		return;
+	}
+
+	$existing = wp_get_object_terms( $product_id, 'product_cat', array( 'fields' => 'ids' ) );
+	if ( is_wp_error( $existing ) ) {
+		$existing = array();
+	}
+	wp_set_object_terms( $product_id, array_unique( array_merge( $existing, $term_ids ) ), 'product_cat' );
+}
+
+/**
  * Create one WooCommerce simple product.
  *
  * @param array $row Product row.
@@ -55,6 +91,7 @@ function jwellery_create_one_demo_product( $row ) {
 
 	$existing_id = wc_get_product_id_by_sku( $sku );
 	if ( $existing_id ) {
+		jwellery_assign_product_categories( $existing_id, $cats, true );
 		if ( function_exists( 'jwellery_attach_demo_product_image' ) && ! has_post_thumbnail( $existing_id ) ) {
 			jwellery_attach_demo_product_image( $existing_id, $sku, false );
 		}
@@ -77,16 +114,7 @@ function jwellery_create_one_demo_product( $row ) {
 	$product_id = $product->save();
 
 	if ( $product_id && ! empty( $cats ) ) {
-		$term_ids = array();
-		foreach ( $cats as $slug ) {
-			$term = get_term_by( 'slug', $slug, 'product_cat' );
-			if ( $term && ! is_wp_error( $term ) ) {
-				$term_ids[] = (int) $term->term_id;
-			}
-		}
-		if ( $term_ids ) {
-			wp_set_object_terms( $product_id, $term_ids, 'product_cat' );
-		}
+		jwellery_assign_product_categories( $product_id, $cats, true );
 	}
 
 	if ( function_exists( 'jwellery_attach_demo_product_image' ) ) {
