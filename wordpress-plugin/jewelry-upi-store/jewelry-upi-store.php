@@ -124,6 +124,25 @@ function jus_bootstrap() {
 add_action( 'woocommerce_loaded', 'jus_bootstrap', 20 );
 
 /**
+ * Register Manual UPI with WooCommerce Checkout Blocks.
+ */
+function jus_register_blocks_payment() {
+	if ( ! class_exists( 'Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' ) ) {
+		return;
+	}
+	if ( ! class_exists( 'JUS_Blocks_Payment', false ) ) {
+		require_once JUS_PLUGIN_DIR . 'includes/class-jus-blocks.php';
+	}
+	add_action(
+		'woocommerce_blocks_payment_method_type_registration',
+		static function ( $registry ) {
+			$registry->register( new JUS_Blocks_Payment() );
+		}
+	);
+}
+add_action( 'woocommerce_blocks_loaded', 'jus_register_blocks_payment' );
+
+/**
  * Inject free shipping as a fallback when no shipping methods are available.
  * This prevents the "No shipping methods available" checkout error.
  *
