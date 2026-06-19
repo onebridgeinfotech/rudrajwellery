@@ -312,8 +312,13 @@ function jwellery_home_product_of_day() {
 					</h3>
 					<p class="price product-of-day-spotlight-price"><?php echo wp_kses_post( $product->get_price_html() ); ?></p>
 					<div class="product-of-day-actions">
-						<?php if ( $product->is_in_stock() ) : ?>
-							<a href="<?php echo esc_url( $product->add_to_cart_url() ); ?>" class="jwellery-btn jwellery-btn-primary add_to_cart_button ajax_add_to_cart" data-product_id="<?php echo esc_attr( $product->get_id() ); ?>"><?php esc_html_e( 'Add to cart', 'jwellery-jewelry' ); ?></a>
+						<?php if ( $product->is_in_stock() ) :
+							$pod_type        = $product->get_type();
+							$pod_ajax        = in_array( $pod_type, array( 'simple', 'external' ), true );
+							$pod_url         = $pod_ajax ? $product->add_to_cart_url() : $product->get_permalink();
+							$pod_btn_classes = 'jwellery-btn jwellery-btn-primary add_to_cart_button product_type_' . esc_attr( $pod_type ) . ( $pod_ajax ? ' ajax_add_to_cart' : '' );
+						?>
+							<a href="<?php echo esc_url( $pod_url ); ?>" class="<?php echo esc_attr( $pod_btn_classes ); ?>" data-product_id="<?php echo esc_attr( $product->get_id() ); ?>"><?php esc_html_e( 'Add to cart', 'jwellery-jewelry' ); ?></a>
 						<?php else : ?>
 							<span class="badge-sold-out product-of-day-actions__sold"><?php esc_html_e( 'Sold out', 'jwellery-jewelry' ); ?></span>
 						<?php endif; ?>
