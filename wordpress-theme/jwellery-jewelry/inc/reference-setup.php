@@ -410,11 +410,15 @@ function jwellery_run_reference_setup() {
 	}
 	jwellery_create_reference_menu();
 	jwellery_repair_primary_menu_links();
-	if ( function_exists( 'jwellery_create_demo_products' ) ) {
-		jwellery_create_demo_products();
-	}
-	if ( function_exists( 'jwellery_import_demo_product_images' ) ) {
-		jwellery_import_demo_product_images( true );
+	if ( function_exists( 'jwellery_sync_catalog_products' ) ) {
+		jwellery_sync_catalog_products();
+	} else {
+		if ( function_exists( 'jwellery_create_demo_products' ) ) {
+			jwellery_create_demo_products();
+		}
+		if ( function_exists( 'jwellery_import_demo_product_images' ) ) {
+			jwellery_import_demo_product_images( true );
+		}
 	}
 	if ( function_exists( 'jwellery_create_default_coupons' ) ) {
 		jwellery_create_default_coupons();
@@ -512,6 +516,12 @@ function jwellery_store_setup_page() {
 		jwellery_run_reference_setup();
 		echo '<div class="notice notice-success"><p>' . esc_html__( 'Setup complete: menu, categories, 19 demo products, and product images.', 'jwellery-jewelry' ) . '</p></div>';
 	}
+	if ( isset( $_POST['jwellery_sync_catalog'] ) && check_admin_referer( 'jwellery_setup' ) ) {
+		$result = function_exists( 'jwellery_sync_catalog_products' ) ? jwellery_sync_catalog_products() : array( 'created' => 0, 'images' => 0 );
+		update_option( 'jwellery_catalog_sync_version', JWELLERY_THEME_VERSION, false );
+		delete_option( 'jwellery_catalog_sync_pending' );
+		echo '<div class="notice notice-success"><p>' . esc_html( sprintf( __( 'Catalog synced: %1$d new products, %2$d images attached.', 'jwellery-jewelry' ), (int) $result['created'], (int) $result['images'] ) ) . '</p></div>';
+	}
 	if ( isset( $_POST['jwellery_demo_products'] ) && check_admin_referer( 'jwellery_setup' ) ) {
 		$n = jwellery_create_demo_products();
 		echo '<div class="notice notice-success"><p>' . esc_html( sprintf( __( 'Demo products ready (%d new items).', 'jwellery-jewelry' ), (int) $n ) ) . '</p></div>';
@@ -562,6 +572,10 @@ function jwellery_store_setup_page() {
 		<form method="post" style="margin-bottom:12px;">
 			<?php wp_nonce_field( 'jwellery_setup' ); ?>
 			<button type="submit" name="jwellery_run_setup" class="button button-primary button-hero"><?php esc_html_e( 'Full setup (menu + categories + 19 products)', 'jwellery-jewelry' ); ?></button>
+		</form>
+		<form method="post" style="margin-bottom:12px;">
+			<?php wp_nonce_field( 'jwellery_setup' ); ?>
+			<button type="submit" name="jwellery_sync_catalog" class="button button-primary"><?php esc_html_e( 'Sync all catalog products + images', 'jwellery-jewelry' ); ?></button>
 		</form>
 		<form method="post" style="margin-bottom:12px;">
 			<?php wp_nonce_field( 'jwellery_setup' ); ?>

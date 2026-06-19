@@ -24,8 +24,8 @@ function jwellery_ajax_deploy_purge() {
 	if ( function_exists( 'jwellery_purge_hosting_cache' ) ) {
 		jwellery_purge_hosting_cache();
 	}
-	if ( function_exists( 'jwellery_maintain_store' ) ) {
-		jwellery_maintain_store( true );
+	if ( function_exists( 'jwellery_schedule_catalog_sync_if_needed' ) ) {
+		jwellery_schedule_catalog_sync_if_needed();
 	}
 	if ( defined( 'JWELLERY_THEME_VERSION' ) ) {
 		update_option( 'jwellery_theme_deploy_version', JWELLERY_THEME_VERSION, false );

@@ -1,0 +1,470 @@
+[
+  {
+    "sku": "WP-001",
+    "name": "Jewelry item 1",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-13_at_12.15.12_PM"
+  },
+  {
+    "sku": "WP-002",
+    "name": "Jewelry item 2",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-13_at_12.16.29_PM"
+  },
+  {
+    "sku": "WP-003",
+    "name": "Jewelry item 3",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-13_at_12.17.11_PM"
+  },
+  {
+    "sku": "WP-004",
+    "name": "Jewelry item 4",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-15_at_9.47.56_PM"
+  },
+  {
+    "sku": "WP-005",
+    "name": "Jewelry item 5",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-15_at_9.47.56_PM__1_"
+  },
+  {
+    "sku": "WP-006",
+    "name": "Jewelry item 6",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-15_at_9.48.11_PM"
+  },
+  {
+    "sku": "WP-007",
+    "name": "Jewelry item 7",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-15_at_9.49.18_PM__1_"
+  },
+  {
+    "sku": "WP-008",
+    "name": "Jewelry item 8",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-15_at_9.49.36_PM__1_"
+  },
+  {
+    "sku": "WP-009",
+    "name": "Jewelry item 9",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-15_at_9.59.52_PM__1_"
+  },
+  {
+    "sku": "WP-010",
+    "name": "Jewelry item 10",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-15_at_9.59.52_PM__2_"
+  },
+  {
+    "sku": "WP-011",
+    "name": "Jewelry item 11",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-15_at_9.59.53_PM"
+  },
+  {
+    "sku": "WP-012",
+    "name": "Jewelry item 12",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-15_at_9.59.53_PM__1_"
+  },
+  {
+    "sku": "WP-013",
+    "name": "Jewelry item 13",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-15_at_9.59.53_PM__2_"
+  },
+  {
+    "sku": "WP-014",
+    "name": "Jewelry item 14",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-16_at_2.27.56_PM__1_"
+  },
+  {
+    "sku": "WP-015",
+    "name": "Jewelry item 15",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-16_at_2.27.57_PM"
+  },
+  {
+    "sku": "WP-016",
+    "name": "Jewelry item 16",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-16_at_2.28.11_PM"
+  },
+  {
+    "sku": "WP-017",
+    "name": "Jewelry item 17",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-16_at_2.28.57_PM"
+  },
+  {
+    "sku": "WP-018",
+    "name": "Jewelry item 18",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-16_at_2.28.58_PM"
+  },
+  {
+    "sku": "WP-019",
+    "name": "Jewelry item 19",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-16_at_2.28.59_PM"
+  },
+  {
+    "sku": "WP-020",
+    "name": "Jewelry item 20",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-16_at_2.28.59_PM__1_"
+  },
+  {
+    "sku": "WP-021",
+    "name": "Jewelry item 21",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-16_at_2.29.00_PM"
+  },
+  {
+    "sku": "WP-022",
+    "name": "Jewelry item 22",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-16_at_2.29.00_PM__1_"
+  },
+  {
+    "sku": "WP-023",
+    "name": "Jewelry item 23",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-16_at_2.29.11_PM"
+  },
+  {
+    "sku": "WP-024",
+    "name": "Jewelry item 24",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-16_at_2.29.35_PM__1_"
+  },
+  {
+    "sku": "WP-025",
+    "name": "Jewelry item 25",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-16_at_2.29.58_PM"
+  },
+  {
+    "sku": "WP-026",
+    "name": "Jewelry item 26",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-16_at_3.40.02_PM"
+  },
+  {
+    "sku": "WP-027",
+    "name": "Jewelry item 27",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-17_at_1.38.07_PM"
+  },
+  {
+    "sku": "WP-028",
+    "name": "Jewelry item 28",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-18_at_6.07.55_PM__1_"
+  },
+  {
+    "sku": "WP-029",
+    "name": "Jewelry item 29",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-18_at_6.13.38_PM"
+  },
+  {
+    "sku": "WP-030",
+    "name": "Jewelry item 30",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-18_at_6.13.38_PM__1_"
+  },
+  {
+    "sku": "WP-031",
+    "name": "Jewelry item 31",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-18_at_6.13.39_PM"
+  },
+  {
+    "sku": "WP-032",
+    "name": "Jewelry item 32",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-18_at_6.13.39_PM__1_"
+  },
+  {
+    "sku": "WP-033",
+    "name": "Jewelry item 33",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-18_at_6.21.37_PM"
+  },
+  {
+    "sku": "WP-034",
+    "name": "Jewelry item 34",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-18_at_6.23.06_PM"
+  },
+  {
+    "sku": "WP-035",
+    "name": "Jewelry item 35",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-18_at_6.23.07_PM"
+  },
+  {
+    "sku": "WP-036",
+    "name": "Jewelry item 36",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-18_at_6.33.08_PM"
+  },
+  {
+    "sku": "WP-037",
+    "name": "Jewelry item 37",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-18_at_6.33.09_PM"
+  },
+  {
+    "sku": "WP-038",
+    "name": "Jewelry item 38",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-18_at_6.33.09_PM__1_"
+  },
+  {
+    "sku": "WP-039",
+    "name": "Jewelry item 39",
+    "price": 399,
+    "stock": 10,
+    "featured": 0,
+    "categories": [
+      "latest-collection"
+    ],
+    "description": "Imitation jewelry \u2014 update name and price in admin.",
+    "stamp": "2026-06-18_at_6.33.10_PM__1_"
+  }
+]

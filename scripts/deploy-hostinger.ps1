@@ -123,5 +123,10 @@ if (Test-Path $purgeScript) {
     & $purgeScript -Config $config
 }
 
+$syncScript = Join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) "sync-live-catalog.ps1"
+if (Test-Path $syncScript) {
+    & $syncScript -Config $config
+}
+
 Write-Host ""
 Write-Host "Deploy complete." -ForegroundColor Green

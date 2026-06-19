@@ -55,6 +55,9 @@ function jwellery_create_one_demo_product( $row ) {
 
 	$existing_id = wc_get_product_id_by_sku( $sku );
 	if ( $existing_id ) {
+		if ( function_exists( 'jwellery_attach_demo_product_image' ) && ! has_post_thumbnail( $existing_id ) ) {
+			jwellery_attach_demo_product_image( $existing_id, $sku, false );
+		}
 		return $existing_id;
 	}
 
@@ -104,7 +107,10 @@ function jwellery_create_demo_products() {
 	}
 
 	$count = 0;
-	foreach ( jwellery_get_demo_products() as $row ) {
+	$rows  = function_exists( 'jwellery_get_bundled_catalog_rows' )
+		? jwellery_get_bundled_catalog_rows()
+		: jwellery_get_demo_products();
+	foreach ( $rows as $row ) {
 		$before = wc_get_product_id_by_sku( $row[0] );
 		$id     = jwellery_create_one_demo_product( $row );
 		if ( $id && ! $before ) {

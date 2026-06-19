@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'JWELLERY_THEME_VERSION', '4.6.13' );
+define( 'JWELLERY_THEME_VERSION', '4.6.18' );
 define( 'JWELLERY_THEME_DIR', get_template_directory() );
 define( 'JWELLERY_THEME_URI', get_template_directory_uri() );
 define( 'JWELLERY_THEME_SLUG', 'jwellery-jewelry' );
@@ -67,6 +67,7 @@ require_once JWELLERY_THEME_DIR . '/inc/customizer.php';
 require_once JWELLERY_THEME_DIR . '/inc/social-icons.php';
 require_once JWELLERY_THEME_DIR . '/inc/menu-fallback.php';
 require_once JWELLERY_THEME_DIR . '/inc/demo-products.php';
+require_once JWELLERY_THEME_DIR . '/inc/catalog-sync.php';
 require_once JWELLERY_THEME_DIR . '/inc/product-images.php';
 require_once JWELLERY_THEME_DIR . '/inc/store-config.php';
 require_once JWELLERY_THEME_DIR . '/inc/checkout-fix.php';

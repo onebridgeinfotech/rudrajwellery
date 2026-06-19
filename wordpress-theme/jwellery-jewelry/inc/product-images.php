@@ -269,7 +269,10 @@ function jwellery_repair_missing_product_images() {
 	}
 
 	$count = 0;
-	foreach ( jwellery_get_demo_products() as $row ) {
+	$rows  = function_exists( 'jwellery_get_bundled_catalog_rows' )
+		? jwellery_get_bundled_catalog_rows()
+		: jwellery_get_demo_products();
+	foreach ( $rows as $row ) {
 		$sku = $row[0];
 		$id  = wc_get_product_id_by_sku( $sku );
 		if ( ! $id || has_post_thumbnail( $id ) ) {
@@ -295,7 +298,10 @@ function jwellery_import_demo_product_images( $force = false ) {
 	}
 
 	$count = 0;
-	foreach ( jwellery_get_demo_products() as $row ) {
+	$rows  = function_exists( 'jwellery_get_bundled_catalog_rows' )
+		? jwellery_get_bundled_catalog_rows()
+		: jwellery_get_demo_products();
+	foreach ( $rows as $row ) {
 		$sku = $row[0];
 		$id  = wc_get_product_id_by_sku( $sku );
 		if ( ! $id ) {
@@ -309,4 +315,14 @@ function jwellery_import_demo_product_images( $force = false ) {
 	jwellery_repair_missing_product_images();
 	wc_delete_product_transients();
 	return $count;
+}
+
+/**
+ * Alias for catalog sync (all bundled SKUs).
+ *
+ * @param bool $force Replace existing product images.
+ * @return int
+ */
+function jwellery_import_all_catalog_images( $force = false ) {
+	return jwellery_import_demo_product_images( $force );
 }
