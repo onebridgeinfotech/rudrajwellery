@@ -124,30 +124,46 @@ function jus_bootstrap() {
 add_action( 'woocommerce_loaded', 'jus_bootstrap', 20 );
 
 /**
- * Force classic WooCommerce checkout by replacing the blocks checkout with the shortcode.
- * Blocks are stored as <!-- wp:woocommerce/checkout --> in raw post content.
+ * Permanently convert the WooCommerce checkout page from blocks to classic shortcode.
+ * Runs once on init and saves the classic shortcode directly to the DB so blocks
+ * rendering never interferes again. This is what WC admin "Switch to classic" does.
  */
-function jus_force_classic_checkout( $content ) {
-	if ( ! function_exists( 'is_checkout' ) || ! is_checkout() ) {
-		return $content;
+function jus_convert_checkout_to_classic() {
+	if ( ! function_exists( 'wc_get_page_id' ) ) {
+		return;
 	}
-	if ( function_exists( 'is_wc_endpoint_url' ) && is_wc_endpoint_url( 'order-received' ) ) {
-		return $content;
+	// Skip if already converted.
+	if ( get_option( 'jus_checkout_converted_v2' ) ) {
+		return;
 	}
-	if ( has_shortcode( $content, 'woocommerce_checkout' ) ) {
-		return $content;
+
+	$page_id = wc_get_page_id( 'checkout' );
+	if ( ! $page_id || $page_id < 0 ) {
+		return;
 	}
-	// Raw block markup uses <!-- wp:woocommerce/checkout --> comment syntax.
-	if ( strpos( $content, 'wp:woocommerce/checkout' ) !== false
-		|| strpos( $content, 'wp-block-woocommerce-checkout' ) !== false ) {
-		return '<!-- wp:shortcode -->[woocommerce_checkout]<!-- /wp:shortcode -->';
+
+	$page = get_post( $page_id );
+	if ( ! $page ) {
+		return;
 	}
-	return $content;
+
+	// Convert if it has the blocks checkout or is empty.
+	if ( strpos( $page->post_content, 'wp:woocommerce/checkout' ) !== false
+		|| strpos( $page->post_content, 'wp:woocommerce/cart' ) !== false
+		|| '' === trim( $page->post_content ) ) {
+
+		wp_update_post( array(
+			'ID'           => $page_id,
+			'post_content' => '<!-- wp:shortcode -->[woocommerce_checkout]<!-- /wp:shortcode -->',
+		) );
+	}
+
+	update_option( 'jus_checkout_converted_v2', true );
 }
-add_filter( 'the_content', 'jus_force_classic_checkout', 1 );
+add_action( 'init', 'jus_convert_checkout_to_classic', 1 );
 
 /**
- * Also disable WooCommerce checkout blocks feature flag as a second layer of defence.
+ * Disable WooCommerce checkout blocks feature flag.
  */
 add_filter( 'woocommerce_feature_cart_checkout_blocks_enabled', '__return_false' );
 
