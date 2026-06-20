@@ -23,7 +23,12 @@ class JUS_Checkout_Reliability {
 	public static function init() {
 		add_filter( 'woocommerce_defer_transactional_emails', '__return_true' );
 		add_action( 'woocommerce_checkout_order_processed', array( __CLASS__, 'remember_redirect' ), 20, 3 );
-		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_checkout_script' ), 30 );
+
+		// Print the reliability script directly in the footer. We deliberately do NOT
+		// enqueue with a dependency on wc-checkout: if that handle is missing (cached
+		// page, deferred scripts) WordPress silently drops a dependent inline script,
+		// which is why earlier versions of this watchdog never ran on the live site.
+		add_action( 'wp_footer', array( __CLASS__, 'print_checkout_script' ), 99 );
 
 		// Prevent LiteSpeed / any cache from storing wc-ajax responses.
 		add_action( 'init', array( __CLASS__, 'no_cache_wc_ajax' ), 0 );
@@ -104,80 +109,120 @@ class JUS_Checkout_Reliability {
 	}
 
 	/**
-	 * Checkout fallback script when AJAX returns an error after order creation.
+	 * Print checkout reliability script directly in wp_footer.
+	 *
+	 * Deliberately NOT enqueued with wp_enqueue_scripts / wc-checkout dependency:
+	 * if wc-checkout handle is absent (cached page, script optimiser) WordPress
+	 * silently drops any inline script that depends on it — which is why the
+	 * watchdog never ran on the live site in earlier versions.
+	 *
+	 * Targets the exact elements WooCommerce's blockUI overlays:
+	 *   .woocommerce-checkout-review-order-table  (order summary spinner)
+	 *   #payment / .woocommerce-checkout-payment  (pay via UPI spinner)
+	 * NOT the outer <form> — that is NOT what WC blocks.
 	 */
-	public static function enqueue_checkout_script() {
+	public static function print_checkout_script() {
 		if ( ! function_exists( 'is_checkout' ) || ! is_checkout() || is_order_received_page() ) {
 			return;
 		}
-		if ( ! function_exists( 'WC' ) || ! WC()->session ) {
-			return;
-		}
 
-		$redirect = WC()->session->get( self::SESSION_REDIRECT );
-		if ( ! is_string( $redirect ) || '' === $redirect ) {
-			$redirect = function_exists( 'wc_get_account_endpoint_url' )
-				? wc_get_account_endpoint_url( 'orders' )
-				: home_url( '/my-account/orders/' );
+		// Redirect URL for post-order recovery (if process_checkout times out).
+		$redirect = '';
+		if ( function_exists( 'WC' ) && WC()->session ) {
+			$redirect = (string) WC()->session->get( self::SESSION_REDIRECT, '' );
 		}
-
-		// Orders page fallback (always defined, never empty).
 		$orders_url = function_exists( 'wc_get_account_endpoint_url' )
 			? wc_get_account_endpoint_url( 'orders' )
 			: home_url( '/my-account/orders/' );
+		if ( ! $redirect ) {
+			$redirect = $orders_url;
+		}
 
-		wp_register_script( 'jus-checkout-reliability', false, array( 'jquery', 'wc-checkout' ), JUS_VERSION, true );
-		wp_enqueue_script( 'jus-checkout-reliability' );
-		wp_add_inline_script(
-			'jus-checkout-reliability',
-			'(function($){' .
+		?>
+<script id="jus-checkout-reliability">
+(function () {
+	'use strict';
+	var $ = window.jQuery;
+	if ( ! $ ) { return; }
 
-			// ── Recovery: redirect to orders page when order succeeded but AJAX returned error ──
-			'var redirect=' . wp_json_encode( esc_url_raw( $redirect ) ) . ';' .
-			'var ordersUrl=' . wp_json_encode( esc_url_raw( $orders_url ) ) . ';' .
-			'function cartCount(){var n=parseInt($(".jwellery-cart-count,.cart-count-badge,.cart-contents-count").first().text(),10);return isNaN(n)?0:n;}' .
-			'function maybeRecover(){if(!$(".woocommerce-error").length){return;}if(cartCount()>0){return;}window.location.href=redirect||ordersUrl;}' .
-			'$(document.body).on("checkout_error",function(){setTimeout(maybeRecover,900);});' .
+	var redirect   = <?php echo wp_json_encode( esc_url_raw( $redirect ) ); ?>;
+	var ordersUrl  = <?php echo wp_json_encode( esc_url_raw( $orders_url ) ); ?>;
 
-			// ── update_order_review watchdog (rolling 3s timer) ───────────────────────────────
-			// WooCommerce blocks the form while update_order_review AJAX is in-flight.
-			// On shared hosting this can stall permanently. Reset the 3s timer on every
-			// update_checkout trigger; cancel it when WC responds (updated_checkout / checkout_error).
-			'var _jusUpdateTimer=null;' .
-			'function jusUnblock(){' .
-			'_jusUpdateTimer=null;' .
-			'var $f=$("form.woocommerce-checkout");' .
-			'if(!$f.length){return;}' .
-			'$f.removeClass("processing").unblock();' .
-			'$f.find("#place_order").prop("disabled",false).css("opacity","");' .
-			'}' .
-			'function jusArmUpdateTimer(){clearTimeout(_jusUpdateTimer);_jusUpdateTimer=setTimeout(jusUnblock,1500);}' .
-			'$(document.body).on("update_checkout",jusArmUpdateTimer);' .
-			'$(document.body).on("updated_checkout checkout_error",function(){clearTimeout(_jusUpdateTimer);_jusUpdateTimer=null;});' .
-			// Extra unblock on error so a failed process_checkout also clears any overlay.
-			'$(document.body).on("checkout_error",function(){setTimeout(jusUnblock,400);});' .
-			// Hard safety net: 8s after page-ready, unconditionally unblock.
-			'$(document).ready(function(){setTimeout(jusUnblock,8000);});' .
+	/* ── Force-unblock: targets the EXACT elements WC's blockUI overlays ── */
+	function jusForceUnblock() {
+		/* WC blocks these two child elements, NOT the outer form */
+		var $tbl = $( '.woocommerce-checkout-review-order-table' );
+		var $pay = $( '#payment, .woocommerce-checkout-payment' );
+		var $btn = $( '#place_order' );
 
-			// ── Place Order timeout (process_checkout AJAX) ───────────────────────────────────
-			// If the server-side process_checkout hangs (PHP timeout on shared hosting),
-			// the AJAX call never resolves and the button spins forever.
-			// After 28s we redirect: to the thank-you URL if the order was placed (cart empty),
-			// otherwise to the orders page so the customer can check.
-			'var _jusOrderTimer=null;' .
-			'$(document.body).on("checkout_place_order",function(){' .
-			'clearTimeout(_jusOrderTimer);' .
-			'_jusOrderTimer=setTimeout(function(){' .
-			'_jusOrderTimer=null;' .
-			// Redirect: if cart appears empty, order was likely created — go to thank-you.
-			// If cart still has items, go to orders page so customer can see status.
-			'window.location.href=(cartCount()===0&&redirect)?redirect:ordersUrl;' .
-			'},28000);' .
-			'});' .
-			// On any checkout response (success redirects automatically; error fires checkout_error).
-			'$(document.body).on("checkout_error",function(){clearTimeout(_jusOrderTimer);_jusOrderTimer=null;});' .
+		if ( $tbl.length ) { $tbl.unblock(); }
+		if ( $pay.length ) { $pay.unblock(); }
+		if ( $btn.length ) { $btn.prop( 'disabled', false ).css( 'opacity', '' ); }
 
-			'})(jQuery);'
-		);
+		/* Also unblock the outer form in case WC or a plugin blocked it too */
+		var $form = $( 'form.woocommerce-checkout' );
+		if ( $form.length ) {
+			$form.removeClass( 'processing' );
+			try { $form.unblock(); } catch(e) {}
+		}
+	}
+
+	/* ── Rolling watchdog for update_order_review AJAX ── */
+	/* WC fires update_checkout, blocks the table+payment, then fires update_order_review.
+	   Our plugins_loaded fast-path responds in microseconds so updated_checkout fires
+	   quickly. But if the AJAX still hangs (cached stale response, network hiccup)
+	   this timer fires 2s after the last update_checkout and force-unblocks. */
+	var _watchdogTimer = null;
+	function armWatchdog() {
+		clearTimeout( _watchdogTimer );
+		_watchdogTimer = setTimeout( jusForceUnblock, 2000 );
+	}
+	$( document.body ).on( 'update_checkout', armWatchdog );
+	/* When WC finishes successfully or with an error, cancel watchdog (WC unblocks itself). */
+	$( document.body ).on( 'updated_checkout checkout_error', function () {
+		clearTimeout( _watchdogTimer );
+		_watchdogTimer = null;
+	} );
+
+	/* ── Hard safety net: 3 s after DOMContentLoaded, force-unblock unconditionally ── */
+	/* Covers the case where update_checkout fires before our listener is registered,
+	   or WC blocks on page load before the jQuery event system is ready. */
+	$( document ).ready( function () {
+		setTimeout( jusForceUnblock, 3000 );
+	} );
+
+	/* ── Extra unblock on checkout_error (failed process_checkout) ── */
+	$( document.body ).on( 'checkout_error', function () {
+		setTimeout( jusForceUnblock, 400 );
+	} );
+
+	/* ── Place Order timeout: if process_checkout AJAX hangs > 28 s, redirect ── */
+	var _orderTimer = null;
+	$( document.body ).on( 'checkout_place_order', function () {
+		clearTimeout( _orderTimer );
+		_orderTimer = setTimeout( function () {
+			_orderTimer = null;
+			/* Cart count > 0 means order wasn't created; go to orders page. */
+			var cartBadge = $( '.cart-count-badge,.jwellery-cart-count' ).first().text();
+			var cartCount = parseInt( cartBadge, 10 ) || 0;
+			window.location.href = ( cartCount === 0 && redirect ) ? redirect : ordersUrl;
+		}, 28000 );
+	} );
+	$( document.body ).on( 'checkout_error', function () {
+		clearTimeout( _orderTimer );
+		_orderTimer = null;
+	} );
+
+	/* ── Recovery: if order was placed but AJAX errored, redirect to thank-you ── */
+	function maybeRecover() {
+		if ( ! $( '.woocommerce-error' ).length ) { return; }
+		var cartBadge = $( '.cart-count-badge,.jwellery-cart-count' ).first().text();
+		if ( ( parseInt( cartBadge, 10 ) || 0 ) > 0 ) { return; }
+		window.location.href = redirect || ordersUrl;
+	}
+	$( document.body ).on( 'checkout_error', function () { setTimeout( maybeRecover, 900 ); } );
+}());
+</script>
+		<?php
 	}
 }
