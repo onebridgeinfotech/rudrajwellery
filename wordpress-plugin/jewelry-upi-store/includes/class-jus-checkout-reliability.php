@@ -53,17 +53,18 @@ class JUS_Checkout_Reliability {
 	 *
 	 * Runs before WooCommerce's own handler (priority 1). Bypasses the slow
 	 * shipping/gateway recalculation that causes checkout to hang on shared hosting.
-	 * Empty fragments are safe: the checkout HTML is already rendered by PHP on page load.
+	 *
+	 * We deliberately skip nonce verification here. update_order_review is a
+	 * read-only display refresh — it modifies no cart or order state, so there
+	 * is nothing to protect. Verifying the nonce would permanently block the
+	 * checkout form whenever the page is served from LiteSpeed cache (stale nonce
+	 * causes WC's own handler to return "-1"; WC JS can't parse it and never fires
+	 * updated_checkout, leaving the order-review and payment sections blocked forever).
+	 * The actual order placement uses its own independent nonce on ?wc-ajax=checkout.
 	 */
 	public static function fast_update_order_review() {
-		// Validate nonce — same key WooCommerce uses.
-		$nonce = isset( $_POST['security'] ) ? sanitize_text_field( wp_unslash( $_POST['security'] ) ) : '';
-		if ( ! wp_verify_nonce( $nonce, 'update-order-review' ) ) {
-			// Invalid nonce — fall through to WooCommerce's own handler.
-			return;
-		}
-
-		// Return the stored cart hash from the session so WC JS does not trigger a reload.
+		// Return the cart hash so WC JS does not trigger a reload.
+		// An empty string is safe: WC JS only reloads when cart_hash is truthy AND differs.
 		$cart_hash = '';
 		if ( function_exists( 'WC' ) ) {
 			if ( WC()->cart ) {
@@ -73,7 +74,7 @@ class JUS_Checkout_Reliability {
 			}
 		}
 
-		// Empty fragments = no DOM replacements; WooCommerce JS still unblocks the form.
+		// Empty fragments = no DOM replacements; WooCommerce JS unblocks the form.
 		wp_send_json( array(
 			'result'    => 'success',
 			'fragments' => array(),
@@ -149,7 +150,7 @@ class JUS_Checkout_Reliability {
 			'$f.removeClass("processing").unblock();' .
 			'$f.find("#place_order").prop("disabled",false).css("opacity","");' .
 			'}' .
-			'function jusArmUpdateTimer(){clearTimeout(_jusUpdateTimer);_jusUpdateTimer=setTimeout(jusUnblock,3000);}' .
+			'function jusArmUpdateTimer(){clearTimeout(_jusUpdateTimer);_jusUpdateTimer=setTimeout(jusUnblock,1500);}' .
 			'$(document.body).on("update_checkout",jusArmUpdateTimer);' .
 			'$(document.body).on("updated_checkout checkout_error",function(){clearTimeout(_jusUpdateTimer);_jusUpdateTimer=null;});' .
 			// Extra unblock on error so a failed process_checkout also clears any overlay.
