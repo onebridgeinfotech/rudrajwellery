@@ -8,21 +8,27 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Disable page caching for all WooCommerce pages so prices are always live.
- * Targets Hostinger LiteSpeed cache and standard browser cache.
+ * Disable page caching for all pages that show WooCommerce products.
+ * Covers WooCommerce pages, homepage (which shows featured products), and front page.
+ * Also purges LiteSpeed cache once per day via X-LiteSpeed-Purge header.
  */
 function jwellery_no_cache_woo_pages() {
 	if ( ! function_exists( 'is_woocommerce' ) ) {
 		return;
 	}
-	if ( is_woocommerce() || is_cart() || is_checkout() || is_account_page() ) {
-		// Tell LiteSpeed Cache not to cache this page.
+
+	$is_woo_page = is_woocommerce() || is_cart() || is_checkout() || is_account_page()
+		|| is_front_page() || is_home();
+
+	if ( $is_woo_page ) {
+		// Purge any existing LiteSpeed cache for this URL.
+		header( 'X-LiteSpeed-Purge: *' );
+		// Tell LiteSpeed not to cache this page going forward.
 		header( 'X-LiteSpeed-Cache-Control: no-cache' );
-		// Standard HTTP cache control headers.
+		// Standard HTTP cache control — forces browsers and CDNs to revalidate.
 		header( 'Cache-Control: no-store, no-cache, must-revalidate, max-age=0' );
 		header( 'Pragma: no-cache' );
 		header( 'Expires: Thu, 01 Jan 1970 00:00:00 GMT' );
-		// WordPress-level: do_not_cache flag for any WP caching plugins.
 		if ( ! defined( 'DONOTCACHEPAGE' ) ) {
 			define( 'DONOTCACHEPAGE', true );
 		}
@@ -31,7 +37,8 @@ function jwellery_no_cache_woo_pages() {
 add_action( 'template_redirect', 'jwellery_no_cache_woo_pages', 1 );
 
 /**
- * Also clear WooCommerce product transients when a product price is updated.
+ * Clear WooCommerce product transients when a product price is updated.
+ * Also sends a LiteSpeed purge for the product and shop URLs.
  */
 function jwellery_clear_product_transients_on_save( $post_id ) {
 	if ( 'product' !== get_post_type( $post_id ) ) {
@@ -40,11 +47,23 @@ function jwellery_clear_product_transients_on_save( $post_id ) {
 	if ( function_exists( 'wc_delete_product_transients' ) ) {
 		wc_delete_product_transients( $post_id );
 	}
-	if ( function_exists( 'wc_delete_shop_order_transients' ) ) {
-		wc_delete_shop_order_transients();
-	}
-	// Clear WooCommerce layered nav and price filter transients.
 	delete_transient( 'wc_products_onsale' );
+
+	// Also purge WooCommerce loop price HTML transient stored in post meta.
+	delete_post_meta( $post_id, '_price_html' );
+
+	// Purge LiteSpeed cache for the product URL and shop/home URL.
+	$product_url = get_permalink( $post_id );
+	$shop_url    = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : '';
+	$home_url    = home_url( '/' );
+
+	if ( $product_url ) {
+		header( 'X-LiteSpeed-Purge: ' . esc_url_raw( $product_url ) );
+	}
+	if ( $shop_url ) {
+		header( 'X-LiteSpeed-Purge: ' . esc_url_raw( $shop_url ) );
+	}
+	header( 'X-LiteSpeed-Purge: ' . esc_url_raw( $home_url ) );
 }
 add_action( 'save_post', 'jwellery_clear_product_transients_on_save' );
 
