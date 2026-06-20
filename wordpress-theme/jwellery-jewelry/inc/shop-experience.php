@@ -8,6 +8,47 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
+ * Disable page caching for all WooCommerce pages so prices are always live.
+ * Targets Hostinger LiteSpeed cache and standard browser cache.
+ */
+function jwellery_no_cache_woo_pages() {
+	if ( ! function_exists( 'is_woocommerce' ) ) {
+		return;
+	}
+	if ( is_woocommerce() || is_cart() || is_checkout() || is_account_page() ) {
+		// Tell LiteSpeed Cache not to cache this page.
+		header( 'X-LiteSpeed-Cache-Control: no-cache' );
+		// Standard HTTP cache control headers.
+		header( 'Cache-Control: no-store, no-cache, must-revalidate, max-age=0' );
+		header( 'Pragma: no-cache' );
+		header( 'Expires: Thu, 01 Jan 1970 00:00:00 GMT' );
+		// WordPress-level: do_not_cache flag for any WP caching plugins.
+		if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+			define( 'DONOTCACHEPAGE', true );
+		}
+	}
+}
+add_action( 'template_redirect', 'jwellery_no_cache_woo_pages', 1 );
+
+/**
+ * Also clear WooCommerce product transients when a product price is updated.
+ */
+function jwellery_clear_product_transients_on_save( $post_id ) {
+	if ( 'product' !== get_post_type( $post_id ) ) {
+		return;
+	}
+	if ( function_exists( 'wc_delete_product_transients' ) ) {
+		wc_delete_product_transients( $post_id );
+	}
+	if ( function_exists( 'wc_delete_shop_order_transients' ) ) {
+		wc_delete_shop_order_transients();
+	}
+	// Clear WooCommerce layered nav and price filter transients.
+	delete_transient( 'wc_products_onsale' );
+}
+add_action( 'save_post', 'jwellery_clear_product_transients_on_save' );
+
+/**
  * Free shipping threshold (INR).
  *
  * @return float
