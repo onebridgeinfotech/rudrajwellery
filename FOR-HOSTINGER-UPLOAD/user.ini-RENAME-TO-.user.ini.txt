@@ -1,0 +1,26 @@
+; ============================================================================
+;  PHP limits fix for media uploads on Hostinger.
+;
+;  WHAT THIS FIXES:
+;    - "An error occurred in the upload. Please try again later."
+;    - Media Library failing to load / thumbnails not generating
+;    (when the cause is low PHP memory or a small upload size limit)
+;
+;  HOW TO USE (Hostinger File Manager):
+;    1. Upload this file into  public_html  (same folder as wp-config.php)
+;    2. RENAME it from         user.ini-RENAME-TO-.user.ini.txt
+;                       to     .user.ini
+;       (exactly that — a leading dot, then "user.ini", no .txt)
+;    3. Wait ~5 minutes (Hostinger re-reads .user.ini on a short cache),
+;       then retry the upload in an Incognito window.
+;
+;  To confirm it took effect: WordPress admin -> Tools -> Site Health ->
+;  Info -> Media Handling / Server should show the new values.
+; ============================================================================
+
+memory_limit = 256M
+upload_max_filesize = 64M
+post_max_size = 64M
+max_execution_time = 120
+max_input_time = 120
+max_file_uploads = 30
