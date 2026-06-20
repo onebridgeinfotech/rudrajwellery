@@ -92,7 +92,6 @@ function jwellery_on_product_admin_save( $product_id ) {
 add_action( 'woocommerce_update_product', 'jwellery_on_product_admin_save', 20, 1 );
 add_action( 'woocommerce_new_product', 'jwellery_on_product_admin_save', 20, 1 );
 
-
 /**
  * Mark every live catalog product as admin-managed so deploy never overwrites wp-admin data.
  */
@@ -573,7 +572,6 @@ function jwellery_get_active_catalog_skus() {
 
 /**
  * WooCommerce product IDs for the active catalog SKUs.
- * Only returns IDs for published (not trashed/draft) products.
  *
  * @return int[]
  */
@@ -585,15 +583,13 @@ function jwellery_get_active_catalog_product_ids() {
 
 	$ids = array();
 	foreach ( jwellery_get_active_catalog_skus() as $sku ) {
-		// jwellery_get_product_ids_by_sku already filters out trash/auto-draft via SQL.
 		$product_ids = function_exists( 'jwellery_get_product_ids_by_sku' )
 			? jwellery_get_product_ids_by_sku( $sku )
 			: array();
 		if ( empty( $product_ids ) ) {
-			// wc_get_product_id_by_sku does NOT filter by post_status, so check explicitly.
-			$fallback_id = (int) wc_get_product_id_by_sku( $sku );
-			if ( $fallback_id > 0 && 'publish' === get_post_status( $fallback_id ) ) {
-				$product_ids = array( $fallback_id );
+			$id = wc_get_product_id_by_sku( $sku );
+			if ( $id ) {
+				$product_ids = array( (int) $id );
 			}
 		}
 		if ( empty( $product_ids ) ) {
@@ -602,8 +598,7 @@ function jwellery_get_active_catalog_product_ids() {
 		$id = function_exists( 'jwellery_pick_canonical_product_id' )
 			? jwellery_pick_canonical_product_id( $product_ids )
 			: (int) $product_ids[0];
-		// Final guard: only include published products.
-		if ( $id > 0 && 'publish' === get_post_status( $id ) ) {
+		if ( $id ) {
 			$ids[] = $id;
 		}
 	}
