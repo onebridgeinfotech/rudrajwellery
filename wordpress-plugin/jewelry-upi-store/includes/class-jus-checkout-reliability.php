@@ -74,10 +74,11 @@ class JUS_Checkout_Reliability {
 			}
 		}
 
-		// Empty fragments = no DOM replacements; WooCommerce JS unblocks the form.
+		// Empty fragments object = no DOM replacements; WooCommerce JS unblocks the form.
+		// Must be stdClass so it JSON-encodes as {} (object), not [] (array).
 		wp_send_json( array(
 			'result'    => 'success',
-			'fragments' => array(),
+			'fragments' => new stdClass(),
 			'cart_hash' => $cart_hash,
 		) );
 	}
