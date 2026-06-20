@@ -26,7 +26,7 @@ jobs:
           port: ${{ env.FTP_PORT }}
           protocol: ftp
           local-dir: ./wordpress-theme/jwellery-jewelry/
-          server-dir: /public_html/wp-content/themes/jwellery-jewelry/
+          server-dir: /wp-content/themes/jwellery-jewelry/
           dangerous-clean-slate: true
 
   deploy-plugin:
@@ -44,5 +44,5 @@ jobs:
           port: ${{ env.FTP_PORT }}
           protocol: ftp
           local-dir: ./wordpress-plugin/jewelry-upi-store/
-          server-dir: /public_html/wp-content/plugins/jewelry-upi-store/
+          server-dir: /wp-content/plugins/jewelry-upi-store/
           dangerous-clean-slate: true
