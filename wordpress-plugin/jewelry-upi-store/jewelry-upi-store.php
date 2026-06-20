@@ -129,10 +129,13 @@ add_action( 'woocommerce_loaded', 'jus_bootstrap', 20 );
  * rendering never interferes again. This is what WC admin "Switch to classic" does.
  */
 function jus_convert_checkout_to_classic() {
+	// Never run during AJAX — wp_update_post during AJAX breaks update_order_review.
+	if ( wp_doing_ajax() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
+		return;
+	}
 	if ( ! function_exists( 'wc_get_page_id' ) ) {
 		return;
 	}
-	// Skip if already converted.
 	if ( get_option( 'jus_checkout_converted_v2' ) ) {
 		return;
 	}
@@ -147,7 +150,6 @@ function jus_convert_checkout_to_classic() {
 		return;
 	}
 
-	// Convert if it has the blocks checkout or is empty.
 	if ( strpos( $page->post_content, 'wp:woocommerce/checkout' ) !== false
 		|| strpos( $page->post_content, 'wp:woocommerce/cart' ) !== false
 		|| '' === trim( $page->post_content ) ) {

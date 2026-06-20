@@ -68,7 +68,33 @@ class JUS_Checkout_Reliability {
 		wp_enqueue_script( 'jus-checkout-reliability' );
 		wp_add_inline_script(
 			'jus-checkout-reliability',
-			'(function($){var redirect=' . wp_json_encode( esc_url_raw( $redirect ) ) . ';function cartCount(){var n=parseInt($(".jwellery-cart-count,.cart-count-badge,.cart-contents-count").first().text(),10);return isNaN(n)?0:n;}function maybeRecover(){if(!redirect||!$(".woocommerce-error").length){return;}if(cartCount()>0){return;}window.location.href=redirect;}$(document.body).on("checkout_error",function(){setTimeout(maybeRecover,900);});})(jQuery);'
+			'(function($){' .
+			// Post-order-creation recovery: redirect if cart is empty after a checkout_error.
+			'var redirect=' . wp_json_encode( esc_url_raw( $redirect ) ) . ';' .
+			'function cartCount(){var n=parseInt($(".jwellery-cart-count,.cart-count-badge,.cart-contents-count").first().text(),10);return isNaN(n)?0:n;}' .
+			'function maybeRecover(){if(!redirect||!$(".woocommerce-error").length){return;}if(cartCount()>0){return;}window.location.href=redirect;}' .
+			'$(document.body).on("checkout_error",function(){setTimeout(maybeRecover,900);});' .
+			// Overlay watchdog: if the checkout form stays blocked for >8s, force-unblock it.
+			// This handles cases where update_order_review AJAX times out on shared hosting.
+			'$(document).ready(function(){' .
+			'setTimeout(function(){' .
+			'var $form=$("form.woocommerce-checkout");' .
+			'if($form.length&&$form.is(".processing")){' .
+			'$form.removeClass("processing").unblock();' .
+			'$form.find("#place_order").prop("disabled",false).css("opacity","");' .
+			'}' .
+			'},8000);' .
+			'$(document.body).on("update_checkout",function(){' .
+			'clearTimeout(window._jusOverlayTimer);' .
+			'window._jusOverlayTimer=setTimeout(function(){' .
+			'var $form=$("form.woocommerce-checkout");' .
+			'if($form.length&&$form.is(".processing")){' .
+			'$form.removeClass("processing").unblock();' .
+			'$form.find("#place_order").prop("disabled",false).css("opacity","");' .
+			'}},8000);' .
+			'});' .
+			'});' .
+			'})(jQuery);'
 		);
 	}
 }
