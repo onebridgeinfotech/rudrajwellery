@@ -24,6 +24,39 @@ class JUS_Checkout_Reliability {
 		add_filter( 'woocommerce_defer_transactional_emails', '__return_true' );
 		add_action( 'woocommerce_checkout_order_processed', array( __CLASS__, 'remember_redirect' ), 20, 3 );
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_checkout_script' ), 30 );
+
+		// Fast-path: short-circuit update_order_review before WC's slow handler (priority 1 < WC's 10).
+		// For a UPI-only, no-shipping store nothing in the order review changes when billing fields change,
+		// so returning empty fragments immediately unblocks the checkout form without any delay.
+		add_action( 'wc_ajax_update_order_review', array( __CLASS__, 'fast_update_order_review' ), 1 );
+	}
+
+	/**
+	 * Return a minimal update_order_review response instantly.
+	 *
+	 * Runs before WooCommerce's own handler (priority 1). Bypasses the slow
+	 * shipping/gateway recalculation that causes checkout to hang on shared hosting.
+	 * Empty fragments are safe: the checkout HTML is already rendered by PHP on page load.
+	 */
+	public static function fast_update_order_review() {
+		// Validate nonce — same key WooCommerce uses.
+		$nonce = isset( $_POST['security'] ) ? sanitize_text_field( wp_unslash( $_POST['security'] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, 'update-order-review' ) ) {
+			// Invalid nonce — fall through to WooCommerce's own handler.
+			return;
+		}
+
+		$cart_hash = '';
+		if ( function_exists( 'WC' ) && WC()->cart ) {
+			$cart_hash = WC()->cart->get_cart_hash();
+		}
+
+		// Empty fragments = no DOM replacements; WooCommerce JS still unblocks the form.
+		wp_send_json( array(
+			'result'    => 'success',
+			'fragments' => array(),
+			'cart_hash' => $cart_hash,
+		) );
 	}
 
 	/**
@@ -74,25 +107,19 @@ class JUS_Checkout_Reliability {
 			'function cartCount(){var n=parseInt($(".jwellery-cart-count,.cart-count-badge,.cart-contents-count").first().text(),10);return isNaN(n)?0:n;}' .
 			'function maybeRecover(){if(!redirect||!$(".woocommerce-error").length){return;}if(cartCount()>0){return;}window.location.href=redirect;}' .
 			'$(document.body).on("checkout_error",function(){setTimeout(maybeRecover,900);});' .
-			// Overlay watchdog: if the checkout form stays blocked for >8s, force-unblock it.
-			// This handles cases where update_order_review AJAX times out on shared hosting.
+			// Overlay watchdog: fire once 3s after page ready; never reset on update_checkout.
+			// The server-side fast_update_order_review returns instantly so the form should
+			// unblock via WC JS, but this is a safety net for edge cases.
 			'$(document).ready(function(){' .
-			'setTimeout(function(){' .
+			'function jusForceUnblock(){' .
 			'var $form=$("form.woocommerce-checkout");' .
 			'if($form.length&&$form.is(".processing")){' .
 			'$form.removeClass("processing").unblock();' .
 			'$form.find("#place_order").prop("disabled",false).css("opacity","");' .
-			'}' .
-			'},8000);' .
-			'$(document.body).on("update_checkout",function(){' .
-			'clearTimeout(window._jusOverlayTimer);' .
-			'window._jusOverlayTimer=setTimeout(function(){' .
-			'var $form=$("form.woocommerce-checkout");' .
-			'if($form.length&&$form.is(".processing")){' .
-			'$form.removeClass("processing").unblock();' .
-			'$form.find("#place_order").prop("disabled",false).css("opacity","");' .
-			'}},8000);' .
-			'});' .
+			'}}' .
+			'setTimeout(jusForceUnblock,3000);' .
+			// Also unblock whenever WC fires checkout_error (failed AJAX, wrong nonce, etc.)
+			'$(document.body).on("checkout_error",function(){setTimeout(jusForceUnblock,500);});' .
 			'});' .
 			'})(jQuery);'
 		);
