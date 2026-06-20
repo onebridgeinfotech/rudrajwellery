@@ -25,10 +25,12 @@ class JUS_Checkout_Reliability {
 		add_action( 'woocommerce_checkout_order_processed', array( __CLASS__, 'remember_redirect' ), 20, 3 );
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_checkout_script' ), 30 );
 
-		// Fast-path: short-circuit update_order_review before WC's slow handler (priority 1 < WC's 10).
-		// For a UPI-only, no-shipping store nothing in the order review changes when billing fields change,
-		// so returning empty fragments immediately unblocks the checkout form without any delay.
+		// Fast-path via ?wc-ajax= endpoint (WC default on most servers).
 		add_action( 'wc_ajax_update_order_review', array( __CLASS__, 'fast_update_order_review' ), 1 );
+
+		// Fallback via admin-ajax.php (some Hostinger configs route here instead).
+		add_action( 'wp_ajax_woocommerce_update_order_review', array( __CLASS__, 'fast_update_order_review' ), 1 );
+		add_action( 'wp_ajax_nopriv_woocommerce_update_order_review', array( __CLASS__, 'fast_update_order_review' ), 1 );
 	}
 
 	/**
@@ -46,9 +48,14 @@ class JUS_Checkout_Reliability {
 			return;
 		}
 
+		// Return the stored cart hash from the session so WC JS does not trigger a reload.
 		$cart_hash = '';
-		if ( function_exists( 'WC' ) && WC()->cart ) {
-			$cart_hash = WC()->cart->get_cart_hash();
+		if ( function_exists( 'WC' ) ) {
+			if ( WC()->cart ) {
+				$cart_hash = WC()->cart->get_cart_hash();
+			} elseif ( WC()->session ) {
+				$cart_hash = (string) WC()->session->get( 'cart_hash', '' );
+			}
 		}
 
 		// Empty fragments = no DOM replacements; WooCommerce JS still unblocks the form.
@@ -102,25 +109,42 @@ class JUS_Checkout_Reliability {
 		wp_add_inline_script(
 			'jus-checkout-reliability',
 			'(function($){' .
-			// Post-order-creation recovery: redirect if cart is empty after a checkout_error.
+
+			// ── Recovery: redirect to orders page when order succeeded but AJAX returned error ──
 			'var redirect=' . wp_json_encode( esc_url_raw( $redirect ) ) . ';' .
 			'function cartCount(){var n=parseInt($(".jwellery-cart-count,.cart-count-badge,.cart-contents-count").first().text(),10);return isNaN(n)?0:n;}' .
 			'function maybeRecover(){if(!redirect||!$(".woocommerce-error").length){return;}if(cartCount()>0){return;}window.location.href=redirect;}' .
 			'$(document.body).on("checkout_error",function(){setTimeout(maybeRecover,900);});' .
-			// Overlay watchdog: fire once 3s after page ready; never reset on update_checkout.
-			// The server-side fast_update_order_review returns instantly so the form should
-			// unblock via WC JS, but this is a safety net for edge cases.
-			'$(document).ready(function(){' .
+
+			// ── Overlay watchdog ─────────────────────────────────────────────────────────────
+			// WooCommerce blocks the checkout form while update_order_review AJAX is in-flight.
+			// On shared hosting the request can stall. We keep a rolling timer that fires 3s
+			// after the LAST update_checkout event. If the AJAX comes back first (updated_checkout
+			// or checkout_error), we cancel the timer — WC will unblock the form itself.
+			// This means repeated field changes are safe: each change resets the timer to 3s.
+			'var _jusTimer=null;' .
 			'function jusForceUnblock(){' .
+			'_jusTimer=null;' .
 			'var $form=$("form.woocommerce-checkout");' .
-			'if($form.length&&$form.is(".processing")){' .
+			'if(!$form.length){return;}' .
 			'$form.removeClass("processing").unblock();' .
 			'$form.find("#place_order").prop("disabled",false).css("opacity","");' .
-			'}}' .
-			'setTimeout(jusForceUnblock,3000);' .
-			// Also unblock whenever WC fires checkout_error (failed AJAX, wrong nonce, etc.)
-			'$(document.body).on("checkout_error",function(){setTimeout(jusForceUnblock,500);});' .
+			'}' .
+			'function jusArmTimer(){' .
+			'clearTimeout(_jusTimer);' .
+			'_jusTimer=setTimeout(jusForceUnblock,3000);' .
+			'}' .
+			// Arm a 3s watchdog every time WC starts an update_checkout AJAX call.
+			'$(document.body).on("update_checkout",jusArmTimer);' .
+			// When WC completes the call (success or error), cancel our timer.
+			'$(document.body).on("updated_checkout checkout_error",function(){' .
+			'clearTimeout(_jusTimer);_jusTimer=null;' .
 			'});' .
+			// Extra unblock on checkout_error so a failed process_checkout also clears overlay.
+			'$(document.body).on("checkout_error",function(){setTimeout(jusForceUnblock,500);});' .
+			// Hard safety net: 8s after page ready, force-unblock unconditionally.
+			'$(document).ready(function(){setTimeout(jusForceUnblock,8000);});' .
+
 			'})(jQuery);'
 		);
 	}
