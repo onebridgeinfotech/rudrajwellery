@@ -25,12 +25,27 @@ class JUS_Checkout_Reliability {
 		add_action( 'woocommerce_checkout_order_processed', array( __CLASS__, 'remember_redirect' ), 20, 3 );
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_checkout_script' ), 30 );
 
+		// Prevent LiteSpeed / any cache from storing wc-ajax responses.
+		add_action( 'init', array( __CLASS__, 'no_cache_wc_ajax' ), 0 );
+
 		// Fast-path via ?wc-ajax= endpoint (WC default on most servers).
 		add_action( 'wc_ajax_update_order_review', array( __CLASS__, 'fast_update_order_review' ), 1 );
 
 		// Fallback via admin-ajax.php (some Hostinger configs route here instead).
 		add_action( 'wp_ajax_woocommerce_update_order_review', array( __CLASS__, 'fast_update_order_review' ), 1 );
 		add_action( 'wp_ajax_nopriv_woocommerce_update_order_review', array( __CLASS__, 'fast_update_order_review' ), 1 );
+	}
+
+	/**
+	 * Set no-cache headers for every wc-ajax request so LiteSpeed never caches them.
+	 */
+	public static function no_cache_wc_ajax() {
+		if ( ! isset( $_GET['wc-ajax'] ) && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
+			return;
+		}
+		nocache_headers();
+		do_action( 'litespeed_control_set_nocache', 'wc_ajax' );
+		header( 'X-LiteSpeed-Cache-Control: no-cache' );
 	}
 
 	/**
@@ -104,6 +119,11 @@ class JUS_Checkout_Reliability {
 				: home_url( '/my-account/orders/' );
 		}
 
+		// Orders page fallback (always defined, never empty).
+		$orders_url = function_exists( 'wc_get_account_endpoint_url' )
+			? wc_get_account_endpoint_url( 'orders' )
+			: home_url( '/my-account/orders/' );
+
 		wp_register_script( 'jus-checkout-reliability', false, array( 'jquery', 'wc-checkout' ), JUS_VERSION, true );
 		wp_enqueue_script( 'jus-checkout-reliability' );
 		wp_add_inline_script(
@@ -112,38 +132,48 @@ class JUS_Checkout_Reliability {
 
 			// ── Recovery: redirect to orders page when order succeeded but AJAX returned error ──
 			'var redirect=' . wp_json_encode( esc_url_raw( $redirect ) ) . ';' .
+			'var ordersUrl=' . wp_json_encode( esc_url_raw( $orders_url ) ) . ';' .
 			'function cartCount(){var n=parseInt($(".jwellery-cart-count,.cart-count-badge,.cart-contents-count").first().text(),10);return isNaN(n)?0:n;}' .
-			'function maybeRecover(){if(!redirect||!$(".woocommerce-error").length){return;}if(cartCount()>0){return;}window.location.href=redirect;}' .
+			'function maybeRecover(){if(!$(".woocommerce-error").length){return;}if(cartCount()>0){return;}window.location.href=redirect||ordersUrl;}' .
 			'$(document.body).on("checkout_error",function(){setTimeout(maybeRecover,900);});' .
 
-			// ── Overlay watchdog ─────────────────────────────────────────────────────────────
-			// WooCommerce blocks the checkout form while update_order_review AJAX is in-flight.
-			// On shared hosting the request can stall. We keep a rolling timer that fires 3s
-			// after the LAST update_checkout event. If the AJAX comes back first (updated_checkout
-			// or checkout_error), we cancel the timer — WC will unblock the form itself.
-			// This means repeated field changes are safe: each change resets the timer to 3s.
-			'var _jusTimer=null;' .
-			'function jusForceUnblock(){' .
-			'_jusTimer=null;' .
-			'var $form=$("form.woocommerce-checkout");' .
-			'if(!$form.length){return;}' .
-			'$form.removeClass("processing").unblock();' .
-			'$form.find("#place_order").prop("disabled",false).css("opacity","");' .
+			// ── update_order_review watchdog (rolling 3s timer) ───────────────────────────────
+			// WooCommerce blocks the form while update_order_review AJAX is in-flight.
+			// On shared hosting this can stall permanently. Reset the 3s timer on every
+			// update_checkout trigger; cancel it when WC responds (updated_checkout / checkout_error).
+			'var _jusUpdateTimer=null;' .
+			'function jusUnblock(){' .
+			'_jusUpdateTimer=null;' .
+			'var $f=$("form.woocommerce-checkout");' .
+			'if(!$f.length){return;}' .
+			'$f.removeClass("processing").unblock();' .
+			'$f.find("#place_order").prop("disabled",false).css("opacity","");' .
 			'}' .
-			'function jusArmTimer(){' .
-			'clearTimeout(_jusTimer);' .
-			'_jusTimer=setTimeout(jusForceUnblock,3000);' .
-			'}' .
-			// Arm a 3s watchdog every time WC starts an update_checkout AJAX call.
-			'$(document.body).on("update_checkout",jusArmTimer);' .
-			// When WC completes the call (success or error), cancel our timer.
-			'$(document.body).on("updated_checkout checkout_error",function(){' .
-			'clearTimeout(_jusTimer);_jusTimer=null;' .
+			'function jusArmUpdateTimer(){clearTimeout(_jusUpdateTimer);_jusUpdateTimer=setTimeout(jusUnblock,3000);}' .
+			'$(document.body).on("update_checkout",jusArmUpdateTimer);' .
+			'$(document.body).on("updated_checkout checkout_error",function(){clearTimeout(_jusUpdateTimer);_jusUpdateTimer=null;});' .
+			// Extra unblock on error so a failed process_checkout also clears any overlay.
+			'$(document.body).on("checkout_error",function(){setTimeout(jusUnblock,400);});' .
+			// Hard safety net: 8s after page-ready, unconditionally unblock.
+			'$(document).ready(function(){setTimeout(jusUnblock,8000);});' .
+
+			// ── Place Order timeout (process_checkout AJAX) ───────────────────────────────────
+			// If the server-side process_checkout hangs (PHP timeout on shared hosting),
+			// the AJAX call never resolves and the button spins forever.
+			// After 28s we redirect: to the thank-you URL if the order was placed (cart empty),
+			// otherwise to the orders page so the customer can check.
+			'var _jusOrderTimer=null;' .
+			'$(document.body).on("checkout_place_order",function(){' .
+			'clearTimeout(_jusOrderTimer);' .
+			'_jusOrderTimer=setTimeout(function(){' .
+			'_jusOrderTimer=null;' .
+			// Redirect: if cart appears empty, order was likely created — go to thank-you.
+			// If cart still has items, go to orders page so customer can see status.
+			'window.location.href=(cartCount()===0&&redirect)?redirect:ordersUrl;' .
+			'},28000);' .
 			'});' .
-			// Extra unblock on checkout_error so a failed process_checkout also clears overlay.
-			'$(document.body).on("checkout_error",function(){setTimeout(jusForceUnblock,500);});' .
-			// Hard safety net: 8s after page ready, force-unblock unconditionally.
-			'$(document).ready(function(){setTimeout(jusForceUnblock,8000);});' .
+			// On any checkout response (success redirects automatically; error fires checkout_error).
+			'$(document.body).on("checkout_error",function(){clearTimeout(_jusOrderTimer);_jusOrderTimer=null;});' .
 
 			'})(jQuery);'
 		);
