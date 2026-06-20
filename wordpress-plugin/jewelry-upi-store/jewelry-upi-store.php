@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Jewelry UPI Store
  * Description: Manual UPI payment gateway, pending order workflow, and order emails.
- * Version: 1.2.7
+ * Version: 1.2.8
  * Author: Jewelry E-commerce
  * Requires at least: 6.0
  * Requires PHP: 7.4
@@ -15,7 +15,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'JUS_VERSION', '1.2.7' );
+define( 'JUS_VERSION', '1.2.8' );
 define( 'JUS_PLUGIN_FILE', __FILE__ );
 define( 'JUS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -178,7 +178,6 @@ add_filter( 'woocommerce_feature_cart_checkout_blocks_enabled', '__return_false'
  */
 add_filter( 'woocommerce_cart_needs_shipping', '__return_false' );
 add_filter( 'woocommerce_cart_needs_shipping_address', '__return_false' );
-add_filter( 'woocommerce_shipping_total', '__return_zero' );
 
 /**
  * Register gateway class name (loads gateway file only when WC asks for it).
