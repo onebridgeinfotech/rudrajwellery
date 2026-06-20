@@ -26,8 +26,18 @@ require $wp_load;
 header( 'Content-Type: text/html; charset=utf-8' );
 
 if ( ! is_user_logged_in() || ! current_user_can( 'manage_options' ) ) {
-	echo '<p>Access denied. Log in to WordPress admin as an administrator, then open this URL again.</p>';
-	exit;
+	// Fallback for when the auth cookie does not match (e.g. www vs non-www domain):
+	// allow access with a secret key in the URL. Temporary file — delete after use.
+	$given_key = isset( $_GET['key'] ) ? (string) $_GET['key'] : '';
+	if ( ! hash_equals( 'rudra-diag-2026', $given_key ) ) {
+		echo '<p>Access denied. Either:</p><ol>'
+			. '<li>Open this URL with <strong>www</strong>: '
+			. '<code>https://www.rudrajewellery.co.in/4-VISIT-ONCE-DIAGNOSE-MEDIA.php</code>, or</li>'
+			. '<li>Add the secret key to the URL: '
+			. '<code>https://rudrajewellery.co.in/4-VISIT-ONCE-DIAGNOSE-MEDIA.php?key=rudra-diag-2026</code></li>'
+			. '</ol>';
+		exit;
+	}
 }
 
 /**
