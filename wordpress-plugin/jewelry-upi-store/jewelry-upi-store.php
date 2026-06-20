@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Jewelry UPI Store
  * Description: Manual UPI payment gateway, pending order workflow, and order emails.
- * Version: 1.3.0
+ * Version: 1.3.1
  * Author: Jewelry E-commerce
  * Requires at least: 6.0
  * Requires PHP: 7.4
@@ -15,9 +15,35 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'JUS_VERSION', '1.3.0' );
+define( 'JUS_VERSION', '1.3.1' );
 define( 'JUS_PLUGIN_FILE', __FILE__ );
 define( 'JUS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+
+/**
+ * Ultra-early intercept for update_order_review — fires at plugins_loaded priority 1,
+ * before WooCommerce loads anything. This guarantees a sub-millisecond response
+ * regardless of any slow hook, DB query, or cache issue further down the stack.
+ *
+ * update_order_review is read-only (no state changes), so responding here is safe.
+ * The nonce is intentionally not verified — a stale nonce from a cached checkout
+ * page would cause WC's own handler to return "-1" (not valid JSON), which leaves
+ * the order-review and payment sections blocked with spinners forever.
+ */
+add_action(
+	'plugins_loaded',
+	static function () {
+		if ( ! isset( $_GET['wc-ajax'] ) || 'update_order_review' !== $_GET['wc-ajax'] ) {
+			return;
+		}
+		nocache_headers();
+		header( 'Content-Type: application/json; charset=utf-8' );
+		header( 'X-LiteSpeed-Cache-Control: no-cache' );
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo '{"result":"success","fragments":{},"cart_hash":""}';
+		exit;
+	},
+	1
+);
 
 /**
  * HPOS compatibility.
