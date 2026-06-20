@@ -168,26 +168,15 @@ add_action( 'init', 'jus_convert_checkout_to_classic', 1 );
 add_filter( 'woocommerce_feature_cart_checkout_blocks_enabled', '__return_false' );
 
 /**
- * Inject free shipping as a fallback when no shipping methods are available.
- * This prevents the "No shipping methods available" checkout error.
- *
- * @param array $rates Available shipping rates.
- * @return array
+ * Disable WooCommerce shipping requirement entirely.
+ * The store handles delivery separately and collects payment via UPI.
+ * Without this, WooCommerce's update_order_review AJAX hangs looking
+ * for shipping methods that were never configured, keeping a spinner overlay
+ * on the checkout page permanently.
  */
-function jus_ensure_free_shipping( $rates ) {
-	if ( ! empty( $rates ) ) {
-		return $rates;
-	}
-	$free = new WC_Shipping_Rate(
-		'jus_free_shipping',
-		__( 'Free Shipping', 'jewelry-upi-store' ),
-		0,
-		array(),
-		'free_shipping'
-	);
-	return array( 'jus_free_shipping' => $free );
-}
-add_filter( 'woocommerce_package_rates', 'jus_ensure_free_shipping', 99 );
+add_filter( 'woocommerce_cart_needs_shipping', '__return_false' );
+add_filter( 'woocommerce_cart_needs_shipping_address', '__return_false' );
+add_filter( 'woocommerce_shipping_total', '__return_zero' );
 
 /**
  * Register gateway class name (loads gateway file only when WC asks for it).
