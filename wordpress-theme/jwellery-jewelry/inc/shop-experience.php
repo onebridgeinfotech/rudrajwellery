@@ -9,8 +9,7 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Disable page caching for all pages that show WooCommerce products.
- * Covers WooCommerce pages, homepage (which shows featured products), and front page.
- * Also purges LiteSpeed cache once per day via X-LiteSpeed-Purge header.
+ * Uses LiteSpeed Cache plugin API + standard headers.
  */
 function jwellery_no_cache_woo_pages() {
 	if ( ! function_exists( 'is_woocommerce' ) ) {
@@ -21,11 +20,10 @@ function jwellery_no_cache_woo_pages() {
 		|| is_front_page() || is_home();
 
 	if ( $is_woo_page ) {
-		// Purge any existing LiteSpeed cache for this URL.
-		header( 'X-LiteSpeed-Purge: *' );
-		// Tell LiteSpeed not to cache this page going forward.
+		// LiteSpeed Cache plugin API — most reliable way on Hostinger.
+		do_action( 'litespeed_control_set_nocache', 'woocommerce_page' );
+		// HTTP header fallback.
 		header( 'X-LiteSpeed-Cache-Control: no-cache' );
-		// Standard HTTP cache control — forces browsers and CDNs to revalidate.
 		header( 'Cache-Control: no-store, no-cache, must-revalidate, max-age=0' );
 		header( 'Pragma: no-cache' );
 		header( 'Expires: Thu, 01 Jan 1970 00:00:00 GMT' );
@@ -37,35 +35,28 @@ function jwellery_no_cache_woo_pages() {
 add_action( 'template_redirect', 'jwellery_no_cache_woo_pages', 1 );
 
 /**
- * Clear WooCommerce product transients when a product price is updated.
- * Also sends a LiteSpeed purge for the product and shop URLs.
+ * When a product is saved or trashed, purge the homepage, shop page,
+ * and the product URL from LiteSpeed cache so new prices/status show immediately.
  */
-function jwellery_clear_product_transients_on_save( $post_id ) {
+function jwellery_purge_product_cache( $post_id ) {
 	if ( 'product' !== get_post_type( $post_id ) ) {
 		return;
 	}
+
+	// Clear WooCommerce internal transients.
 	if ( function_exists( 'wc_delete_product_transients' ) ) {
 		wc_delete_product_transients( $post_id );
 	}
 	delete_transient( 'wc_products_onsale' );
-
-	// Also purge WooCommerce loop price HTML transient stored in post meta.
 	delete_post_meta( $post_id, '_price_html' );
 
-	// Purge LiteSpeed cache for the product URL and shop/home URL.
-	$product_url = get_permalink( $post_id );
-	$shop_url    = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : '';
-	$home_url    = home_url( '/' );
-
-	if ( $product_url ) {
-		header( 'X-LiteSpeed-Purge: ' . esc_url_raw( $product_url ) );
-	}
-	if ( $shop_url ) {
-		header( 'X-LiteSpeed-Purge: ' . esc_url_raw( $shop_url ) );
-	}
-	header( 'X-LiteSpeed-Purge: ' . esc_url_raw( $home_url ) );
+	// Purge via LiteSpeed Cache plugin API (works on Hostinger).
+	do_action( 'litespeed_purge_all' );
 }
-add_action( 'save_post', 'jwellery_clear_product_transients_on_save' );
+add_action( 'save_post', 'jwellery_purge_product_cache' );
+add_action( 'wp_trash_post', 'jwellery_purge_product_cache' );
+add_action( 'untrash_post', 'jwellery_purge_product_cache' );
+add_action( 'delete_post', 'jwellery_purge_product_cache' );
 
 /**
  * Free shipping threshold (INR).
