@@ -57,6 +57,9 @@ add_action( 'save_post', 'jwellery_purge_product_cache' );
 add_action( 'wp_trash_post', 'jwellery_purge_product_cache' );
 add_action( 'untrash_post', 'jwellery_purge_product_cache' );
 add_action( 'delete_post', 'jwellery_purge_product_cache' );
+// Also hook WooCommerce product save (fires after WC writes price/stock to DB).
+add_action( 'woocommerce_update_product', 'jwellery_purge_product_cache' );
+add_action( 'woocommerce_new_product', 'jwellery_purge_product_cache' );
 
 /**
  * Free shipping threshold (INR).
