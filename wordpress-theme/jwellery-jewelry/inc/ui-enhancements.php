@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * UI enhancements: homepage stock filter, cart banner, product trust, WhatsApp, footer brand.
  *
