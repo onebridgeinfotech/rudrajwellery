@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Homepage sections styled like krishnamaalika.in
  *

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Jwellery Jewelry theme functions.
  *
