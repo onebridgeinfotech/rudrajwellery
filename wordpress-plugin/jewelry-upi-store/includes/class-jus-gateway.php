@@ -36,8 +36,8 @@ class JUS_Gateway extends WC_Payment_Gateway {
 		$this->init_settings();
 
 		$this->enabled      = $this->get_option( 'enabled', 'yes' );
-		$this->title        = $this->get_option( 'title', __( 'Pay via UPI', 'jewelry-upi-store' ) );
-		$this->description  = $this->get_option( 'description', __( 'Pay via UPI after you place the order. UPI details appear on the next page.', 'jewelry-upi-store' ) );
+		$this->title        = $this->get_option( 'title', __( 'Pay through UPI', 'jewelry-upi-store' ) );
+		$this->description  = $this->get_option( 'description', __( 'Pay through UPI after placing your order. Scan the PhonePe QR code or pay to our UPI ID on the order confirmation page.', 'jewelry-upi-store' ) );
 		$this->upi_id       = $this->get_option( 'upi_id' );
 		$this->qr_image_url = $this->get_option( 'qr_image_url' );
 		$this->instructions = $this->get_option( 'instructions' );
@@ -62,32 +62,32 @@ class JUS_Gateway extends WC_Payment_Gateway {
 				'title'       => __( 'Title', 'jewelry-upi-store' ),
 				'type'        => 'text',
 				'description' => __( 'Shown at checkout.', 'jewelry-upi-store' ),
-				'default'     => __( 'Pay via UPI', 'jewelry-upi-store' ),
+				'default'     => __( 'Pay through UPI', 'jewelry-upi-store' ),
 				'desc_tip'    => true,
 			),
 			'description'  => array(
 				'title'       => __( 'Description', 'jewelry-upi-store' ),
 				'type'        => 'textarea',
 				'description' => __( 'Shown at checkout under payment method.', 'jewelry-upi-store' ),
-				'default'     => __( 'Pay via UPI after placing your order. UPI ID and QR code will be shown on the confirmation page.', 'jewelry-upi-store' ),
+				'default'     => __( 'Pay through UPI after placing your order. Scan the PhonePe QR code or pay to our UPI ID on the order confirmation page.', 'jewelry-upi-store' ),
 			),
 			'upi_id'       => array(
 				'title'       => __( 'UPI ID', 'jewelry-upi-store' ),
 				'type'        => 'text',
 				'description' => __( 'e.g. yourstore@paytm or 9876543210@ybl', 'jewelry-upi-store' ),
-				'default'     => '',
+				'default'     => '7036837243@ybl',
 			),
 			'qr_image_url' => array(
 				'title'       => __( 'QR Code Image URL', 'jewelry-upi-store' ),
 				'type'        => 'text',
 				'description' => __( 'Upload QR to Media Library and paste the file URL here.', 'jewelry-upi-store' ),
-				'default'     => '',
+				'default'     => function_exists( 'jus_default_qr_image_url' ) ? jus_default_qr_image_url() : '',
 			),
 			'instructions' => array(
 				'title'       => __( 'Payment instructions', 'jewelry-upi-store' ),
 				'type'        => 'textarea',
 				'description' => __( 'Shown on thank-you page and emails.', 'jewelry-upi-store' ),
-				'default'     => __( 'Pay the exact order total. Put your Order Number in the UPI payment remarks/note. We will confirm within 24 hours after verifying your payment.', 'jewelry-upi-store' ),
+				'default'     => __( 'Pay the exact order total to KALPANA D (PhonePe). Put your Order Number in the UPI payment remarks/note. We will confirm within 24 hours after verifying your payment.', 'jewelry-upi-store' ),
 			),
 		);
 	}
@@ -108,13 +108,16 @@ class JUS_Gateway extends WC_Payment_Gateway {
 	 * Payment fields on checkout (UPI reminder).
 	 */
 	public function payment_fields() {
+		echo '<div class="jus-checkout-upi">';
+		echo '<p class="jus-checkout-upi-title"><strong>' . esc_html__( 'Pay through UPI', 'jewelry-upi-store' ) . '</strong></p>';
 		if ( $this->description ) {
 			echo wp_kses_post( wpautop( wptexturize( $this->description ) ) );
 		}
 		if ( $this->upi_id ) {
-			echo '<p><strong>' . esc_html__( 'UPI ID:', 'jewelry-upi-store' ) . '</strong> <code>' . esc_html( $this->upi_id ) . '</code></p>';
+			echo '<p class="jus-checkout-upi-id"><strong>' . esc_html__( 'UPI ID:', 'jewelry-upi-store' ) . '</strong> <code>' . esc_html( $this->upi_id ) . '</code></p>';
 		}
-		echo '<p class="jus-checkout-note">' . esc_html__( 'Place your order first — pay on the next page via QR code. Put your order number in UPI remarks.', 'jewelry-upi-store' ) . '</p>';
+		echo '<p class="jus-checkout-note">' . esc_html__( 'Place your order first — the PhonePe QR code and UPI ID will be shown on the next page. Put your order number in UPI remarks when you pay.', 'jewelry-upi-store' ) . '</p>';
+		echo '</div>';
 	}
 
 	/**
@@ -175,7 +178,7 @@ class JUS_Gateway extends WC_Payment_Gateway {
 		$utr = $order->get_meta( '_billing_upi_utr' );
 
 		echo '<div class="jus-thankyou-upi" style="margin:1.5em 0;padding:1.5em;border:1px solid #e0c080;background:#fffdf8;border-radius:8px;">';
-		echo '<h2 style="margin-top:0;">' . esc_html__( 'Complete your UPI payment', 'jewelry-upi-store' ) . '</h2>';
+		echo '<h2 style="margin-top:0;">' . esc_html__( 'Pay through UPI', 'jewelry-upi-store' ) . '</h2>';
 		echo '<p style="margin:0 0 1em;padding:10px 12px;background:#fff3cd;border-radius:6px;"><strong>' . esc_html__( 'Important:', 'jewelry-upi-store' ) . '</strong> ';
 		echo sprintf(
 			/* translators: %s: order number */
@@ -186,12 +189,14 @@ class JUS_Gateway extends WC_Payment_Gateway {
 		echo '<p><strong>' . esc_html__( 'Order number:', 'jewelry-upi-store' ) . '</strong> ' . esc_html( $order->get_order_number() ) . '</p>';
 		echo '<p><strong>' . esc_html__( 'Amount to pay:', 'jewelry-upi-store' ) . '</strong> ' . wp_kses_post( $order->get_formatted_order_total() ) . '</p>';
 
-		if ( $this->upi_id ) {
-			echo '<p><strong>' . esc_html__( 'UPI ID:', 'jewelry-upi-store' ) . '</strong> <code style="font-size:1.1em;">' . esc_html( $this->upi_id ) . '</code></p>';
+		if ( $this->qr_image_url ) {
+			echo '<p><strong>' . esc_html__( 'Scan & pay (PhonePe):', 'jewelry-upi-store' ) . '</strong></p>';
+			echo '<p><img src="' . esc_url( $this->qr_image_url ) . '" alt="' . esc_attr__( 'PhonePe UPI QR Code', 'jewelry-upi-store' ) . '" style="max-width:240px;height:auto;border:1px solid #ddd;border-radius:8px;" /></p>';
+			echo '<p style="margin-top:0;font-size:0.92em;color:#555;">' . esc_html__( 'Open PhonePe, Google Pay, or Paytm → Scan QR → pay the exact order total.', 'jewelry-upi-store' ) . '</p>';
 		}
 
-		if ( $this->qr_image_url ) {
-			echo '<p><img src="' . esc_url( $this->qr_image_url ) . '" alt="' . esc_attr__( 'UPI QR Code', 'jewelry-upi-store' ) . '" style="max-width:220px;height:auto;border:1px solid #ddd;" /></p>';
+		if ( $this->upi_id ) {
+			echo '<p><strong>' . esc_html__( 'Or pay to UPI ID:', 'jewelry-upi-store' ) . '</strong> <code style="font-size:1.1em;">' . esc_html( $this->upi_id ) . '</code></p>';
 		}
 
 		if ( $utr ) {

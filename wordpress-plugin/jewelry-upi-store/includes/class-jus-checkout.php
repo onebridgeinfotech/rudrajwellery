@@ -80,7 +80,7 @@ class JUS_Checkout {
 		$qr_url   = isset( $settings['qr_image_url'] ) ? $settings['qr_image_url'] : '';
 
 		echo '<div class="jus-thankyou-upi jus-view-order-upi" style="margin:1.5em 0;padding:1.5em;border:1px solid #e0c080;background:#fffdf8;border-radius:8px;">';
-		echo '<h3 style="margin-top:0;">' . esc_html__( 'Complete your UPI payment', 'jewelry-upi-store' ) . '</h3>';
+		echo '<h3 style="margin-top:0;">' . esc_html__( 'Pay through UPI', 'jewelry-upi-store' ) . '</h3>';
 		echo '<p><strong>' . esc_html__( 'Amount:', 'jewelry-upi-store' ) . '</strong> ' . wp_kses_post( $order->get_formatted_order_total() ) . '</p>';
 		echo '<p><strong>' . esc_html__( 'Order number (UPI remarks):', 'jewelry-upi-store' ) . '</strong> <code>' . esc_html( $order->get_order_number() ) . '</code></p>';
 		if ( $upi_id ) {

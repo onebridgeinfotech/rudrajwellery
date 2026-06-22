@@ -10,7 +10,7 @@
 	var sanitizeHTML = window.wc.sanitize.sanitizeHTML;
 
 	var settings = getSetting( 'jus_manual_upi_data', {} );
-	var title = decodeEntities( settings.title || 'Pay via UPI' );
+	var title = decodeEntities( settings.title || 'Pay through UPI' );
 	var description = settings.description ? decodeEntities( settings.description ) : '';
 	var upiId = settings.upi_id || '';
 

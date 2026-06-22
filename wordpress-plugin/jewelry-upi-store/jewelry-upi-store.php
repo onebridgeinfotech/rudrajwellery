@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Jewelry UPI Store
  * Description: Manual UPI payment gateway, pending order workflow, and order emails.
- * Version: 1.3.2
+ * Version: 1.3.3
  * Author: Jewelry E-commerce
  * Requires at least: 6.0
  * Requires PHP: 7.4
@@ -15,7 +15,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'JUS_VERSION', '1.3.2' );
+define( 'JUS_VERSION', '1.3.3' );
 define( 'JUS_PLUGIN_FILE', __FILE__ );
 define( 'JUS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -58,6 +58,15 @@ add_action(
 );
 
 /**
+ * Bundled PhonePe QR image URL (Kalpana D).
+ *
+ * @return string
+ */
+function jus_default_qr_image_url() {
+	return plugins_url( 'assets/images/phonepe-qr-kalpana-d.png', JUS_PLUGIN_FILE );
+}
+
+/**
  * Default UPI gateway settings.
  *
  * @return array
@@ -65,11 +74,11 @@ add_action(
 function jus_default_gateway_settings() {
 	return array(
 		'enabled'      => 'yes',
-		'title'        => __( 'Pay via UPI', 'jewelry-upi-store' ),
-		'description'  => __( 'Pay via UPI after you place the order. UPI details appear on the next page.', 'jewelry-upi-store' ),
-		'upi_id'       => '',
-		'qr_image_url' => '',
-		'instructions' => __( 'Pay the exact order total. Put your Order Number in the UPI payment remarks/note. We will confirm within 24 hours after verifying your payment.', 'jewelry-upi-store' ),
+		'title'        => __( 'Pay through UPI', 'jewelry-upi-store' ),
+		'description'  => __( 'Pay through UPI after placing your order. Scan the PhonePe QR code or pay to our UPI ID on the order confirmation page.', 'jewelry-upi-store' ),
+		'upi_id'       => '7036837243@ybl',
+		'qr_image_url' => jus_default_qr_image_url(),
+		'instructions' => __( 'Pay the exact order total to KALPANA D (PhonePe). Put your Order Number in the UPI payment remarks/note. We will confirm within 24 hours after verifying your payment.', 'jewelry-upi-store' ),
 	);
 }
 
@@ -86,7 +95,18 @@ function jus_ensure_gateway_settings() {
 		$settings = array();
 	}
 
-	$settings = wp_parse_args( $settings, jus_default_gateway_settings() );
+	$defaults = jus_default_gateway_settings();
+	$settings = wp_parse_args( $settings, $defaults );
+
+	if ( empty( trim( (string) $settings['upi_id'] ) ) ) {
+		$settings['upi_id'] = $defaults['upi_id'];
+	}
+	if ( empty( trim( (string) $settings['qr_image_url'] ) ) ) {
+		$settings['qr_image_url'] = $defaults['qr_image_url'];
+	}
+	if ( empty( trim( (string) $settings['title'] ) ) || 'Pay via UPI' === $settings['title'] ) {
+		$settings['title'] = $defaults['title'];
+	}
 	if ( empty( $settings['enabled'] ) || 'yes' !== $settings['enabled'] ) {
 		$settings['enabled'] = 'yes';
 	}

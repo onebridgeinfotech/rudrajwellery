@@ -153,7 +153,7 @@ function jwellery_checkout_steps() {
 		<ol>
 			<li class="is-done"><a href="<?php echo esc_url( $cart_url ); ?>"><?php esc_html_e( 'Cart', 'jwellery-jewelry' ); ?></a></li>
 			<li class="is-active" aria-current="step"><?php esc_html_e( 'Details', 'jwellery-jewelry' ); ?></li>
-			<li><?php esc_html_e( 'Pay via UPI', 'jwellery-jewelry' ); ?></li>
+			<li><?php esc_html_e( 'Pay through UPI', 'jwellery-jewelry' ); ?></li>
 			<li><?php esc_html_e( 'Done', 'jwellery-jewelry' ); ?></li>
 		</ol>
 	</nav>
@@ -173,11 +173,19 @@ function jwellery_thankyou_steps() {
 		<ol>
 			<li class="is-done"><?php esc_html_e( 'Cart', 'jwellery-jewelry' ); ?></li>
 			<li class="is-done"><?php esc_html_e( 'Details', 'jwellery-jewelry' ); ?></li>
-			<li class="is-active" aria-current="step"><?php esc_html_e( 'Pay via UPI', 'jwellery-jewelry' ); ?></li>
+			<li class="is-active" aria-current="step"><?php esc_html_e( 'Pay through UPI', 'jwellery-jewelry' ); ?></li>
 			<li><?php esc_html_e( 'Done', 'jwellery-jewelry' ); ?></li>
 		</ol>
 	</nav>
-	<p class="jwellery-upi-helper"><?php esc_html_e( 'Scan the QR or pay to the UPI ID below. Always mention your order number in the payment note.', 'jwellery-jewelry' ); ?></p>
+	<p class="jwellery-upi-helper"><?php
+		$settings = get_option( 'woocommerce_jus_manual_upi_settings', array() );
+		$upi_id   = is_array( $settings ) && ! empty( $settings['upi_id'] ) ? $settings['upi_id'] : '7036837243@ybl';
+		printf(
+			/* translators: %s: UPI ID */
+			esc_html__( 'Pay through UPI — scan the PhonePe QR or pay to %s. Always mention your order number in the payment note.', 'jwellery-jewelry' ),
+			esc_html( $upi_id )
+		);
+	?></p>
 	<?php
 }
 add_action( 'woocommerce_before_thankyou', 'jwellery_thankyou_steps', 5 );
