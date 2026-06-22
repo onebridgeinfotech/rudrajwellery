@@ -401,6 +401,9 @@ function jwellery_hide_inactive_catalog_products( $visible, $id, $product ) {
 	if ( function_exists( 'is_checkout' ) && is_checkout() ) {
 		return $visible;
 	}
+	if ( function_exists( 'is_product' ) && is_product() ) {
+		return $visible;
+	}
 	if ( function_exists( 'jwellery_product_is_admin_managed' ) && jwellery_product_is_admin_managed( $id ) ) {
 		return $visible;
 	}
@@ -779,12 +782,12 @@ function jwellery_product_trust_badges() {
 	?>
 	<ul class="jwellery-trust-badges jwellery-trust-badges--product">
 		<li><?php esc_html_e( 'Premium imitation jewellery', 'jwellery-jewelry' ); ?></li>
-		<li><?php esc_html_e( 'Gold-tone finish â€” not real gold', 'jwellery-jewelry' ); ?></li>
-		<li><?php esc_html_e( 'Secure UPI Â· All-India shipping', 'jwellery-jewelry' ); ?></li>
+		<li><?php esc_html_e( 'Gold-tone finish — not real gold', 'jwellery-jewelry' ); ?></li>
+		<li><?php esc_html_e( 'Secure UPI · All-India shipping', 'jwellery-jewelry' ); ?></li>
 	</ul>
 	<?php
 }
-add_action( 'woocommerce_single_product_summary', 'jwellery_product_trust_badges', 25 );
+// Priority set in inc/single-product.php.
 
 /**
  * WhatsApp share on product page.
@@ -801,14 +804,14 @@ function jwellery_product_whatsapp_share() {
 	if ( ! $wa ) {
 		return;
 	}
-	$text = rawurlencode( $product->get_name() . ' â€” ' . $product->get_permalink() );
+	$text = rawurlencode( $product->get_name() . ' — ' . $product->get_permalink() );
 	?>
 	<p class="jwellery-wa-share jwellery-single-product-actions">
 		<a class="jwellery-btn jwellery-btn-wa jwellery-single-wa-btn" href="<?php echo esc_url( $wa . '?text=' . $text ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Ask on WhatsApp', 'jwellery-jewelry' ); ?></a>
 	</p>
 	<?php
 }
-add_action( 'woocommerce_single_product_summary', 'jwellery_product_whatsapp_share', 35 );
+// Priority set in inc/single-product.php.
 
 /**
  * Sticky add to cart bar (mobile).

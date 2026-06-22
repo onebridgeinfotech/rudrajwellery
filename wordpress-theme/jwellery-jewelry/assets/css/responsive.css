@@ -1005,6 +1005,11 @@ body.jwellery-menu-open {
 		display: block !important;
 	}
 
+	.jwellery-menu {
+		flex-direction: row;
+		align-items: center;
+	}
+
 	.jwellery-logo-link {
 		justify-content: flex-start;
 		width: auto;

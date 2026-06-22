@@ -90,7 +90,7 @@ function jwellery_single_product_details() {
 	</div>
 	<?php
 }
-add_action( 'woocommerce_single_product_summary', 'jwellery_single_product_details', 26 );
+// Priority set in inc/single-product.php (after add to cart).
 
 /**
  * Similar products (same category).

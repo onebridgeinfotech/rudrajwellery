@@ -687,7 +687,9 @@ function jwellery_get_active_catalog_skus() {
 		$skus[] = (string) $row[0];
 	}
 
-	if ( class_exists( 'WooCommerce' ) && ! jwellery_is_background_catalog_request() ) {
+	// Full wp-admin SKU scan is expensive — keep it off public product pages.
+	$allow_admin_sku_scan = is_admin() || jwellery_is_background_catalog_request();
+	if ( class_exists( 'WooCommerce' ) && $allow_admin_sku_scan ) {
 		foreach ( wc_get_products(
 			array(
 				'status' => 'publish',
