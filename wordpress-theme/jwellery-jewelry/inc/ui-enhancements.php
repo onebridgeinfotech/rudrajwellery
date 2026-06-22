@@ -739,23 +739,6 @@ function jwellery_hero_slides() {
 }
 
 /**
- * One-time: reset custom hero uploads so bundled haram/necklace slides show after deploy.
- */
-function jwellery_bootstrap_hero_haram_necklace_slides() {
-	$done = (string) get_option( 'jwellery_hero_haram_necklace_ver', '' );
-	if ( $done === JWELLERY_THEME_VERSION ) {
-		return;
-	}
-
-	foreach ( array( 'jwellery_hero_image_1', 'jwellery_hero_image_2', 'jwellery_hero_image_3', 'jwellery_hero_image_4', 'jwellery_hero_image_5' ) as $key ) {
-		remove_theme_mod( $key );
-	}
-
-	update_option( 'jwellery_hero_haram_necklace_ver', JWELLERY_THEME_VERSION, false );
-}
-add_action( 'after_setup_theme', 'jwellery_bootstrap_hero_haram_necklace_slides', 28 );
-
-/**
  * Login notice on cart for guests.
  */
 function jwellery_cart_login_notice() {

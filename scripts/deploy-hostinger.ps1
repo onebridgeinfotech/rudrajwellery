@@ -125,6 +125,10 @@ if (Test-Path $purgeScript) {
 
 # Catalog sync/restore disabled on deploy — wp-admin product names and prices are never overwritten.
 # To sync images or create missing SKUs manually, run scripts/sync-live-catalog.ps1
+#
+# NOTE: FTP deploy uploads theme/plugin FILES only. WordPress Customizer (hero slides,
+# phone, logo, etc.) and Media Library live in the database — they are not in this repo.
+# Hero slides: Appearance → Customize → Homepage Hero (jwellery_hero_image_1..5).
 
 Write-Host ""
 Write-Host "Deploy complete." -ForegroundColor Green
