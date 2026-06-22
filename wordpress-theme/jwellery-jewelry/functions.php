@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'JWELLERY_THEME_VERSION', '4.6.40' );
+define( 'JWELLERY_THEME_VERSION', '4.6.45' );
 define( 'JWELLERY_THEME_DIR', get_template_directory() );
 define( 'JWELLERY_THEME_URI', get_template_directory_uri() );
 define( 'JWELLERY_THEME_SLUG', 'jwellery-jewelry' );
@@ -141,7 +141,7 @@ function jwellery_enqueue_assets() {
 	wp_enqueue_style( 'jwellery-responsive', JWELLERY_THEME_URI . '/assets/css/responsive.css', array( 'jwellery-buttons' ), $ver );
 	wp_enqueue_style( 'jwellery-home-design', JWELLERY_THEME_URI . '/assets/css/home-design.css', array( 'jwellery-responsive' ), $ver );
 	wp_enqueue_style( 'jwellery-icons', JWELLERY_THEME_URI . '/assets/css/icons.css', array( 'jwellery-theme' ), $ver );
-	wp_enqueue_script( 'jwellery-theme', JWELLERY_THEME_URI . '/assets/js/theme.js', array(), $ver, true );
+	wp_enqueue_script( 'jwellery-theme', JWELLERY_THEME_URI . '/assets/js/theme.js', array( 'jquery' ), $ver, true );
 }
 add_action( 'wp_enqueue_scripts', 'jwellery_enqueue_assets' );
 

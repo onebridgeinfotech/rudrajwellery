@@ -34,6 +34,9 @@ function jwellery_render_product_card( $product, $extra_class = '' ) {
 	if ( ! $product || ! is_a( $product, 'WC_Product' ) ) {
 		return;
 	}
+	if ( function_exists( 'jwellery_product_is_storefront_ready' ) && ! jwellery_product_is_storefront_ready( $product ) ) {
+		return;
+	}
 	if ( function_exists( 'jwellery_product_has_image' ) && ! jwellery_product_has_image( $product ) ) {
 		return;
 	}
@@ -65,9 +68,14 @@ function jwellery_render_product_card( $product, $extra_class = '' ) {
 			<h3 class="woocommerce-loop-product__title jwellery-product-title"><?php echo esc_html( $product->get_name() ); ?></h3>
 			<span class="price"><?php echo wp_kses_post( $product->get_price_html() ); ?></span>
 		</div>
-		<?php if ( ! $out_of_stock ) : ?>
+		<?php if ( ! $out_of_stock && $product->is_purchasable() ) : ?>
 			<div class="jwellery-loop-actions" style="position:relative;z-index:2;">
-				<a href="<?php echo esc_url( $product->get_permalink() ); ?>" class="button add_to_cart_button product_type_<?php echo esc_attr( $product->get_type() ); ?>"><?php esc_html_e( 'Add to cart', 'jwellery-jewelry' ); ?></a>
+				<?php
+				$aria = method_exists( $product, 'add_to_cart_description' )
+					? $product->add_to_cart_description()
+					: $product->add_to_cart_text();
+				?>
+				<a href="<?php echo esc_url( $product->add_to_cart_url() ); ?>" class="button add_to_cart_button ajax_add_to_cart product_type_<?php echo esc_attr( $product->get_type() ); ?>" data-product_id="<?php echo esc_attr( $product->get_id() ); ?>" aria-label="<?php echo esc_attr( $aria ); ?>"><?php echo esc_html( $product->add_to_cart_text() ); ?></a>
 			</div>
 		<?php endif; ?>
 	</li>

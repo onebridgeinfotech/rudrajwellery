@@ -9,8 +9,10 @@ Stored in **`.env.deploy`** (gitignored). Template: `deploy.env.example`.
 | Server | `82.180.143.137` |
 | Username | `u956615329.rudrajewellery.co.in` |
 | Port | `21` |
-| Theme path | `/public_html/wp-content/themes/jwellery-jewelry/` |
-| Plugin path | `/public_html/wp-content/plugins/jewelry-upi-store/` |
+| Theme path | `/wp-content/themes/jwellery-jewelry/` |
+| Plugin path | `/wp-content/plugins/jewelry-upi-store/` |
+
+**Important:** On Hostinger, the FTP account root is already `public_html`. Do **not** prefix paths with `/public_html/` — that creates a wrong nested folder `public_html/public_html/` and deploys will not reach the live site.
 
 Password is only in `.env.deploy` — never commit it.
 

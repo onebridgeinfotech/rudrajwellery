@@ -85,6 +85,16 @@ function jwellery_get_all_catalog_products( $instock_only = false ) {
 	if ( function_exists( 'jwellery_filter_products_with_images' ) ) {
 		$products = jwellery_filter_products_with_images( $products );
 	}
+	if ( function_exists( 'jwellery_product_is_storefront_ready' ) ) {
+		$products = array_values(
+			array_filter(
+				$products,
+				static function ( $product ) {
+					return jwellery_product_is_storefront_ready( $product );
+				}
+			)
+		);
+	}
 	if ( function_exists( 'jwellery_dedupe_products_by_image' ) ) {
 		$products = jwellery_dedupe_products_by_image( $products );
 	}

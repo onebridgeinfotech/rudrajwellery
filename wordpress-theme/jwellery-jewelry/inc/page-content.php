@@ -389,7 +389,7 @@ function jwellery_build_shipping_page_content( $t ) {
 		sprintf( esc_html__( 'Last updated: June %s', 'jwellery-jewelry' ), esc_html( $t['year'] ) ),
 		esc_html__( 'We ship across India with secure packaging and reliable courier partners.', 'jwellery-jewelry' ),
 		function_exists( 'jwellery_page_policy_card_html' ) ? jwellery_page_policy_card_html( __( 'Processing time', 'jwellery-jewelry' ), '<p>' . esc_html__( 'Orders are processed after your UPI payment and UTR are verified (usually within 24 hours on working days).', 'jwellery-jewelry' ) . '</p>', 'lock' ) : '',
-		function_exists( 'jwellery_page_policy_card_html' ) ? jwellery_page_policy_card_html( __( 'Delivery timeline', 'jwellery-jewelry' ), '<ul><li><strong>' . esc_html__( '5–10 business days', 'jwellery-jewelry' ) . '</strong> ' . esc_html__( 'after dispatch', 'jwellery-jewelry' ) . '</li><li>' . esc_html__( 'Free shipping on orders above ₹999 when offer is active', 'jwellery-jewelry' ) . '</li><li>' . esc_html__( 'Festival seasons may cause occasional delays', 'jwellery-jewelry' ) . '</li></ul>', 'truck' ) : '',
+		function_exists( 'jwellery_page_policy_card_html' ) ? jwellery_page_policy_card_html( __( 'Delivery timeline', 'jwellery-jewelry' ), '<ul><li><strong>' . esc_html__( '5–10 business days', 'jwellery-jewelry' ) . '</strong> ' . esc_html__( 'after dispatch', 'jwellery-jewelry' ) . '</li><li>' . esc_html__( 'Free shipping on all orders across India', 'jwellery-jewelry' ) . '</li><li>' . esc_html__( 'Festival seasons may cause occasional delays', 'jwellery-jewelry' ) . '</li></ul>', 'truck' ) : '',
 		function_exists( 'jwellery_page_policy_card_html' ) ? jwellery_page_policy_card_html( __( 'Tracking', 'jwellery-jewelry' ), '<p>' . sprintf( __( 'Tracking details are emailed when available. Use our <a href="%1$s">Track Order</a> page with your order ID and billing email.', 'jwellery-jewelry' ), esc_url( $t['track_url'] ) ) . '</p>', 'truck' ) : '',
 		function_exists( 'jwellery_page_policy_card_html' ) ? jwellery_page_policy_card_html( __( 'Undelivered / RTO', 'jwellery-jewelry' ), '<p>' . esc_html__( 'If a parcel is returned due to an incorrect address or failed delivery attempts, re-shipping charges may apply.', 'jwellery-jewelry' ) . '</p>', 'support' ) : '',
 		esc_html__( 'Questions?', 'jwellery-jewelry' ),
@@ -722,9 +722,17 @@ function jwellery_maintain_store( $force = false ) {
 }
 
 /**
- * Run maintain_store in wp-admin only (not on public page views).
+ * Run maintain_store in wp-admin only (not on REST product editor requests).
  */
 function jwellery_maintain_store_on_admin() {
+	if ( function_exists( 'jwellery_is_background_catalog_request' ) && jwellery_is_background_catalog_request() ) {
+		return;
+	}
+	if ( get_transient( 'jwellery_maintain_store_lock' ) ) {
+		return;
+	}
+	set_transient( 'jwellery_maintain_store_lock', 1, 30 );
 	jwellery_maintain_store( false );
+	delete_transient( 'jwellery_maintain_store_lock' );
 }
 add_action( 'admin_init', 'jwellery_maintain_store_on_admin', 20 );

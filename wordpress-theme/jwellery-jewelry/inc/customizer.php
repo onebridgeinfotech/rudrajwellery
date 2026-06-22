@@ -168,14 +168,14 @@ function jwellery_customize_register( $wp_customize ) {
 		'jwellery_free_shipping_min',
 		array(
 			'sanitize_callback' => 'absint',
-			'default'           => 999,
+			'default'           => 0,
 		)
 	);
 	$wp_customize->add_control(
 		'jwellery_free_shipping_min',
 		array(
-			'label'       => __( 'Free shipping minimum (â‚¹)', 'jwellery-jewelry' ),
-			'description' => __( 'Used in the mini cart progress bar.', 'jwellery-jewelry' ),
+			'label'       => __( 'Free shipping minimum (₹)', 'jwellery-jewelry' ),
+			'description' => __( 'Used in the mini cart progress bar. Set to 0 for free shipping on all orders.', 'jwellery-jewelry' ),
 			'section'     => 'jwellery_store_ui',
 			'type'        => 'number',
 			'input_attrs' => array(

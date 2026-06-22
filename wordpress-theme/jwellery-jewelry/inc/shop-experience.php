@@ -59,12 +59,21 @@ add_action( 'untrash_post', 'jwellery_purge_product_cache' );
 add_action( 'delete_post', 'jwellery_purge_product_cache' );
 
 /**
- * Free shipping threshold (INR).
+ * Free shipping threshold (INR). 0 = free shipping on every order.
  *
  * @return float
  */
 function jwellery_free_shipping_threshold() {
-	return 0;
+	return max( 0, (float) get_theme_mod( 'jwellery_free_shipping_min', 0 ) );
+}
+
+/**
+ * Whether the store offers free shipping on all orders (no minimum).
+ *
+ * @return bool
+ */
+function jwellery_free_shipping_on_all_orders() {
+	return jwellery_free_shipping_threshold() <= 0;
 }
 
 /**
@@ -87,6 +96,16 @@ function jwellery_cart_subtotal_amount() {
 function jwellery_free_shipping_progress() {
 	$threshold = jwellery_free_shipping_threshold();
 	$subtotal  = jwellery_cart_subtotal_amount();
+
+	if ( jwellery_free_shipping_on_all_orders() ) {
+		return array(
+			'percent'   => 100,
+			'remaining' => 0,
+			'qualified' => true,
+			'threshold' => 0,
+		);
+	}
+
 	$remaining = max( 0, $threshold - $subtotal );
 	$percent   = $threshold > 0 ? min( 100, (int) round( ( $subtotal / $threshold ) * 100 ) ) : 100;
 
@@ -104,13 +123,25 @@ function jwellery_free_shipping_progress() {
  * @return string
  */
 function jwellery_shipping_progress_html() {
-	$data = jwellery_free_shipping_progress();
+	$data     = jwellery_free_shipping_progress();
+	$subtotal = jwellery_cart_subtotal_amount();
+
+	if ( ! jwellery_free_shipping_on_all_orders() && $subtotal <= 0 ) {
+		return '';
+	}
+
 	ob_start();
 	?>
 	<div class="jwellery-shipping-progress" data-shipping-progress>
-		<?php if ( $data['qualified'] ) : ?>
+		<?php if ( jwellery_free_shipping_on_all_orders() || $data['qualified'] ) : ?>
 			<p class="jwellery-shipping-progress-msg jwellery-shipping-progress-msg--success">
-				<?php esc_html_e( 'You qualify for FREE shipping!', 'jwellery-jewelry' ); ?>
+				<?php
+				if ( jwellery_free_shipping_on_all_orders() ) {
+					esc_html_e( 'Free shipping on all orders across India', 'jwellery-jewelry' );
+				} else {
+					esc_html_e( 'You qualify for FREE shipping!', 'jwellery-jewelry' );
+				}
+				?>
 			</p>
 		<?php else : ?>
 			<p class="jwellery-shipping-progress-msg">
@@ -132,6 +163,44 @@ function jwellery_shipping_progress_html() {
 	<?php
 	return ob_get_clean();
 }
+
+/**
+ * Zero shipping cost at checkout when free shipping applies to all orders.
+ *
+ * @param array $rates   Package rates.
+ * @param array $package Package.
+ * @return array
+ */
+function jwellery_apply_free_shipping_rates( $rates, $package ) {
+	unset( $package );
+	if ( ! jwellery_free_shipping_on_all_orders() || empty( $rates ) ) {
+		return $rates;
+	}
+
+	foreach ( $rates as $rate_id => $rate ) {
+		if ( is_object( $rate ) && method_exists( $rate, 'set_cost' ) ) {
+			$rate->set_cost( 0 );
+			$rates[ $rate_id ] = $rate;
+		}
+	}
+
+	return $rates;
+}
+add_filter( 'woocommerce_package_rates', 'jwellery_apply_free_shipping_rates', 100, 2 );
+
+/**
+ * One-time: switch storefront to free shipping on all orders (removes old ₹999 minimum).
+ */
+function jwellery_bootstrap_free_shipping_all_orders() {
+	$done = (string) get_option( 'jwellery_free_shipping_all_orders_ver', '' );
+	if ( $done === JWELLERY_THEME_VERSION ) {
+		return;
+	}
+
+	set_theme_mod( 'jwellery_free_shipping_min', 0 );
+	update_option( 'jwellery_free_shipping_all_orders_ver', JWELLERY_THEME_VERSION, false );
+}
+add_action( 'after_setup_theme', 'jwellery_bootstrap_free_shipping_all_orders', 28 );
 
 /**
  * Product categories for Shop mega menu (all top-level, preferred order).
@@ -708,6 +777,7 @@ function jwellery_localize_shop_experience() {
 				'announcements' => function_exists( 'jwellery_announcement_messages' ) ? jwellery_announcement_messages() : array(),
 				'addedToCart'   => __( 'Added to cart ✓', 'jwellery-jewelry' ),
 				'removedFromCart' => __( 'Removed from cart', 'jwellery-jewelry' ),
+				'addToCartError'  => __( 'Could not add to cart. Please try another product.', 'jwellery-jewelry' ),
 				'carouselAuto'  => (bool) get_theme_mod( 'jwellery_carousel_autoplay', true ),
 				'isLoggedIn'    => is_user_logged_in(),
 				'ajaxUrl'       => admin_url( 'admin-ajax.php' ),

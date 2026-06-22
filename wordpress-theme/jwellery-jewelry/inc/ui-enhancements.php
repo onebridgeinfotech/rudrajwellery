@@ -37,6 +37,28 @@ function jwellery_home_grid_rows() {
 }
 
 /**
+ * Whether a product can be sold on the storefront (published, priced, purchasable, with image).
+ *
+ * @param WC_Product|int $product Product or ID.
+ * @return bool
+ */
+function jwellery_product_is_storefront_ready( $product ) {
+	if ( is_numeric( $product ) ) {
+		$product = wc_get_product( (int) $product );
+	}
+	if ( ! $product instanceof WC_Product ) {
+		return false;
+	}
+	if ( 'publish' !== $product->get_status() || ! $product->is_purchasable() ) {
+		return false;
+	}
+	if ( function_exists( 'jwellery_product_has_image' ) && ! jwellery_product_has_image( $product ) ) {
+		return false;
+	}
+	return true;
+}
+
+/**
  * Keep only products that have a real featured image.
  *
  * @param WC_Product[] $products Products.
@@ -250,6 +272,9 @@ function jwellery_get_products_for_display( $args = array(), $cols = null, $rows
 				continue;
 			}
 			$seen[ $pid ] = true;
+			if ( function_exists( 'jwellery_product_is_storefront_ready' ) && ! jwellery_product_is_storefront_ready( $product ) ) {
+				continue;
+			}
 			if ( jwellery_product_has_image( $product ) ) {
 				$picked[] = $product;
 				if ( count( $picked ) >= $need ) {
@@ -627,6 +652,21 @@ function jwellery_hero_from_price_html() {
 }
 
 /**
+ * Default hero slides — long haram & necklace catalog photos.
+ *
+ * @return array<int, string>
+ */
+function jwellery_default_hero_slide_files() {
+	return array(
+		'hero-slide-1.png', // Kasulaperu haram set.
+		'hero-slide-2.jpg', // Laxmi kasulu short necklace.
+		'hero-slide-3.png', // Laxmi pendant pearl necklace.
+		'hero-slide-4.png', // Black beads kasu necklace.
+		'hero-slide-5.jpg', // Laxmi kasulu + bottu mala combo.
+	);
+}
+
+/**
  * Hero slide image URLs (Customizer, then auto-pulls from Long Haram & Necklace products).
  *
  * @return array<int, string>
@@ -679,20 +719,38 @@ function jwellery_hero_slides() {
 
 	// 3. Fallback to static theme images.
 	if ( empty( $slides ) ) {
-		for ( $i = 1; $i <= 5; $i++ ) {
-			$path = JWELLERY_THEME_DIR . '/assets/images/hero-slide-' . $i . '.jpg';
-			if ( file_exists( $path ) ) {
-				$slides[] = JWELLERY_THEME_URI . '/assets/images/hero-slide-' . $i . '.jpg';
+		foreach ( jwellery_default_hero_slide_files() as $file ) {
+			$path = JWELLERY_THEME_DIR . '/assets/images/' . $file;
+			if ( is_readable( $path ) ) {
+				$slides[] = JWELLERY_THEME_URI . '/assets/images/' . $file;
 			}
 		}
 	}
 
 	if ( empty( $slides ) ) {
-		$slides[] = JWELLERY_THEME_URI . '/assets/images/hero-default.jpg';
+		$slides[] = JWELLERY_THEME_URI . '/assets/category-images/long-harams.png';
+		$slides[] = JWELLERY_THEME_URI . '/assets/category-images/necklaces.jpg';
 	}
 
 	return $slides;
 }
+
+/**
+ * One-time: reset custom hero uploads so bundled haram/necklace slides show after deploy.
+ */
+function jwellery_bootstrap_hero_haram_necklace_slides() {
+	$done = (string) get_option( 'jwellery_hero_haram_necklace_ver', '' );
+	if ( $done === JWELLERY_THEME_VERSION ) {
+		return;
+	}
+
+	foreach ( array( 'jwellery_hero_image_1', 'jwellery_hero_image_2', 'jwellery_hero_image_3', 'jwellery_hero_image_4', 'jwellery_hero_image_5' ) as $key ) {
+		remove_theme_mod( $key );
+	}
+
+	update_option( 'jwellery_hero_haram_necklace_ver', JWELLERY_THEME_VERSION, false );
+}
+add_action( 'after_setup_theme', 'jwellery_bootstrap_hero_haram_necklace_slides', 28 );
 
 /**
  * Login notice on cart for guests.

@@ -6,6 +6,18 @@
 
 	var cfg = window.jwelleryTheme || {};
 
+	/* WooCommerce AJAX returns UTF-8 BOM on this host — strip so add-to-cart JSON parses */
+	if (typeof jQuery !== 'undefined' && jQuery.ajaxSetup) {
+		jQuery.ajaxSetup({
+			dataFilter: function (response) {
+				if (typeof response === 'string') {
+					return response.replace(/^\uFEFF+/, '');
+				}
+				return response;
+			}
+		});
+	}
+
 	/* Mobile menu */
 	var toggle = document.querySelector('.jwellery-nav-toggle');
 	var nav = document.querySelector('.jwellery-nav');
@@ -476,14 +488,32 @@
 		}, 2000);
 	});
 
-	if (typeof jQuery !== 'undefined') {
-		jQuery(document.body).on('added_to_cart', function () {
+	if ( typeof jQuery !== 'undefined' ) {
+		jQuery(document.body).on('added_to_cart', function (event, fragments, hash, $button) {
 			showToast(cfg.addedToCart || 'Added to cart');
 			openCartDrawer();
+			if ($button && $button.length) {
+				$button.removeClass('loading');
+			}
 		});
 
 		jQuery(document.body).on('removed_from_cart', function () {
 			showToast(cfg.removedFromCart || 'Removed from cart');
+		});
+
+		jQuery(document).ajaxComplete(function (event, xhr, settings) {
+			var url = settings && settings.url ? settings.url : '';
+			if (url.indexOf('wc-ajax=add_to_cart') === -1 && url.indexOf('add-to-cart') === -1) {
+				return;
+			}
+			var response = xhr.responseJSON;
+			if (!response || !response.error) {
+				return;
+			}
+			showToast(cfg.addToCartError || 'Could not add to cart. Please try again.');
+			document.querySelectorAll('.add_to_cart_button.loading').forEach(function (btn) {
+				btn.classList.remove('loading');
+			});
 		});
 	}
 

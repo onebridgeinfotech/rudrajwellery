@@ -28,6 +28,7 @@ jobs:
           local-dir: ./wordpress-theme/jwellery-jewelry/
           server-dir: /wp-content/themes/jwellery-jewelry/
           dangerous-clean-slate: true
+          timeout: 600000
 
   deploy-plugin:
     runs-on: ubuntu-latest
@@ -46,3 +47,4 @@ jobs:
           local-dir: ./wordpress-plugin/jewelry-upi-store/
           server-dir: /wp-content/plugins/jewelry-upi-store/
           dangerous-clean-slate: true
+          timeout: 600000

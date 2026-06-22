@@ -8,6 +8,24 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
+ * REST/AJAX/cron — skip heavy catalog bootstraps (prevents wp-admin product editor timeouts).
+ *
+ * @return bool
+ */
+function jwellery_is_background_catalog_request() {
+	if ( wp_doing_ajax() || wp_doing_cron() ) {
+		return true;
+	}
+	if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+		return true;
+	}
+	if ( ! empty( $_SERVER['REQUEST_URI'] ) && false !== strpos( wp_unslash( $_SERVER['REQUEST_URI'] ), '/wp-json/' ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		return true;
+	}
+	return false;
+}
+
+/**
  * Whether this product was edited in wp-admin (preserve name, price, image, categories).
  *
  * @param int $product_id Product ID.
@@ -83,26 +101,92 @@ function jwellery_on_product_admin_save( $product_id ) {
 	if ( defined( 'JWELLERY_CATALOG_SYNC' ) && JWELLERY_CATALOG_SYNC ) {
 		return;
 	}
-	if ( ! is_admin() || ! current_user_can( 'edit_product', $product_id ) ) {
+	$is_rest = ( defined( 'REST_REQUEST' ) && REST_REQUEST );
+	if ( ! is_admin() && ! $is_rest ) {
+		return;
+	}
+	if ( ! current_user_can( 'edit_product', $product_id ) ) {
 		return;
 	}
 
 	jwellery_mark_product_admin_managed( $product_id );
+	jwellery_flush_active_catalog_cache();
 }
 add_action( 'woocommerce_update_product', 'jwellery_on_product_admin_save', 20, 1 );
 add_action( 'woocommerce_new_product', 'jwellery_on_product_admin_save', 20, 1 );
 
 /**
+ * Mark every live catalog product as admin-managed (batched — avoids admin timeouts).
+ *
+ * @param int $batch_size Products per request.
+ * @return array{done: bool, processed: int, remaining: int}
+ */
+function jwellery_bootstrap_admin_managed_catalog_batch( $batch_size = 25 ) {
+	$result = array(
+		'done'      => true,
+		'processed' => 0,
+		'remaining' => 0,
+	);
+
+	if ( ! function_exists( 'wc_get_products' ) ) {
+		return $result;
+	}
+
+	$batch_size = max( 5, (int) $batch_size );
+	$offset     = max( 0, (int) get_option( 'jwellery_admin_managed_bootstrap_offset', 0 ) );
+	$products   = wc_get_products(
+		array(
+			'limit'  => $batch_size,
+			'offset' => $offset,
+			'status' => array( 'publish', 'draft', 'pending', 'private' ),
+			'return' => 'ids',
+		)
+	);
+
+	if ( empty( $products ) ) {
+		delete_option( 'jwellery_admin_managed_bootstrap_offset' );
+		return $result;
+	}
+
+	foreach ( $products as $product_id ) {
+		jwellery_mark_product_admin_managed( (int) $product_id );
+		++$result['processed'];
+	}
+
+	$offset += count( $products );
+	update_option( 'jwellery_admin_managed_bootstrap_offset', $offset, false );
+
+	$next = wc_get_products(
+		array(
+			'limit'  => 1,
+			'offset' => $offset,
+			'status' => array( 'publish', 'draft', 'pending', 'private' ),
+			'return' => 'ids',
+		)
+	);
+
+	$result['done']      = empty( $next );
+	$result['remaining'] = $result['done'] ? 0 : 1;
+
+	if ( $result['done'] ) {
+		delete_option( 'jwellery_admin_managed_bootstrap_offset' );
+	}
+
+	return $result;
+}
+
+/**
  * Mark every live catalog product as admin-managed so deploy never overwrites wp-admin data.
  */
 function jwellery_bootstrap_admin_managed_catalog() {
-	if ( ! function_exists( 'wc_get_products' ) ) {
-		return;
-	}
+	jwellery_bootstrap_admin_managed_catalog_batch( 9999 );
+}
 
-	foreach ( wc_get_products( array( 'limit' => -1, 'status' => array( 'publish', 'draft', 'pending', 'private' ) ) ) as $product ) {
-		jwellery_mark_product_admin_managed( (int) $product->get_id() );
-	}
+/**
+ * Clear cached active-catalog SKU/ID lists after wp-admin product changes.
+ */
+function jwellery_flush_active_catalog_cache() {
+	delete_transient( 'jwellery_active_catalog_skus_v1' );
 }
 
 /**
@@ -288,6 +372,9 @@ function jwellery_score_catalog_product( $product_id ) {
 	$score = 0;
 	if ( 'publish' === $product->get_status() ) {
 		$score += 100;
+	}
+	if ( $product->is_purchasable() ) {
+		$score += 2000;
 	}
 	if ( function_exists( 'jwellery_product_is_admin_managed' ) && jwellery_product_is_admin_managed( $product_id ) ) {
 		$score += 500;
@@ -545,12 +632,18 @@ function jwellery_get_active_catalog_skus() {
 		return $skus;
 	}
 
+	$cached = get_transient( 'jwellery_active_catalog_skus_v1' );
+	if ( is_array( $cached ) ) {
+		$skus = $cached;
+		return $skus;
+	}
+
 	$skus = array();
 	foreach ( jwellery_get_whatsapp_catalog_products() as $row ) {
 		$skus[] = (string) $row[0];
 	}
 
-	if ( class_exists( 'WooCommerce' ) ) {
+	if ( class_exists( 'WooCommerce' ) && ! jwellery_is_background_catalog_request() ) {
 		foreach ( wc_get_products(
 			array(
 				'status' => 'publish',
@@ -561,13 +654,26 @@ function jwellery_get_active_catalog_skus() {
 				continue;
 			}
 			$sku = (string) $product->get_sku();
-			if ( $sku && preg_match( '/^WP-\d+$/', $sku ) ) {
+			if ( ! $sku ) {
+				continue;
+			}
+			$id = (int) $product->get_id();
+			if ( preg_match( '/^WP-\d+$/', $sku ) ) {
+				$skus[] = $sku;
+				continue;
+			}
+			if ( function_exists( 'jwellery_product_is_admin_managed' ) && jwellery_product_is_admin_managed( $id ) ) {
 				$skus[] = $sku;
 			}
 		}
 	}
 
-	return array_values( array_unique( $skus ) );
+	$skus = array_values( array_unique( $skus ) );
+	if ( ! jwellery_is_background_catalog_request() ) {
+		set_transient( 'jwellery_active_catalog_skus_v1', $skus, 5 * MINUTE_IN_SECONDS );
+	}
+
+	return $skus;
 }
 
 /**
@@ -581,7 +687,9 @@ function jwellery_get_active_catalog_product_ids() {
 		return $ids;
 	}
 
-	$ids = array();
+	$ids  = array();
+	$seen = array();
+
 	foreach ( jwellery_get_active_catalog_skus() as $sku ) {
 		$product_ids = function_exists( 'jwellery_get_product_ids_by_sku' )
 			? jwellery_get_product_ids_by_sku( $sku )
@@ -598,8 +706,36 @@ function jwellery_get_active_catalog_product_ids() {
 		$id = function_exists( 'jwellery_pick_canonical_product_id' )
 			? jwellery_pick_canonical_product_id( $product_ids )
 			: (int) $product_ids[0];
-		if ( $id ) {
-			$ids[] = $id;
+		if ( ! $id || isset( $seen[ $id ] ) ) {
+			continue;
+		}
+		$ready = function_exists( 'jwellery_product_is_storefront_ready' )
+			? jwellery_product_is_storefront_ready( $id )
+			: ( ( $product = wc_get_product( $id ) ) && $product->is_purchasable() );
+		if ( $ready ) {
+			$ids[]       = $id;
+			$seen[ $id ] = true;
+		}
+	}
+
+	if ( class_exists( 'WooCommerce' ) && ! jwellery_is_background_catalog_request() ) {
+		foreach ( wc_get_products(
+			array(
+				'status' => 'publish',
+				'limit'  => -1,
+			)
+		) as $product ) {
+			if ( ! $product instanceof WC_Product ) {
+				continue;
+			}
+			$id = (int) $product->get_id();
+			if ( isset( $seen[ $id ] ) ) {
+				continue;
+			}
+			if ( function_exists( 'jwellery_product_is_admin_managed' ) && jwellery_product_is_admin_managed( $id ) && $product->is_purchasable() ) {
+				$ids[]       = $id;
+				$seen[ $id ] = true;
+			}
 		}
 	}
 
@@ -721,6 +857,38 @@ function jwellery_schedule_catalog_sync_if_needed() {
 	delete_option( 'jwellery_catalog_sync_offset' );
 }
 add_action( 'after_setup_theme', 'jwellery_schedule_catalog_sync_if_needed', 25 );
+
+/**
+ * After deploy, mark published products as admin-managed in small batches (not during REST saves).
+ */
+function jwellery_bootstrap_admin_managed_on_deploy() {
+	if ( jwellery_is_background_catalog_request() ) {
+		return;
+	}
+	if ( ! function_exists( 'wc_get_products' ) || ! is_admin() ) {
+		return;
+	}
+
+	$done = (string) get_option( 'jwellery_admin_managed_deploy_ver', '' );
+	if ( $done === JWELLERY_THEME_VERSION ) {
+		return;
+	}
+
+	if ( $done !== JWELLERY_THEME_VERSION ) {
+		$offset_key = 'jwellery_admin_managed_bootstrap_offset';
+		$ver_key    = 'jwellery_admin_managed_bootstrap_ver';
+		if ( get_option( $ver_key, '' ) !== JWELLERY_THEME_VERSION ) {
+			delete_option( $offset_key );
+			update_option( $ver_key, JWELLERY_THEME_VERSION, false );
+		}
+	}
+
+	$batch = jwellery_bootstrap_admin_managed_catalog_batch( 25 );
+	if ( $batch['done'] ) {
+		update_option( 'jwellery_admin_managed_deploy_ver', JWELLERY_THEME_VERSION, false );
+	}
+}
+add_action( 'after_setup_theme', 'jwellery_bootstrap_admin_managed_on_deploy', 30 );
 
 /**
  * Sync one batch of catalog rows (avoids timeouts on shared hosting).
