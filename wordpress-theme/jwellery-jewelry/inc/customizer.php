@@ -54,7 +54,7 @@ function jwellery_customize_register( $wp_customize ) {
 		'jwellery_phone',
 		array(
 			'sanitize_callback' => 'sanitize_text_field',
-			'default'           => '+91 7036837243',
+			'default'           => '+91 7730817950',
 		)
 	);
 	$wp_customize->add_control(
@@ -593,4 +593,31 @@ function jwellery_customize_register( $wp_customize ) {
 }
 add_action( 'customize_register', 'jwellery_customize_register' );
 
+/**
+ * One-time: replace legacy call number with current store phone on deploy.
+ */
+function jwellery_bootstrap_store_phone_number() {
+	$done = (string) get_option( 'jwellery_store_phone_ver', '' );
+	if ( $done === JWELLERY_THEME_VERSION ) {
+		return;
+	}
+
+	$phone = trim( (string) get_theme_mod( 'jwellery_phone', '' ) );
+	$digits = preg_replace( '/\D+/', '', $phone );
+	if ( ! $phone || '7036837243' === $digits || false !== strpos( $phone, '7036837243' ) ) {
+		set_theme_mod( 'jwellery_phone', '+91 7730817950' );
+	}
+
+	$wa = preg_replace( '/\D+/', '', (string) get_theme_mod( 'jwellery_whatsapp', '' ) );
+	if ( ! $wa || '7036837243' === $wa ) {
+		set_theme_mod( 'jwellery_whatsapp', '7730817950' );
+	}
+
+	if ( function_exists( 'jwellery_sync_store_page_content' ) && ! ( function_exists( 'jwellery_should_skip_heavy_admin_work' ) && jwellery_should_skip_heavy_admin_work() ) ) {
+		jwellery_sync_store_page_content( true );
+	}
+
+	update_option( 'jwellery_store_phone_ver', JWELLERY_THEME_VERSION, false );
+}
+add_action( 'after_setup_theme', 'jwellery_bootstrap_store_phone_number', 27 );
 

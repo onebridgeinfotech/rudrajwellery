@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$phone        = trim( (string) get_theme_mod( 'jwellery_phone', '+91 7036837243' ) );
+$phone        = trim( (string) get_theme_mod( 'jwellery_phone', '+91 7730817950' ) );
 $address      = trim( (string) get_theme_mod( 'jwellery_address', 'H no 7-7-11/8, New Sri Ram Nagar Colony, Peerzadiguda, Hyderabad - 500098' ) );
 $footer_emails = function_exists( 'jwellery_footer_contact_email_rows' )
 	? jwellery_footer_contact_email_rows()
@@ -16,7 +16,7 @@ $footer_emails = function_exists( 'jwellery_footer_contact_email_rows' )
 		'personal' => 'kalpanayadav503@gmail.com',
 	);
 if ( ! $phone ) {
-	$phone = '+91 7036837243';
+	$phone = '+91 7730817950';
 }
 if ( ! $address ) {
 	$address = 'H no 7-7-11/8, New Sri Ram Nagar Colony, Peerzadiguda, Hyderabad - 500098';
