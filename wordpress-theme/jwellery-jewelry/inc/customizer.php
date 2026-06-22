@@ -439,7 +439,7 @@ function jwellery_customize_register( $wp_customize ) {
 		'jwellery_hero',
 		array(
 			'title'       => __( 'Homepage Hero', 'jwellery-jewelry' ),
-			'description' => __( 'Upload up to 5 images for the homepage slider. Leave empty to use built-in jewelry photos.', 'jwellery-jewelry' ),
+			'description' => __( 'Upload up to 5 widescreen banner images (recommended 1920×720 px). Portrait photos also work — the full jewellery is shown on desktop with a soft blurred fill behind.', 'jwellery-jewelry' ),
 			'priority'    => 121,
 		)
 	);

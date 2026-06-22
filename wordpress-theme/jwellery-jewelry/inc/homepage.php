@@ -345,7 +345,22 @@ function jwellery_home_hero() {
 	<section class="jwellery-hero jwellery-hero--slider" data-hero-slider>
 		<div class="jwellery-hero-slides">
 			<?php foreach ( $slides as $i => $slide_url ) : ?>
-				<div class="jwellery-hero-slide<?php echo 0 === $i ? ' is-active' : ''; ?>" style="background-image:url(<?php echo esc_url( $slide_url ); ?>)" role="img" aria-label="<?php echo esc_attr( sprintf( __( 'Hero image %d', 'jwellery-jewelry' ), $i + 1 ) ); ?>"></div>
+				<div class="jwellery-hero-slide<?php echo 0 === $i ? ' is-active' : ''; ?>">
+					<img
+						class="jwellery-hero-slide-fill"
+						src="<?php echo esc_url( $slide_url ); ?>"
+						alt=""
+						decoding="async"
+						aria-hidden="true"
+					/>
+					<img
+						class="jwellery-hero-slide-photo"
+						src="<?php echo esc_url( $slide_url ); ?>"
+						alt="<?php echo esc_attr( sprintf( __( 'Hero image %d', 'jwellery-jewelry' ), $i + 1 ) ); ?>"
+						decoding="async"
+						<?php echo 0 === $i ? 'fetchpriority="high"' : 'loading="lazy"'; ?>
+					/>
+				</div>
 			<?php endforeach; ?>
 		</div>
 		<div class="jwellery-hero-overlay"></div>

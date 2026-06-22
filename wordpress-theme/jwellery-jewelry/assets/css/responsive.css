@@ -993,6 +993,15 @@ body.jwellery-menu-open {
 
 /* ——— Desktop (1025px+) ——— */
 @media (min-width: 1025px) {
+	.jwellery-hero {
+		min-height: clamp(580px, 62vh, 780px);
+	}
+
+	.jwellery-hero-slide-photo {
+		object-fit: contain;
+		object-position: center center;
+	}
+
 	.jwellery-sticky-atc {
 		display: none;
 	}
