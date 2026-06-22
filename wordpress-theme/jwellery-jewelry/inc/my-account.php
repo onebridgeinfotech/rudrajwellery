@@ -18,11 +18,25 @@ function jwellery_uda_nav_icon( $endpoint ) {
 		'dashboard'       => 'home',
 		'orders'          => 'orders',
 		'wishlist'        => 'heart',
+		'cart'            => 'cart',
 		'edit-address'    => 'location',
 		'edit-account'    => 'settings',
 		'customer-logout' => 'logout',
 	);
 	return isset( $icons[ $endpoint ] ) ? $icons[ $endpoint ] : 'user';
+}
+
+/**
+ * Account nav link URL (cart uses the cart page, not an account endpoint).
+ *
+ * @param string $endpoint Endpoint key.
+ * @return string
+ */
+function jwellery_uda_nav_url( $endpoint ) {
+	if ( 'cart' === $endpoint && function_exists( 'wc_get_cart_url' ) ) {
+		return wc_get_cart_url();
+	}
+	return function_exists( 'wc_get_account_endpoint_url' ) ? wc_get_account_endpoint_url( $endpoint ) : '';
 }
 
 /**
@@ -32,6 +46,16 @@ function jwellery_uda_nav_icon( $endpoint ) {
  * @return string
  */
 function jwellery_uda_nav_classes( $endpoint ) {
+	if ( 'cart' === $endpoint ) {
+		$classes = array(
+			'woocommerce-MyAccount-navigation-link',
+			'woocommerce-MyAccount-navigation-link--cart',
+		);
+		if ( function_exists( 'is_cart' ) && is_cart() ) {
+			$classes[] = 'is-active';
+		}
+		return implode( ' ', $classes );
+	}
 	if ( function_exists( 'wc_get_account_menu_item_classes' ) ) {
 		return wc_get_account_menu_item_classes( $endpoint );
 	}
@@ -177,7 +201,43 @@ function jwellery_uda_menu_items( $items ) {
 	if ( isset( $items['customer-logout'] ) ) {
 		$items['customer-logout'] = __( 'Sign out', 'jwellery-jewelry' );
 	}
-	return $items;
+
+	$cart_label = __( 'Cart', 'jwellery-jewelry' );
+	$ordered    = array();
+	$inserted   = false;
+
+	foreach ( $items as $key => $label ) {
+		if ( 'customer-logout' === $key ) {
+			continue;
+		}
+		$ordered[ $key ] = $label;
+		if ( 'wishlist' === $key ) {
+			$ordered['cart'] = $cart_label;
+			$inserted        = true;
+		}
+	}
+
+	if ( ! $inserted ) {
+		$with_cart = array();
+		foreach ( $ordered as $key => $label ) {
+			$with_cart[ $key ] = $label;
+			if ( 'dashboard' === $key ) {
+				$with_cart['cart'] = $cart_label;
+				$inserted          = true;
+			}
+		}
+		$ordered = $with_cart;
+	}
+
+	if ( ! $inserted ) {
+		$ordered['cart'] = $cart_label;
+	}
+
+	if ( isset( $items['customer-logout'] ) ) {
+		$ordered['customer-logout'] = $items['customer-logout'];
+	}
+
+	return $ordered;
 }
 add_filter( 'woocommerce_account_menu_items', 'jwellery_uda_menu_items', 20 );
 
@@ -315,13 +375,19 @@ function jwellery_uda_render_sidebar() {
 						<?php continue; ?>
 					<?php endif; ?>
 					<li class="<?php echo esc_attr( jwellery_uda_nav_classes( $endpoint ) ); ?>">
-						<a href="<?php echo esc_url( wc_get_account_endpoint_url( $endpoint ) ); ?>">
+						<a href="<?php echo esc_url( jwellery_uda_nav_url( $endpoint ) ); ?>">
 							<?php
 							if ( function_exists( 'jwellery_icon_svg' ) ) {
 								echo jwellery_icon_svg( jwellery_uda_nav_icon( $endpoint ), 18 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 							}
 							?>
 							<span><?php echo esc_html( $label ); ?></span>
+							<?php if ( 'cart' === $endpoint && function_exists( 'WC' ) && WC()->cart ) : ?>
+								<?php $cart_count = (int) WC()->cart->get_cart_contents_count(); ?>
+								<?php if ( $cart_count > 0 ) : ?>
+									<span class="jwellery-uda__nav-badge" aria-label="<?php echo esc_attr( sprintf( _n( '%d item in cart', '%d items in cart', $cart_count, 'jwellery-jewelry' ), $cart_count ) ); ?>"><?php echo (int) $cart_count; ?></span>
+								<?php endif; ?>
+							<?php endif; ?>
 						</a>
 					</li>
 				<?php endforeach; ?>
@@ -351,12 +417,13 @@ function jwellery_uda_mobile_nav() {
 		return;
 	}
 
-	$short = array( 'dashboard', 'orders', 'wishlist', 'edit-address', 'edit-account' );
+	$short = array( 'dashboard', 'wishlist', 'cart', 'orders', 'edit-address', 'edit-account' );
 	$items = wc_get_account_menu_items();
 	$labels = array(
 		'dashboard'    => __( 'Overview', 'jwellery-jewelry' ),
 		'orders'       => __( 'Orders', 'jwellery-jewelry' ),
 		'wishlist'     => __( 'Saved', 'jwellery-jewelry' ),
+		'cart'         => __( 'Cart', 'jwellery-jewelry' ),
 		'edit-address' => __( 'Address', 'jwellery-jewelry' ),
 		'edit-account' => __( 'Profile', 'jwellery-jewelry' ),
 	);
@@ -367,8 +434,8 @@ function jwellery_uda_mobile_nav() {
 				<?php continue; ?>
 			<?php endif; ?>
 			<a
-				class="jwellery-uda__mobnav-link<?php echo function_exists( 'wc_is_current_account_menu_item' ) && wc_is_current_account_menu_item( $endpoint ) ? ' is-active' : ''; ?>"
-				href="<?php echo esc_url( wc_get_account_endpoint_url( $endpoint ) ); ?>"
+				class="jwellery-uda__mobnav-link<?php echo ( 'cart' === $endpoint && function_exists( 'is_cart' ) && is_cart() ) || ( 'cart' !== $endpoint && function_exists( 'wc_is_current_account_menu_item' ) && wc_is_current_account_menu_item( $endpoint ) ) ? ' is-active' : ''; ?>"
+				href="<?php echo esc_url( jwellery_uda_nav_url( $endpoint ) ); ?>"
 			>
 				<?php echo esc_html( $labels[ $endpoint ] ); ?>
 			</a>

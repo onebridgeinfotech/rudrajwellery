@@ -133,6 +133,25 @@
 	opacity: 0.75;
 }
 
+.jwellery-uda__nav a .jwellery-uda__nav-badge {
+	margin-left: auto;
+	min-width: 20px;
+	height: 20px;
+	padding: 0 6px;
+	border-radius: 999px;
+	background: var(--jwellery-maroon);
+	color: #fff;
+	font-size: 0.68rem;
+	font-weight: 700;
+	line-height: 20px;
+	text-align: center;
+}
+
+.jwellery-uda__nav li.is-active a .jwellery-uda__nav-badge {
+	background: #fff;
+	color: var(--jwellery-maroon);
+}
+
 .jwellery-uda__nav a:hover,
 .jwellery-uda__nav a:focus-visible {
 	background: #f8f6f3;
