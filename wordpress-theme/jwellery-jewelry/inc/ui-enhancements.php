@@ -353,14 +353,32 @@ function jwellery_supplement_products_for_grid( $products, $cols = null, $rows =
 }
 
 /**
+ * Resolve product object when WooCommerce passes only the ID (e.g. admin order items).
+ *
+ * @param int               $id      Product ID.
+ * @param WC_Product|null   $product Product.
+ * @return WC_Product|null
+ */
+function jwellery_resolve_product_for_visibility( $id, $product = null ) {
+	if ( $product instanceof WC_Product ) {
+		return $product;
+	}
+	if ( $id && function_exists( 'wc_get_product' ) ) {
+		$resolved = wc_get_product( $id );
+		return $resolved instanceof WC_Product ? $resolved : null;
+	}
+	return null;
+}
+
+/**
  * Hide catalog products that have no featured image.
  *
- * @param bool       $visible Visible.
- * @param int        $id      Product ID.
- * @param WC_Product $product Product.
+ * @param bool            $visible Visible.
+ * @param int             $id      Product ID.
+ * @param WC_Product|null $product Product (optional — WC admin sometimes passes 2 args only).
  * @return bool
  */
-function jwellery_hide_products_without_images( $visible, $id, $product ) {
+function jwellery_hide_products_without_images( $visible, $id, $product = null ) {
 	if ( ! $visible || is_admin() ) {
 		return $visible;
 	}
@@ -376,6 +394,10 @@ function jwellery_hide_products_without_images( $visible, $id, $product ) {
 	if ( function_exists( 'is_product' ) && is_product() && (int) get_queried_object_id() === (int) $id ) {
 		return $visible;
 	}
+	$product = jwellery_resolve_product_for_visibility( $id, $product );
+	if ( ! $product ) {
+		return $visible;
+	}
 	return jwellery_product_has_image( $product );
 }
 add_filter( 'woocommerce_product_is_visible', 'jwellery_hide_products_without_images', 10, 3 );
@@ -383,12 +405,12 @@ add_filter( 'woocommerce_product_is_visible', 'jwellery_hide_products_without_im
 /**
  * Hide products outside the recent WhatsApp catalog (old demo / stale uploads).
  *
- * @param bool       $visible Visible.
- * @param int        $id      Product ID.
- * @param WC_Product $product Product.
+ * @param bool            $visible Visible.
+ * @param int             $id      Product ID.
+ * @param WC_Product|null $product Product (optional — WC admin sometimes passes 2 args only).
  * @return bool
  */
-function jwellery_hide_inactive_catalog_products( $visible, $id, $product ) {
+function jwellery_hide_inactive_catalog_products( $visible, $id, $product = null ) {
 	if ( ! $visible || is_admin() ) {
 		return $visible;
 	}
@@ -408,6 +430,11 @@ function jwellery_hide_inactive_catalog_products( $visible, $id, $product ) {
 		return $visible;
 	}
 	if ( ! function_exists( 'jwellery_get_active_catalog_skus' ) ) {
+		return $visible;
+	}
+
+	$product = jwellery_resolve_product_for_visibility( $id, $product );
+	if ( ! $product ) {
 		return $visible;
 	}
 
