@@ -1,5 +1,7 @@
 # Rudra Jewellery — WordPress Store Operations Guide
 
+> **Print-friendly HTML version:** [WORDPRESS-STORE-OPERATIONS.html](WORDPRESS-STORE-OPERATIONS.html) (open in browser → Print / Save as PDF)
+
 Complete work instructions for day-to-day store management on **https://www.rudrajewellery.co.in**
 
 **Admin login:** `https://www.rudrajewellery.co.in/wp-admin/`

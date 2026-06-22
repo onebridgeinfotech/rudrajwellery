@@ -542,31 +542,11 @@ body {
 .jwellery-hero-slide {
 	position: absolute;
 	inset: 0;
-	overflow: hidden;
+	background-size: cover;
+	background-position: center center;
+	background-repeat: no-repeat;
 	opacity: 0;
 	transition: opacity 0.8s ease;
-}
-
-.jwellery-hero-slide-fill,
-.jwellery-hero-slide-photo {
-	position: absolute;
-	inset: 0;
-	display: block;
-	width: 100%;
-	height: 100%;
-}
-
-.jwellery-hero-slide-fill {
-	object-fit: cover;
-	object-position: center;
-	filter: blur(20px) brightness(0.48) saturate(1.08);
-	transform: scale(1.1);
-}
-
-.jwellery-hero-slide-photo {
-	object-fit: cover;
-	object-position: center;
-	z-index: 1;
 }
 
 .jwellery-hero-slide.is-active {

@@ -52,7 +52,7 @@ Source: [wordpress-plugin/jewelry-upi-store/](wordpress-plugin/jewelry-upi-store
 
 | Doc | Topic |
 |-----|-------|
-| [WORDPRESS-STORE-OPERATIONS.md](docs/WORDPRESS-STORE-OPERATIONS.md) | **Store owner guide** — products, banners, orders, image sizes |
+| [WORDPRESS-STORE-OPERATIONS.md](docs/WORDPRESS-STORE-OPERATIONS.md) | **Store owner guide** — products, banners, orders, image sizes ([HTML](docs/WORDPRESS-STORE-OPERATIONS.html)) |
 | [HOSTINGER-INSTALL.md](docs/HOSTINGER-INSTALL.md) | **Start here** for Hostinger |
 | [INSTALL.md](docs/INSTALL.md) | Generic hosting |
 | [UPI-SETTINGS.md](docs/UPI-SETTINGS.md) | UPI + order workflow |

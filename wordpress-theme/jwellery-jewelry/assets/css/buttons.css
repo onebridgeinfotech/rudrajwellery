@@ -675,12 +675,22 @@ a.jwellery-btn-viewall:hover {
 
 	.jwellery-hero .jwellery-btn {
 		min-height: var(--jwellery-btn-h);
+		flex: 1 1 0;
+		min-width: 0;
+		width: auto;
+		max-width: none;
+	}
+
+	.jwellery-hero-actions {
+		flex-wrap: nowrap;
+		gap: 10px;
 		width: 100%;
-		max-width: 280px;
+		max-width: 100%;
 	}
 
 	.product-of-day-actions {
-		grid-template-columns: 1fr;
+		grid-template-columns: 1fr 1fr;
+		gap: 8px;
 	}
 
 	.product-of-day-actions .jwellery-btn,

@@ -186,12 +186,65 @@
 
 @media (max-width: 900px) {
 	.single-product div.product {
-		grid-template-columns: 1fr;
-		gap: 24px;
-		padding: 16px 0 36px;
+		grid-template-columns: minmax(0, 42%) minmax(0, 58%);
+		gap: 12px 14px;
+		padding: 12px 0 32px;
+		align-items: start;
 	}
 
 	.single-product .woocommerce-product-gallery {
+		padding: 8px;
+		margin: 0;
+	}
+
+	.single-product .summary .product_title {
+		font-size: 1.15rem;
+		margin-bottom: 6px;
+	}
+
+	.single-product .summary .price {
+		font-size: 1.25rem;
+		margin-bottom: 10px;
+	}
+
+	.single-product .jwellery-trust-badges--product {
+		grid-template-columns: 1fr 1fr;
+		gap: 6px;
+		margin-bottom: 12px;
+	}
+
+	.single-product .jwellery-trust-badges--product li {
+		font-size: 0.72rem;
+		padding: 6px 8px;
+		line-height: 1.35;
+	}
+
+	.single-product .jwellery-product-purchase {
 		padding: 12px;
+		margin-bottom: 14px;
+	}
+
+	.single-product .summary form.cart .quantity {
+		flex: 0 0 64px;
+		max-width: 72px;
+	}
+
+	.single-product .jwellery-product-details,
+	.single-product .jwellery-wa-share,
+	.single-product .jwellery-product-meta-line,
+	.single-product .woocommerce-tabs,
+	.single-product .jwellery-similar-products {
+		grid-column: 1 / -1;
+	}
+}
+
+@media (max-width: 380px) {
+	.single-product div.product {
+		grid-template-columns: 1fr;
+		gap: 16px;
+	}
+
+	.single-product .jwellery-trust-badges--product {
+		grid-template-columns: 1fr;
 	}
 }

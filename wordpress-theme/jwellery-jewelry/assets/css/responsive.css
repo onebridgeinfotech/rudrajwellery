@@ -953,16 +953,18 @@ body.jwellery-menu-open {
 	}
 
 	.jwellery-product-grid--static {
-		grid-template-columns: 1fr;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 12px;
 	}
 
 	.jwellery-budget-grid {
-		grid-template-columns: 1fr;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 10px;
 	}
 
 	.jwellery-trust-strip-grid {
-		grid-template-columns: 1fr;
-		gap: 12px;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 10px;
 	}
 
 	.jwellery-trust-strip-grid li {
@@ -993,15 +995,6 @@ body.jwellery-menu-open {
 
 /* ——— Desktop (1025px+) ——— */
 @media (min-width: 1025px) {
-	.jwellery-hero {
-		min-height: clamp(580px, 62vh, 780px);
-	}
-
-	.jwellery-hero-slide-photo {
-		object-fit: contain;
-		object-position: center center;
-	}
-
 	.jwellery-sticky-atc {
 		display: none;
 	}

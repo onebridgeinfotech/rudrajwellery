@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Rudra Jewellery — WordPress Store Operations Guide</title>
+	<style>
+		:root {
+			--maroon: #a51c30;
+			--maroon-dark: #7a1524;
+			--gold: #d4af37;
+			--cream: #fffdf6;
+			--border: #e5d4a8;
+			--text: #222;
+			--muted: #555;
+		}
+
+		* { box-sizing: border-box; }
+
+		body {
+			margin: 0;
+			font-family: "Segoe UI", Lato, system-ui, sans-serif;
+			font-size: 16px;
+			line-height: 1.65;
+			color: var(--text);
+			background: #f5f0e6;
+		}
+
+		.doc-wrap {
+			max-width: 920px;
+			margin: 0 auto;
+			padding: 24px 20px 64px;
+		}
+
+		.doc-header {
+			background: linear-gradient(135deg, var(--maroon-dark), var(--maroon));
+			color: #fff;
+			padding: 32px 36px;
+			border-radius: 12px;
+			margin-bottom: 28px;
+			box-shadow: 0 8px 28px rgba(165, 28, 48, 0.2);
+		}
+
+		.doc-header h1 {
+			margin: 0 0 8px;
+			font-family: Georgia, "Times New Roman", serif;
+			font-size: 1.85rem;
+			font-weight: 600;
+		}
+
+		.doc-header p { margin: 6px 0; opacity: 0.95; }
+		.doc-header a { color: var(--gold); }
+
+		.card {
+			background: #fff;
+			border: 1px solid var(--border);
+			border-radius: 10px;
+			padding: 24px 28px;
+			margin-bottom: 24px;
+			box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+		}
+
+		h2 {
+			font-family: Georgia, serif;
+			color: var(--maroon);
+			font-size: 1.45rem;
+			margin: 0 0 16px;
+			padding-bottom: 8px;
+			border-bottom: 2px solid var(--border);
+		}
+
+		h3 {
+			color: var(--maroon-dark);
+			font-size: 1.1rem;
+			margin: 24px 0 10px;
+		}
+
+		h2:first-child, h3:first-child { margin-top: 0; }
+
+		a { color: var(--maroon); }
+		a:hover { color: var(--maroon-dark); }
+
+		.toc ol {
+			margin: 0;
+			padding-left: 1.4em;
+		}
+
+		.toc li { margin: 6px 0; }
+
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			margin: 12px 0 20px;
+			font-size: 0.95rem;
+		}
+
+		th, td {
+			border: 1px solid var(--border);
+			padding: 10px 12px;
+			text-align: left;
+			vertical-align: top;
+		}
+
+		th {
+			background: var(--cream);
+			color: var(--maroon-dark);
+			font-weight: 600;
+		}
+
+		tr:nth-child(even) td { background: #faf8f3; }
+
+		.callout {
+			background: var(--cream);
+			border-left: 4px solid var(--gold);
+			padding: 14px 16px;
+			margin: 16px 0;
+			border-radius: 0 8px 8px 0;
+		}
+
+		.callout strong { color: var(--maroon-dark); }
+
+		.checklist {
+			list-style: none;
+			padding: 0;
+			margin: 12px 0;
+		}
+
+		.checklist li {
+			padding: 6px 0 6px 28px;
+			position: relative;
+		}
+
+		.checklist li::before {
+			content: "☐";
+			position: absolute;
+			left: 0;
+			color: var(--maroon);
+			font-size: 1.1rem;
+		}
+
+		ol.steps { padding-left: 1.4em; }
+		ol.steps li { margin: 8px 0; }
+
+		ul.bullets { padding-left: 1.4em; }
+		ul.bullets li { margin: 6px 0; }
+
+		code, .path {
+			background: #f0ebe0;
+			padding: 2px 6px;
+			border-radius: 4px;
+			font-size: 0.9em;
+			word-break: break-all;
+		}
+
+		pre {
+			background: #1e1e1e;
+			color: #e8e8e8;
+			padding: 14px 16px;
+			border-radius: 8px;
+			overflow-x: auto;
+			font-size: 0.9rem;
+		}
+
+		.footer-note {
+			text-align: center;
+			color: var(--muted);
+			font-size: 0.9rem;
+			margin-top: 32px;
+		}
+
+		.print-btn {
+			display: inline-block;
+			margin-top: 12px;
+			padding: 10px 20px;
+			background: var(--gold);
+			color: #1a1a1a;
+			border: none;
+			border-radius: 6px;
+			font-weight: 600;
+			cursor: pointer;
+			text-decoration: none;
+		}
+
+		.print-btn:hover { background: #c9a227; color: #000; }
+
+		@media print {
+			body { background: #fff; }
+			.doc-wrap { padding: 0; max-width: none; }
+			.doc-header { border-radius: 0; box-shadow: none; }
+			.card { box-shadow: none; break-inside: avoid; }
+			.print-btn { display: none; }
+			a { color: #000; text-decoration: none; }
+		}
+	</style>
+</head>
+<body>
+	<div class="doc-wrap">
+		<header class="doc-header">
+			<h1>Rudra Jewellery — WordPress Store Operations Guide</h1>
+			<p>Complete work instructions for day-to-day store management</p>
+			<p><strong>Store:</strong> <a href="https://www.rudrajewellery.co.in/">https://www.rudrajewellery.co.in</a></p>
+			<p><strong>Admin login:</strong> <a href="https://www.rudrajewellery.co.in/wp-admin/">https://www.rudrajewellery.co.in/wp-admin/</a></p>
+			<button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+		</header>
+
+		<section class="card toc">
+			<h2>Table of contents</h2>
+			<ol>
+				<li><a href="#s1">Important: what saves where</a></li>
+				<li><a href="#s2">Image size requirements</a></li>
+				<li><a href="#s3">Add a new product</a></li>
+				<li><a href="#s4">Update homepage banner slides</a></li>
+				<li><a href="#s5">Product of the Day</a></li>
+				<li><a href="#s6">Verify UPI orders (admin)</a></li>
+				<li><a href="#s7">Update order status &amp; shipping</a></li>
+				<li><a href="#s8">Track orders (customer &amp; admin)</a></li>
+				<li><a href="#s9">Other common tasks</a></li>
+				<li><a href="#s10">Troubleshooting</a></li>
+				<li><a href="#s11">Daily checklist</a></li>
+				<li><a href="#quick">Quick links</a></li>
+			</ol>
+		</section>
+
+		<section class="card" id="s1">
+			<h2>1. Important: what saves where</h2>
+			<table>
+				<thead>
+					<tr><th>You change this in WordPress…</th><th>Stored in</th><th>Updated by FTP deploy?</th></tr>
+				</thead>
+				<tbody>
+					<tr><td>Products, prices, stock</td><td>Database</td><td><strong>No</strong></td></tr>
+					<tr><td>Banner slides (Customizer)</td><td>Database</td><td><strong>No</strong></td></tr>
+					<tr><td>Media Library uploads</td><td>Server uploads folder</td><td><strong>No</strong></td></tr>
+					<tr><td>Theme code (PHP/CSS)</td><td>Theme files on server</td><td><strong>Yes</strong> (deploy script)</td></tr>
+				</tbody>
+			</table>
+			<div class="callout">
+				<strong>Rule:</strong> The deploy script only uploads <strong>theme and plugin files</strong>. It does <strong>not</strong> copy your products, banners, or media. Those live in WordPress on Hostinger.
+			</div>
+			<p>After you change banners or products, click <strong>Publish / Update</strong> in wp-admin. If the live site looks old, purge cache (see <a href="#s10">§10 Troubleshooting</a>).</p>
+		</section>
+
+		<section class="card" id="s2">
+			<h2>2. Image size requirements</h2>
+
+			<h3>Homepage hero banner slides (slider)</h3>
+			<table>
+				<thead><tr><th>Setting</th><th>Value</th></tr></thead>
+				<tbody>
+					<tr><td><strong>Recommended size</strong></td><td><strong>1920 × 720 px</strong> (widescreen)</td></tr>
+					<tr><td>Also good</td><td>1920 × 800 px</td></tr>
+					<tr><td>Minimum</td><td>1600 × 600 px</td></tr>
+					<tr><td>Aspect ratio</td><td>~8:3 (wide landscape)</td></tr>
+					<tr><td>Format</td><td>JPG (80–85% quality) or WebP</td></tr>
+					<tr><td>File size</td><td>Under <strong>400 KB</strong> per slide when possible</td></tr>
+					<tr><td>Count</td><td>Up to <strong>5 slides</strong></td></tr>
+					<tr><td>Safe zone</td><td>Keep jewellery in the <strong>center 70%</strong> — text overlays the middle</td></tr>
+				</tbody>
+			</table>
+			<p><strong>Portrait product photos</strong> (e.g. 1080 × 1350) also work — desktop shows the full piece with a soft blurred fill. For the cleanest look, crop to <strong>1920 × 720</strong> in Canva before upload.</p>
+			<p><strong>Where to upload:</strong> Appearance → Customize → <strong>Homepage Hero</strong> → Hero slide 1–5</p>
+
+			<h3>Product images (shop &amp; product page)</h3>
+			<table>
+				<thead><tr><th>Image type</th><th>Recommended size</th><th>Notes</th></tr></thead>
+				<tbody>
+					<tr><td><strong>Main product image</strong></td><td><strong>800 × 800 px</strong> min; <strong>1000 × 1000 px</strong> ideal</td><td>Square works best</td></tr>
+					<tr><td>Gallery images</td><td>Same as main</td><td>Up to 4 extra angles</td></tr>
+					<tr><td>Format</td><td>JPG or WebP</td><td>Clear background, good lighting</td></tr>
+					<tr><td>File size</td><td>Under <strong>300 KB</strong> per image</td><td></td></tr>
+				</tbody>
+			</table>
+			<div class="callout">
+				<strong>Critical:</strong> Products <strong>without a main image do not appear</strong> on the shop or homepage grids. Always set <strong>Product image</strong> before publishing.
+			</div>
+			<table>
+				<thead><tr><th>Page</th><th>Display size (theme)</th></tr></thead>
+				<tbody>
+					<tr><td>Shop grid thumbnail</td><td>~400 px wide</td></tr>
+					<tr><td>Product page main image</td><td>~600 px wide</td></tr>
+					<tr><td>Product of the Day spotlight</td><td>Thumbnail size</td></tr>
+				</tbody>
+			</table>
+
+			<h3>Logo &amp; owner photo (optional)</h3>
+			<table>
+				<thead><tr><th>Asset</th><th>Recommended size</th></tr></thead>
+				<tbody>
+					<tr><td><strong>Header logo</strong></td><td>PNG transparent, max height ~<strong>120 px</strong>, width up to <strong>280 px</strong></td></tr>
+					<tr><td><strong>Owner / founder photo</strong></td><td><strong>400 × 400 px</strong> square (Appearance → Customize → Owner section)</td></tr>
+				</tbody>
+			</table>
+
+			<h3>Category images</h3>
+			<p>Category cards use theme defaults. Custom category thumbnails (if added later): <strong>600 × 600 px</strong> square.</p>
+		</section>
+
+		<section class="card" id="s3">
+			<h2>3. Add a new product</h2>
+			<h3>Step-by-step</h3>
+			<ol class="steps">
+				<li>Log in to <strong>wp-admin</strong></li>
+				<li>Go to <strong>Products → Add New</strong></li>
+				<li>Fill in the fields below</li>
+				<li>Click <strong>Publish</strong></li>
+			</ol>
+
+			<h3>Required fields</h3>
+			<table>
+				<thead><tr><th>Field</th><th>Where</th><th>What to enter</th></tr></thead>
+				<tbody>
+					<tr><td><strong>Product name</strong></td><td>Top title box</td><td>e.g. Panchaloham 7 stone studs</td></tr>
+					<tr><td><strong>Regular price</strong></td><td>Product data → General</td><td>Price in ₹ e.g. 299</td></tr>
+					<tr><td><strong>Product image</strong></td><td>Right sidebar → Product image</td><td>Upload square photo</td></tr>
+					<tr><td><strong>Categories</strong></td><td>Right sidebar → Product categories</td><td>Tick Studs, Necklaces, etc.</td></tr>
+					<tr><td><strong>Stock</strong></td><td>Product data → Inventory</td><td>Enable stock; set quantity</td></tr>
+				</tbody>
+			</table>
+
+			<h3>Recommended fields</h3>
+			<table>
+				<thead><tr><th>Field</th><th>Where</th><th>Notes</th></tr></thead>
+				<tbody>
+					<tr><td>SKU</td><td>Product data → Inventory</td><td>Unique e.g. WP-050</td></tr>
+					<tr><td>Short description</td><td>Below title</td><td>1–2 lines (no placeholder text)</td></tr>
+					<tr><td>Description</td><td>Main editor</td><td>Full details (optional)</td></tr>
+					<tr><td>Gallery</td><td>Product data → Product gallery</td><td>Extra photos</td></tr>
+					<tr><td>Material / Occasion / Care</td><td>Product data → Attributes</td><td>Or theme uses defaults</td></tr>
+				</tbody>
+			</table>
+
+			<h3>Product categories on this store</h3>
+			<ul class="bullets">
+				<li>Ear Rings, Studs, Necklaces, Chockers, Bangles, Long Harams</li>
+				<li>Handmade Collection, Instagram Collection, Latest Collection</li>
+				<li>Combo, Rings (and others in <strong>Products → Categories</strong>)</li>
+			</ul>
+
+			<h3>Make product visible on shop — checklist</h3>
+			<ul class="checklist">
+				<li>Status = <strong>Published</strong></li>
+				<li><strong>Product image</strong> is set (not placeholder)</li>
+				<li><strong>In stock</strong> (quantity &gt; 0)</li>
+				<li>At least <strong>one category</strong> selected</li>
+				<li><strong>Price</strong> is set</li>
+			</ul>
+
+			<h3>Edit an existing product</h3>
+			<p><strong>Products → All Products</strong> → click product name → change fields → <strong>Update</strong></p>
+		</section>
+
+		<section class="card" id="s4">
+			<h2>4. Update homepage banner slides</h2>
+			<ol class="steps">
+				<li><strong>Appearance → Customize</strong></li>
+				<li>Open <strong>Homepage Hero</strong></li>
+				<li>For each slide (Hero slide 1 … 5): Select or upload image — use <strong>1920 × 720 px</strong></li>
+				<li>Optional: set Hero “from” price (₹) — leave <strong>0</strong> for auto lowest price</li>
+				<li>Click <strong>Publish</strong> (required!)</li>
+				<li>Hard refresh homepage (<strong>Ctrl+F5</strong>) or use incognito window</li>
+				<li>If cached: <strong>LiteSpeed Cache → Purge All</strong></li>
+			</ol>
+			<p><strong>Note:</strong> Theme deploys no longer reset banner slides (v4.6.50+). Your Customizer choices stay after code updates.</p>
+		</section>
+
+		<section class="card" id="s5">
+			<h2>5. Product of the Day</h2>
+			<p>The <strong>Product of the Day</strong> block highlights <strong>one</strong> product on the homepage.</p>
+			<h3>How the site picks it</h3>
+			<ol class="steps">
+				<li><strong>First:</strong> Latest <strong>Featured</strong> product that is in stock with an image</li>
+				<li><strong>If none:</strong> Newest in-stock product with an image</li>
+			</ol>
+			<p>Control it with the <strong>Featured</strong> flag — no separate SKU picker.</p>
+
+			<h3>Set today’s product</h3>
+			<p><strong>Option A:</strong> Products → All Products → open product → check <strong>Featured</strong> → Update</p>
+			<p><strong>Option B:</strong> Click the <strong>star</strong> icon on the product row in All Products</p>
+			<p>To rotate: uncheck Featured on old product, enable on new one.</p>
+
+			<h3>Show or hide section</h3>
+			<p><strong>Appearance → Customize → Homepage Sections</strong> → toggle <strong>Product of the Day</strong> → Publish</p>
+		</section>
+
+		<section class="card" id="s6">
+			<h2>6. Verify UPI orders (admin)</h2>
+			<p>Customers pay via <strong>UPI after</strong> placing the order. New orders start as <strong>Pending payment</strong>.</p>
+
+			<h3>Morning routine</h3>
+			<ol class="steps">
+				<li><strong>WooCommerce → Orders</strong></li>
+				<li>Filter: <strong>Pending payment</strong></li>
+				<li>Process oldest orders first</li>
+			</ol>
+
+			<h3>Per-order verification</h3>
+			<table>
+				<thead><tr><th>Step</th><th>Action</th></tr></thead>
+				<tbody>
+					<tr><td>1</td><td>Open order — note <strong>Order #</strong> and total</td></tr>
+					<tr><td>2</td><td>Check if customer clicked <strong>“I've completed UPI payment”</strong> (order note / UTR)</td></tr>
+					<tr><td>3</td><td>Open PhonePe / GPay / Paytm business app</td></tr>
+					<tr><td>4</td><td>Find payment by order # in remarks, amount, date, or UTR</td></tr>
+					<tr><td>5</td><td>Confirm amount <strong>exactly matches</strong> order total</td></tr>
+					<tr><td>6</td><td>If valid → status <strong>Processing</strong> → Update</td></tr>
+					<tr><td>7</td><td>If invalid → Order note → WhatsApp customer → <strong>Cancelled</strong> if unresolved</td></tr>
+				</tbody>
+			</table>
+
+			<h3>Common payment issues</h3>
+			<table>
+				<thead><tr><th>Issue</th><th>What to do</th></tr></thead>
+				<tbody>
+					<tr><td>Wrong amount paid</td><td>WhatsApp for balance or partial refund</td></tr>
+					<tr><td>No order # in UPI remarks</td><td>Match by amount + time + name</td></tr>
+					<tr><td>Duplicate UTR</td><td>Investigate before Processing</td></tr>
+					<tr><td>Customer never paid</td><td>Leave Pending or Cancel after follow-up</td></tr>
+				</tbody>
+			</table>
+		</section>
+
+		<section class="card" id="s7">
+			<h2>7. Update order status &amp; shipping</h2>
+			<table>
+				<thead><tr><th>Status</th><th>Meaning</th><th>When to use</th></tr></thead>
+				<tbody>
+					<tr><td><strong>Pending payment</strong></td><td>Order placed; UPI not verified</td><td>Default after checkout</td></tr>
+					<tr><td><strong>Processing</strong></td><td>Payment confirmed; packing</td><td>After UPI verified</td></tr>
+					<tr><td><strong>Completed</strong></td><td>Delivered / closed</td><td>After courier delivery</td></tr>
+					<tr><td><strong>Cancelled</strong></td><td>Order voided</td><td>Invalid payment / request</td></tr>
+					<tr><td><strong>On hold</strong></td><td>Awaiting info</td><td>Optional</td></tr>
+				</tbody>
+			</table>
+
+			<h3>Ship an order</h3>
+			<ol class="steps">
+				<li>Open order in <strong>Processing</strong></li>
+				<li>Pack — print slip: order → <strong>Print</strong></li>
+				<li>Add <strong>Order note</strong> (tick “Note to customer”) with tracking, e.g.:</li>
+			</ol>
+			<pre>Shipped via Delhivery. Tracking: 1234567890. Expected delivery 5–7 business days.</pre>
+			<ol class="steps" start="4">
+				<li>Status <strong>Completed</strong> → Update</li>
+			</ol>
+			<p><strong>Bulk:</strong> Select orders → Bulk actions → Change status to processing</p>
+		</section>
+
+		<section class="card" id="s8">
+			<h2>8. Track orders (customer &amp; admin)</h2>
+
+			<h3>Customer — Track Order page</h3>
+			<p><strong>URL:</strong> <a href="https://www.rudrajewellery.co.in/track-order/">https://www.rudrajewellery.co.in/track-order/</a></p>
+			<p>Customer enters <strong>Order ID</strong> and <strong>billing email</strong> to see status.</p>
+
+			<h3>Customer — My Account</h3>
+			<p><strong>My Account → Orders</strong> → click order number (login required).</p>
+
+			<h3>Customer — email updates</h3>
+			<table>
+				<thead><tr><th>Email</th><th>When sent</th></tr></thead>
+				<tbody>
+					<tr><td>On hold / Pending</td><td>After order — UPI pay instructions</td></tr>
+					<tr><td>Processing</td><td>After you verify payment</td></tr>
+					<tr><td>Completed</td><td>When order marked completed / shipped</td></tr>
+				</tbody>
+			</table>
+
+			<h3>Admin — find an order</h3>
+			<p><strong>WooCommerce → Orders</strong> — search by #, name, email, or phone; filter by status/date.</p>
+
+			<h3>Delivery timeline (customer-facing)</h3>
+			<ol class="steps">
+				<li><strong>UPI verified</strong> — within 24 hours</li>
+				<li><strong>Packed &amp; shipped</strong> — tracking in email when available</li>
+				<li><strong>Delivered</strong> — typically 5–10 business days across India</li>
+			</ol>
+		</section>
+
+		<section class="card" id="s9">
+			<h2>9. Other common tasks</h2>
+			<ul class="bullets">
+				<li><strong>Store contact:</strong> Appearance → Customize → Store UI → Publish</li>
+				<li><strong>Promo codes:</strong> WooCommerce → Marketing → Coupons → Add coupon</li>
+				<li><strong>Hide product:</strong> Stock 0 / Out of stock, or set to Draft</li>
+				<li><strong>Best Sellers:</strong> Mark products <strong>Featured</strong></li>
+				<li><strong>Purge cache:</strong> LiteSpeed Cache → Purge All (after banner changes)</li>
+				<li><strong>UPI settings:</strong> WooCommerce → Settings → Payments → Manual UPI → Manage</li>
+				<li><strong>Email (SMTP):</strong> Install WP Mail SMTP if emails don’t arrive</li>
+			</ul>
+		</section>
+
+		<section class="card" id="s10">
+			<h2>10. Troubleshooting</h2>
+			<table>
+				<thead><tr><th>Problem</th><th>Fix</th></tr></thead>
+				<tbody>
+					<tr><td>Banner changes not visible</td><td>Customizer → Publish; Purge cache; Ctrl+F5</td></tr>
+					<tr><td>New product not on shop</td><td>Add product image; Published + In stock + category</td></tr>
+					<tr><td>Order stuck on Pending</td><td>Verify UPI; check order # in payment remarks</td></tr>
+					<tr><td>Banner cropped on desktop</td><td>Use 1920×720 images; theme v4.6.51+</td></tr>
+					<tr><td>Deploy doesn’t update banners</td><td>Expected — use Customizer, not deploy</td></tr>
+				</tbody>
+			</table>
+		</section>
+
+		<section class="card" id="s11">
+			<h2>11. Daily checklist</h2>
+			<h3>Morning (15–30 min)</h3>
+			<ul class="checklist">
+				<li>WooCommerce → Orders → process <strong>Pending payment</strong></li>
+				<li>Verify UPI → move to <strong>Processing</strong></li>
+				<li>Reply to WhatsApp / contact messages</li>
+			</ul>
+			<h3>When adding new jewellery</h3>
+			<ul class="checklist">
+				<li>Upload square image 800×800+</li>
+				<li>Set price, stock, category</li>
+				<li>Publish; check shop + mobile</li>
+				<li>Optional: mark <strong>Featured</strong> for Product of the Day</li>
+			</ul>
+			<h3>When changing homepage</h3>
+			<ul class="checklist">
+				<li>Customizer → Homepage Hero</li>
+				<li>Publish Customizer</li>
+				<li>Purge cache; verify homepage</li>
+			</ul>
+			<h3>Weekly</h3>
+			<ul class="checklist">
+				<li>Review low-stock products</li>
+				<li>Rotate Featured product for Product of the Day</li>
+				<li>WooCommerce → Analytics → Orders</li>
+			</ul>
+		</section>
+
+		<section class="card" id="quick">
+			<h2>Quick links</h2>
+			<table>
+				<thead><tr><th>Task</th><th>Path in wp-admin</th></tr></thead>
+				<tbody>
+					<tr><td>Add product</td><td>Products → Add New</td></tr>
+					<tr><td>All products</td><td>Products → All Products</td></tr>
+					<tr><td>Orders</td><td>WooCommerce → Orders</td></tr>
+					<tr><td>Banner slides</td><td>Appearance → Customize → Homepage Hero</td></tr>
+					<tr><td>Product of the Day</td><td>Featured product + Customize → Homepage Sections</td></tr>
+					<tr><td>Coupons</td><td>WooCommerce → Marketing → Coupons</td></tr>
+					<tr><td>UPI settings</td><td>WooCommerce → Settings → Payments</td></tr>
+					<tr><td>Media uploads</td><td>Media → Add New</td></tr>
+				</tbody>
+			</table>
+		</section>
+
+		<p class="footer-note">Last updated: June 2026 — Rudra Jewellery theme v4.6.51</p>
+	</div>
+</body>
+</html>
