@@ -26,6 +26,50 @@ function jwellery_is_background_catalog_request() {
 }
 
 /**
+ * Whether the current request is the wp-admin product add/edit screen.
+ *
+ * @return bool
+ */
+function jwellery_is_wp_product_editor_screen() {
+	if ( ! is_admin() ) {
+		return false;
+	}
+
+	global $pagenow;
+	if ( ! in_array( $pagenow, array( 'post-new.php', 'post.php' ), true ) ) {
+		return false;
+	}
+
+	if ( isset( $_GET['post_type'] ) && 'product' === sanitize_key( wp_unslash( $_GET['post_type'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		return true;
+	}
+
+	if ( 'post.php' === $pagenow && isset( $_GET['post'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		return 'product' === get_post_type( (int) $_GET['post'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	}
+
+	return false;
+}
+
+/**
+ * Skip heavy theme maintenance during product editor loads and REST saves.
+ *
+ * @return bool
+ */
+function jwellery_should_skip_heavy_admin_work() {
+	if ( jwellery_is_background_catalog_request() ) {
+		return true;
+	}
+	if ( jwellery_is_wp_product_editor_screen() ) {
+		return true;
+	}
+	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+		return true;
+	}
+	return false;
+}
+
+/**
  * Whether this product was edited in wp-admin (preserve name, price, image, categories).
  *
  * @param int $product_id Product ID.
@@ -862,7 +906,7 @@ add_action( 'after_setup_theme', 'jwellery_schedule_catalog_sync_if_needed', 25 
  * After deploy, mark published products as admin-managed in small batches (not during REST saves).
  */
 function jwellery_bootstrap_admin_managed_on_deploy() {
-	if ( jwellery_is_background_catalog_request() ) {
+	if ( jwellery_should_skip_heavy_admin_work() ) {
 		return;
 	}
 	if ( ! function_exists( 'wc_get_products' ) || ! is_admin() ) {

@@ -449,6 +449,9 @@ add_action( 'after_switch_theme', 'jwellery_on_reference_theme_activation' );
  * Run store setup in admin after activation (needs WooCommerce active).
  */
 function jwellery_run_pending_reference_setup() {
+	if ( function_exists( 'jwellery_should_skip_heavy_admin_work' ) && jwellery_should_skip_heavy_admin_work() ) {
+		return;
+	}
 	if ( ! get_option( 'jwellery_pending_reference_setup' ) ) {
 		return;
 	}

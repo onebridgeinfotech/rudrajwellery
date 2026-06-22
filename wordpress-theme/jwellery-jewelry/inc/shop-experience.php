@@ -42,6 +42,9 @@ function jwellery_purge_product_cache( $post_id ) {
 	if ( 'product' !== get_post_type( $post_id ) ) {
 		return;
 	}
+	if ( function_exists( 'jwellery_should_skip_heavy_admin_work' ) && jwellery_should_skip_heavy_admin_work() ) {
+		return;
+	}
 
 	// Clear WooCommerce internal transients.
 	if ( function_exists( 'wc_delete_product_transients' ) ) {
@@ -50,13 +53,22 @@ function jwellery_purge_product_cache( $post_id ) {
 	delete_transient( 'wc_products_onsale' );
 	delete_post_meta( $post_id, '_price_html' );
 
-	// Purge via LiteSpeed Cache plugin API (works on Hostinger).
+	// Defer full cache purge — litespeed_purge_all on every autosave blocks the block editor.
+	if ( ! has_action( 'shutdown', 'jwellery_deferred_litespeed_purge' ) ) {
+		add_action( 'shutdown', 'jwellery_deferred_litespeed_purge', 20 );
+	}
+}
+add_action( 'save_post', 'jwellery_purge_product_cache', 99 );
+add_action( 'wp_trash_post', 'jwellery_purge_product_cache', 99 );
+add_action( 'untrash_post', 'jwellery_purge_product_cache', 99 );
+add_action( 'delete_post', 'jwellery_purge_product_cache', 99 );
+
+/**
+ * Run LiteSpeed purge once after product save (not on every REST autosave).
+ */
+function jwellery_deferred_litespeed_purge() {
 	do_action( 'litespeed_purge_all' );
 }
-add_action( 'save_post', 'jwellery_purge_product_cache' );
-add_action( 'wp_trash_post', 'jwellery_purge_product_cache' );
-add_action( 'untrash_post', 'jwellery_purge_product_cache' );
-add_action( 'delete_post', 'jwellery_purge_product_cache' );
 
 /**
  * Free shipping threshold (INR). 0 = free shipping on every order.

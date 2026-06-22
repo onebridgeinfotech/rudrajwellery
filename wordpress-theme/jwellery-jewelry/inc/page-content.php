@@ -725,7 +725,7 @@ function jwellery_maintain_store( $force = false ) {
  * Run maintain_store in wp-admin only (not on REST product editor requests).
  */
 function jwellery_maintain_store_on_admin() {
-	if ( function_exists( 'jwellery_is_background_catalog_request' ) && jwellery_is_background_catalog_request() ) {
+	if ( function_exists( 'jwellery_should_skip_heavy_admin_work' ) && jwellery_should_skip_heavy_admin_work() ) {
 		return;
 	}
 	if ( get_transient( 'jwellery_maintain_store_lock' ) ) {

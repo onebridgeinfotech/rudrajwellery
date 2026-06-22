@@ -375,6 +375,9 @@ function jwellery_assign_category_thumbnails( $force = false ) {
  * Assign category thumbnails from wp-admin only (never on public page views).
  */
 function jwellery_maybe_assign_category_thumbnails_admin() {
+	if ( function_exists( 'jwellery_should_skip_heavy_admin_work' ) && jwellery_should_skip_heavy_admin_work() ) {
+		return;
+	}
 	if ( ! current_user_can( 'manage_woocommerce' ) || get_option( 'jwellery_category_images_v5' ) ) {
 		return;
 	}
