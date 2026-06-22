@@ -261,8 +261,26 @@
 }
 
 @media (max-width: 1024px) {
+	html {
+		scroll-padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+	}
+
 	body.jwellery-has-mobile-bar {
-		padding-bottom: calc(62px + env(safe-area-inset-bottom, 0px));
+		padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+	}
+
+	/* Keep product/category tap targets above the fixed bottom bar when scrolled into view */
+	body.jwellery-has-mobile-bar .add_to_cart_button,
+	body.jwellery-has-mobile-bar .jwellery-loop-actions,
+	body.jwellery-has-mobile-bar .jwellery-category-browse-card {
+		scroll-margin-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+	}
+
+	body.jwellery-has-mobile-bar .woocommerce ul.products,
+	body.jwellery-has-mobile-bar .jwellery-product-grid,
+	body.jwellery-has-mobile-bar .jwellery-category-browse,
+	body.jwellery-has-mobile-bar .jwellery-shop-category-group {
+		padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
 	}
 
 	.jwellery-mobile-bar {
@@ -346,7 +364,7 @@
 	}
 
 	body.jwellery-has-mobile-bar .jwellery-sticky-atc {
-		bottom: calc(62px + env(safe-area-inset-bottom, 0px));
+		bottom: calc(72px + env(safe-area-inset-bottom, 0px));
 	}
 
 	.jwellery-header-icons {

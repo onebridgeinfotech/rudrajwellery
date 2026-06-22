@@ -471,26 +471,21 @@ function jwellery_find_store_page( $key ) {
 	}
 
 	$slug = $pages[ $key ];
-	$id   = (int) get_option( 'jwellery_page_' . $key );
 
-	if ( $id ) {
-		$page = get_post( $id );
-		if ( $page instanceof WP_Post && 'page' === $page->post_type && 'publish' === $page->post_status ) {
-			if ( $page->post_name !== $slug ) {
-				$canonical = get_page_by_path( $slug );
-				if ( $canonical instanceof WP_Post && 'publish' === $canonical->post_status ) {
-					update_option( 'jwellery_page_' . $key, $canonical->ID );
-					return $canonical;
-				}
-			}
-			return $page;
-		}
-	}
-
+	// Canonical slug wins over a stale option ID (e.g. privacy-policy-2).
 	$page = get_page_by_path( $slug );
 	if ( $page instanceof WP_Post && 'publish' === $page->post_status ) {
 		update_option( 'jwellery_page_' . $key, $page->ID );
 		return $page;
+	}
+
+	$id = (int) get_option( 'jwellery_page_' . $key );
+	if ( $id ) {
+		$page = get_post( $id );
+		if ( $page instanceof WP_Post && 'page' === $page->post_type && 'publish' === $page->post_status ) {
+			update_option( 'jwellery_page_' . $key, $page->ID );
+			return $page;
+		}
 	}
 
 	$by_slug = get_posts(
