@@ -438,6 +438,12 @@ function jwellery_uda_mobile_nav() {
 				href="<?php echo esc_url( jwellery_uda_nav_url( $endpoint ) ); ?>"
 			>
 				<?php echo esc_html( $labels[ $endpoint ] ); ?>
+				<?php if ( 'cart' === $endpoint && function_exists( 'WC' ) && WC()->cart ) : ?>
+					<?php $mob_cart_count = (int) WC()->cart->get_cart_contents_count(); ?>
+					<?php if ( $mob_cart_count > 0 ) : ?>
+						<span class="jwellery-uda__mobnav-badge"><?php echo (int) $mob_cart_count; ?></span>
+					<?php endif; ?>
+				<?php endif; ?>
 			</a>
 		<?php endforeach; ?>
 	</nav>

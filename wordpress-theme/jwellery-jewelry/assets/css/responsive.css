@@ -482,7 +482,14 @@ body.jwellery-menu-open {
 	}
 
 	.jwellery-hero h1 {
-		font-size: 1.65rem;
+		font-size: clamp(1.15rem, 5.2vw, 1.65rem);
+		line-height: 1.2;
+		word-break: break-word;
+	}
+
+	.jwellery-hero-tag {
+		font-size: 0.72rem;
+		letter-spacing: 0.12em;
 	}
 
 	.jwellery-hero-desc {
@@ -496,7 +503,7 @@ body.jwellery-menu-open {
 	}
 
 	.jwellery-trust-strip-grid {
-		grid-template-columns: repeat(2, 1fr);
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 10px;
 		text-align: left;
 	}
@@ -504,9 +511,20 @@ body.jwellery-menu-open {
 	.jwellery-trust-strip-grid li {
 		flex-direction: row;
 		align-items: center;
-		gap: 14px;
-		padding: 16px 18px !important;
+		gap: 12px;
+		padding: 14px 14px !important;
 		text-align: left;
+		min-width: 0;
+	}
+
+	.jwellery-trust-strip__copy {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.jwellery-trust-strip__copy strong,
+	.jwellery-trust-strip__copy span {
+		overflow-wrap: anywhere;
 	}
 
 	.jwellery-trust-icon-wrap,
@@ -790,6 +808,10 @@ body.jwellery-menu-open {
 		bottom: calc(72px + env(safe-area-inset-bottom, 0px));
 	}
 
+	body.jwellery-has-mobile-bar .jwellery-scroll-btn {
+		display: none;
+	}
+
 	.jwellery-floating-wa-text {
 		display: none;
 	}
@@ -963,13 +985,13 @@ body.jwellery-menu-open {
 	}
 
 	.jwellery-trust-strip-grid {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 10px;
+		grid-template-columns: 1fr;
+		gap: 8px;
 	}
 
 	.jwellery-trust-strip-grid li {
-		padding: 18px 20px !important;
-		gap: 16px;
+		padding: 14px 16px !important;
+		gap: 12px;
 	}
 
 	.jwellery-trust-icon-wrap,

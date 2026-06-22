@@ -1241,6 +1241,9 @@
 
 	.jwellery-uda__mobnav-link {
 		flex: 0 0 auto;
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
 		padding: 8px 14px;
 		border-radius: 999px;
 		border: 1px solid var(--jwellery-border);
@@ -1256,6 +1259,24 @@
 		color: #fff;
 		border-color: var(--jwellery-maroon);
 		box-shadow: none;
+	}
+
+	.jwellery-uda__mobnav-badge {
+		min-width: 18px;
+		height: 18px;
+		padding: 0 5px;
+		border-radius: 999px;
+		background: #fff;
+		color: var(--jwellery-maroon);
+		font-size: 0.65rem;
+		font-weight: 700;
+		line-height: 18px;
+		text-align: center;
+	}
+
+	.jwellery-uda__mobnav-link.is-active .jwellery-uda__mobnav-badge {
+		background: rgba(255, 255, 255, 0.2);
+		color: #fff;
 	}
 
 	.jwellery-uda__panel {

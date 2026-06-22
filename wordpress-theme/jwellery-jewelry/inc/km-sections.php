@@ -86,8 +86,10 @@ function jwellery_home_trust_strip() {
 							}
 							?>
 						</span>
-						<strong><?php echo esc_html( $item['title'] ); ?></strong>
-						<span><?php echo esc_html( $item['desc'] ); ?></span>
+						<div class="jwellery-trust-strip__copy">
+							<strong><?php echo esc_html( $item['title'] ); ?></strong>
+							<span><?php echo esc_html( $item['desc'] ); ?></span>
+						</div>
 					</li>
 				<?php endforeach; ?>
 			</ul>

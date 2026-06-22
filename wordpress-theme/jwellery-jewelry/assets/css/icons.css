@@ -211,6 +211,24 @@
 	color: #fff;
 }
 
+.jwellery-trust-strip__copy {
+	flex: 1;
+	min-width: 0;
+}
+
+.jwellery-trust-strip__copy strong {
+	font-size: 0.92rem;
+	line-height: 1.3;
+}
+
+.jwellery-trust-strip__copy span {
+	display: block;
+	font-size: 0.78rem;
+	line-height: 1.35;
+	color: rgba(255, 255, 255, 0.78);
+	overflow-wrap: anywhere;
+}
+
 .jwellery-trust-strip .jwellery-trust-strip-grid li > span:last-child {
 	display: block;
 	color: rgba(255, 255, 255, 0.78);
@@ -403,14 +421,14 @@
 
 @media (max-width: 640px) {
 	.jwellery-trust-strip .jwellery-trust-strip-grid {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 10px;
+		grid-template-columns: 1fr;
+		gap: 8px;
 	}
 
 	.jwellery-trust-strip .jwellery-trust-strip-grid li {
 		align-items: center;
-		gap: 16px;
-		padding: 18px 20px !important;
+		gap: 12px;
+		padding: 14px 16px !important;
 		background: rgba(255, 255, 255, 0.1);
 		border: 1px solid rgba(255, 255, 255, 0.15);
 		border-radius: 12px;
@@ -418,14 +436,22 @@
 
 	.jwellery-trust-strip .jwellery-trust-icon-wrap,
 	.jwellery-trust-strip .jwellery-trust-icon {
-		width: 44px;
-		height: 44px;
+		width: 40px;
+		height: 40px;
 	}
 
 	.jwellery-trust-strip .jwellery-trust-icon-wrap .jwellery-icon svg,
 	.jwellery-trust-strip .jwellery-trust-icon-wrap svg {
-		width: 28px;
-		height: 28px;
+		width: 24px;
+		height: 24px;
+	}
+
+	.jwellery-trust-strip__copy strong {
+		font-size: 0.88rem;
+	}
+
+	.jwellery-trust-strip__copy span {
+		font-size: 0.74rem;
 	}
 
 	.jwellery-social-icons--footer-newsletter {
