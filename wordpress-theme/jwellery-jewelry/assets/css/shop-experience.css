@@ -316,6 +316,16 @@
 	pointer-events: auto;
 }
 
+/* Touch devices: quick-view stays tappable without hover */
+@media (hover: none), (pointer: coarse) {
+	.product-image-wrap .jwellery-card-hover-actions {
+		opacity: 1;
+		transform: none;
+		pointer-events: auto;
+		background: linear-gradient(transparent 35%, rgba(0, 0, 0, 0.5));
+	}
+}
+
 .jwellery-quick-view-btn {
 	padding: 8px 16px;
 	border: none;

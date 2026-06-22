@@ -411,6 +411,50 @@ function jwellery_mega_menu_html() {
 }
 
 /**
+ * Normalize primary menu URLs to the current site host (www vs non-www).
+ *
+ * @param WP_Post[] $items Menu items.
+ * @param stdClass  $args  Menu args.
+ * @return WP_Post[]
+ */
+function jwellery_normalize_menu_item_urls( $items, $args ) {
+	if ( empty( $args->theme_location ) || 'primary' !== $args->theme_location ) {
+		return $items;
+	}
+
+	$site_host = wp_parse_url( home_url(), PHP_URL_HOST );
+	if ( ! $site_host ) {
+		return $items;
+	}
+
+	$site_base = preg_replace( '/^www\./', '', strtolower( $site_host ) );
+
+	foreach ( $items as $item ) {
+		if ( empty( $item->url ) || 0 === strpos( $item->url, '#' ) ) {
+			continue;
+		}
+
+		$parsed = wp_parse_url( $item->url );
+		if ( empty( $parsed['host'] ) ) {
+			continue;
+		}
+
+		$item_base = preg_replace( '/^www\./', '', strtolower( $parsed['host'] ) );
+		if ( $item_base !== $site_base ) {
+			continue;
+		}
+
+		$path  = isset( $parsed['path'] ) ? $parsed['path'] : '/';
+		$query = ! empty( $parsed['query'] ) ? '?' . $parsed['query'] : '';
+		$frag  = ! empty( $parsed['fragment'] ) ? '#' . $parsed['fragment'] : '';
+		$item->url = home_url( $path ) . $query . $frag;
+	}
+
+	return $items;
+}
+add_filter( 'wp_nav_menu_objects', 'jwellery_normalize_menu_item_urls', 5, 2 );
+
+/**
  * Mark Shop menu items for mega menu.
  *
  * @param array $items Menu items.
