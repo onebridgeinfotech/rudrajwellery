@@ -9,7 +9,8 @@
 }
 
 .jwellery-page-content--account {
-	padding: 24px 0 48px;
+	padding-top: 24px;
+	padding-bottom: 48px;
 	background: #f3f1ee;
 }
 
@@ -1211,7 +1212,8 @@
 /* ——— Mobile ——— */
 @media (max-width: 900px) {
 	.jwellery-page-content--account {
-		padding: 16px 0 32px;
+		padding-top: 16px;
+		padding-bottom: 32px;
 		background: #fff;
 	}
 

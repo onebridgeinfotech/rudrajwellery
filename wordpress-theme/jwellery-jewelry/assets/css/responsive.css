@@ -846,7 +846,8 @@ body.jwellery-menu-open {
 	}
 
 	.jwellery-page-content {
-		padding: 24px 0 40px;
+		padding-top: 24px;
+		padding-bottom: 40px;
 	}
 
 	.woocommerce ul.products {

@@ -108,7 +108,8 @@
 
 /* ——— Page body ——— */
 .jwellery-page-content--store {
-	padding: 36px 0 64px;
+	padding-top: 36px;
+	padding-bottom: 64px;
 }
 
 .jwellery-page-article--store .jwellery-page-body > .jwellery-page-sections {
@@ -673,7 +674,8 @@
 	}
 
 	.jwellery-page-content--store {
-		padding: 20px 0 40px;
+		padding-top: 20px;
+		padding-bottom: 40px;
 	}
 
 	.jwellery-page-content--store .container {

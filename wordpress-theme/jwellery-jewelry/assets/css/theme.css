@@ -1302,7 +1302,8 @@ ul.products.jwellery-product-grid::after {
 
 /* Page content (store pages styled in page-design.css) */
 .jwellery-page-content {
-	padding: 40px 0 60px;
+	padding-top: 40px;
+	padding-bottom: 60px;
 }
 
 .jwellery-page-content .page-title {
@@ -1445,6 +1446,56 @@ ul.products.jwellery-product-grid::after {
 .woocommerce-checkout .checkout_coupon input.input-text {
 	border: 1px solid var(--jwellery-border);
 	border-radius: var(--jwellery-btn-radius, 6px);
+}
+
+/* Cart & checkout — mobile/tablet side padding and inner spacing */
+@media (max-width: 1024px) {
+	body.woocommerce-cart .container.jwellery-page-content,
+	body.woocommerce-checkout .container.jwellery-page-content {
+		padding-left: max(20px, calc(env(safe-area-inset-left, 0px) + 16px));
+		padding-right: max(20px, calc(env(safe-area-inset-right, 0px) + 16px));
+	}
+
+	.woocommerce-cart .jwellery-promo-hint,
+	.woocommerce-checkout .jwellery-promo-hint {
+		padding: 14px 16px;
+		font-size: 0.9rem;
+		line-height: 1.55;
+	}
+
+	.woocommerce-checkout form.checkout_coupon,
+	.woocommerce-cart .coupon {
+		padding: 14px 16px;
+	}
+
+	.jwellery-checkout-steps ol {
+		gap: 6px;
+	}
+
+	.jwellery-checkout-steps li {
+		padding: 8px 12px;
+	}
+
+	.woocommerce-checkout .woocommerce-billing-fields,
+	.woocommerce-checkout .woocommerce-additional-fields,
+	.woocommerce-checkout #order_review {
+		padding-left: 0;
+		padding-right: 0;
+	}
+
+	.woocommerce-checkout h3,
+	.woocommerce-cart h2 {
+		margin-top: 1.25em;
+		margin-bottom: 0.75em;
+	}
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+	body.woocommerce-cart .container.jwellery-page-content,
+	body.woocommerce-checkout .container.jwellery-page-content {
+		padding-left: max(24px, calc(env(safe-area-inset-left, 0px) + 20px));
+		padding-right: max(24px, calc(env(safe-area-inset-right, 0px) + 20px));
+	}
 }
 
 /* Header extras */
