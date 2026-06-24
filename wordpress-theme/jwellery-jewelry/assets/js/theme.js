@@ -231,10 +231,23 @@
 			});
 		}
 
-		hero.addEventListener('mouseenter', stopHeroAuto);
-		hero.addEventListener('mouseleave', startHeroAuto);
-		hero.addEventListener('focusin', stopHeroAuto);
-		hero.addEventListener('focusout', startHeroAuto);
+		hero.addEventListener('mouseenter', function (e) {
+			if (e.target.closest('.jwellery-hero-nav, .jwellery-hero-dots')) {
+				stopHeroAuto();
+			}
+		});
+		hero.addEventListener('mouseleave', function (e) {
+			if (!e.relatedTarget || !hero.contains(e.relatedTarget)) {
+				startHeroAuto();
+			}
+		});
+		document.addEventListener('visibilitychange', function () {
+			if (document.hidden) {
+				stopHeroAuto();
+			} else {
+				startHeroAuto();
+			}
+		});
 
 		startHeroAuto();
 	}

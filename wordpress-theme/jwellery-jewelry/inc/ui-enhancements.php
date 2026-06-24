@@ -702,7 +702,9 @@ function jwellery_default_hero_slide_files() {
  * @return array<int, string>
  */
 function jwellery_hero_slides() {
-	$slides = array();
+	$slides   = array();
+	$max      = 5;
+	$min_auto = 2;
 
 	// 1. Customizer-set images take priority.
 	foreach ( array( 'jwellery_hero_image_1', 'jwellery_hero_image_2', 'jwellery_hero_image_3', 'jwellery_hero_image_4', 'jwellery_hero_image_5' ) as $key ) {
@@ -715,54 +717,70 @@ function jwellery_hero_slides() {
 		} else {
 			$url = (string) $val;
 		}
-		if ( $url ) {
-			$slides[] = $url;
-		}
+		jwellery_hero_slide_add( $slides, $url, $max );
 	}
 
-	// 2. Auto-pull product images from Long Haram and Necklace categories.
-	if ( empty( $slides ) && function_exists( 'wc_get_products' ) ) {
+	// 2. Fill remaining slots from product categories (even when Customizer has 1 image).
+	if ( count( $slides ) < $max && function_exists( 'wc_get_products' ) ) {
 		$category_slugs = array( 'long-harams', 'necklaces', 'long-haram', 'necklace' );
 		foreach ( $category_slugs as $slug ) {
 			$term = get_term_by( 'slug', $slug, 'product_cat' );
 			if ( ! $term || is_wp_error( $term ) ) {
 				continue;
 			}
-			$products = wc_get_products( array(
-				'status'     => 'publish',
-				'limit'      => 3,
-				'category'   => array( $slug ),
-				'orderby'    => 'date',
-				'order'      => 'DESC',
-			) );
+			$products = wc_get_products(
+				array(
+					'status'   => 'publish',
+					'limit'    => 3,
+					'category' => array( $slug ),
+					'orderby'  => 'date',
+					'order'    => 'DESC',
+				)
+			);
 			foreach ( $products as $product ) {
 				$img = wp_get_attachment_image_url( $product->get_image_id(), 'large' );
-				if ( $img && ! in_array( $img, $slides, true ) ) {
-					$slides[] = $img;
-				}
-				if ( count( $slides ) >= 5 ) {
+				jwellery_hero_slide_add( $slides, $img, $max );
+				if ( count( $slides ) >= $max ) {
 					break 2;
 				}
 			}
 		}
 	}
 
-	// 3. Fallback to static theme images.
-	if ( empty( $slides ) ) {
+	// 3. Static theme images.
+	if ( count( $slides ) < $max ) {
 		foreach ( jwellery_default_hero_slide_files() as $file ) {
 			$path = JWELLERY_THEME_DIR . '/assets/images/' . $file;
 			if ( is_readable( $path ) ) {
-				$slides[] = JWELLERY_THEME_URI . '/assets/images/' . $file;
+				jwellery_hero_slide_add( $slides, JWELLERY_THEME_URI . '/assets/images/' . $file, $max );
+			}
+			if ( count( $slides ) >= $max ) {
+				break;
 			}
 		}
 	}
 
-	if ( empty( $slides ) ) {
-		$slides[] = JWELLERY_THEME_URI . '/assets/category-images/long-harams.png';
-		$slides[] = JWELLERY_THEME_URI . '/assets/category-images/necklaces.jpg';
+	// 4. Last-resort category art.
+	if ( count( $slides ) < $min_auto ) {
+		jwellery_hero_slide_add( $slides, JWELLERY_THEME_URI . '/assets/category-images/long-harams.png', $max );
+		jwellery_hero_slide_add( $slides, JWELLERY_THEME_URI . '/assets/category-images/necklaces.jpg', $max );
 	}
 
 	return $slides;
+}
+
+/**
+ * Add a unique hero slide URL.
+ *
+ * @param array<int, string> $slides Slide list (by reference).
+ * @param string|null        $url    Image URL.
+ * @param int                $max    Maximum slides.
+ */
+function jwellery_hero_slide_add( array &$slides, $url, $max = 5 ) {
+	if ( ! $url || in_array( $url, $slides, true ) || count( $slides ) >= $max ) {
+		return;
+	}
+	$slides[] = $url;
 }
 
 /**
