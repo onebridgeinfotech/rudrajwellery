@@ -18,9 +18,11 @@ Complete work instructions for day-to-day store management on **https://www.rudr
 6. [Verify UPI orders (admin)](#6-verify-upi-orders-admin)
 7. [Update order status & shipping](#7-update-order-status--shipping)
 8. [Track orders (customer & admin)](#8-track-orders-customer--admin)
-9. [Other common tasks](#9-other-common-tasks)
-10. [Troubleshooting](#10-troubleshooting)
-11. [Daily checklist](#11-daily-checklist)
+9. [Promo codes & discounts](#9-promo-codes--discounts)
+10. [Customer checkout flow](#10-customer-checkout-flow)
+11. [Other common tasks](#11-other-common-tasks)
+12. [Troubleshooting](#12-troubleshooting)
+13. [Daily checklist](#13-daily-checklist)
 
 ---
 
@@ -29,13 +31,14 @@ Complete work instructions for day-to-day store management on **https://www.rudr
 | You change this in WordPress… | Stored in | Updated by FTP deploy? |
 |------------------------------|-----------|-------------------------|
 | Products, prices, stock | Database | **No** |
+| Promo codes (coupons) | Database | **No** |
 | Banner slides (Customizer) | Database | **No** |
 | Media Library uploads | Server uploads folder | **No** |
 | Theme code (PHP/CSS) | Theme files on server | **Yes** (deploy script) |
 
 **Rule:** The deploy script (`scripts/deploy-hostinger.ps1`) only uploads **theme and plugin files**. It does **not** copy your products, banners, or media. Those live in WordPress on Hostinger.
 
-After you change banners or products, click **Publish / Update** in wp-admin. If the live site looks old, purge cache (see [§10](#10-troubleshooting)).
+After you change banners or products, click **Publish / Update** in wp-admin. If the live site looks old, purge cache (see [§12](#12-troubleshooting)).
 
 ---
 
@@ -274,17 +277,29 @@ URL: **https://www.rudrajewellery.co.in/track-order/**
 
 Customer enters:
 
-- **Order ID** (order number from email or thank-you page)  
-- **Billing email** used at checkout  
+- **Order ID** — the order number from the thank-you page, confirmation email, or UPI screen (e.g. `1242`)  
+- **Billing email** — must match the email used at checkout **exactly**
 
-They see WooCommerce order status (Pending payment → Processing → Completed).
+After clicking **Track**, they see:
+
+- Product list and quantities  
+- Subtotal, **discount** (if a promo code was applied), and **total**  
+- Payment method (Pay through UPI) and order status  
+- UPI payment block (amount, order number for UPI remarks, UPI ID)  
+- Order notes visible to customer (e.g. shipping updates you add in admin)
 
 ### Customer — My Account
 
 1. **My Account → Orders**  
-2. Click order number for details and status  
+2. Click order number for full details, discount, and UPI pay link  
 
-Login required (guest checkout is disabled on this store).
+Login is **required** — guest checkout is disabled on this store.
+
+### Customer — thank-you page (right after checkout)
+
+URL pattern: `https://www.rudrajewellery.co.in/checkout/order-received/ORDER#/?key=...`
+
+Shows order number, total (including any promo discount), and UPI QR / UPI ID to pay.
 
 ### Customer — email updates
 
@@ -296,10 +311,21 @@ Ensure emails are on: **WooCommerce → Settings → Emails**
 | Processing | After you verify payment |
 | Completed | When you mark order completed / shipped |
 
-### Admin — find an order
+**Admin new-order email** goes to the address in **Settings → General → Administration Email Address**.
 
-- **WooCommerce → Orders** → search by order #, name, email, or phone  
-- Or filter by status / date  
+If emails do not arrive, configure **WP Mail SMTP** (see [EMAIL-SETUP.md](EMAIL-SETUP.md)).
+
+### Admin — find and open an order
+
+1. **WooCommerce → Orders**  
+2. Search by order #, name, email, or phone — or filter by status / date  
+3. Open the order to see line items, **coupon discount**, UTR column, and UPI claim status  
+
+**Tip:** If you see a WordPress “technical issue” email, note the order # and URL — contact your developer or use the recovery link in the email. Order edit pages require theme **v4.6.57+**.
+
+### Admin — delete a test order
+
+Open order → **Move to Trash** (top right) → optionally empty trash under **WooCommerce → Orders**.
 
 ### Delivery timeline (shown to customers)
 
@@ -309,7 +335,100 @@ Ensure emails are on: **WooCommerce → Settings → Emails**
 
 ---
 
-## 9. Other common tasks
+## 9. Promo codes & discounts
+
+Promo codes are standard **WooCommerce coupons**. Customers apply them on **Cart** and **Checkout** (text field + **Apply promo** button).
+
+### Create or edit a promo code
+
+1. **WooCommerce → Marketing → Coupons**  
+2. **Add coupon** (or open an existing one e.g. `FEST10`)  
+3. Set:
+
+| Field | Example |
+|-------|---------|
+| **Coupon code** | `FEST10` |
+| **Discount type** | Percentage discount / Fixed cart discount |
+| **Coupon amount** | `10` (= 10% or ₹10 depending on type) |
+| **Coupon expiry date** | Optional e.g. `2026-07-02` |
+| **Minimum spend** | Optional — order must reach this subtotal |
+| **Usage limits** | Optional per coupon or per customer |
+
+4. Click **Publish** or **Update**
+
+### Automatic banner on Cart & Checkout (theme v4.6.58+)
+
+A yellow **Promo code** hint above the coupon field lists your **active coupons from wp-admin** (e.g. *Try fest10 (10% off), welcome10 (10% off)…*).
+
+- **No theme edit needed** when you add a new code  
+- Banner refreshes when you save a coupon in admin (may take up to ~1 hour if cache was warm — purge LiteSpeed cache to see it immediately)
+
+### Default sample codes (optional)
+
+Created via **Appearance → Store Setup → Enable INR + create promo codes**:
+
+| Code | Discount | Minimum order |
+|------|----------|---------------|
+| `WELCOME10` | 10% off | ₹399 |
+| `FLAT50` | ₹50 off cart | ₹499 |
+| `SALE15` | 15% off | ₹999 |
+
+### Customer flow — apply a promo
+
+1. Add products to cart  
+2. On **Cart** or **Checkout**, enter code in **Promo code** field  
+3. Click **Apply promo**  
+4. Confirm **Discount** line appears and **Total** is reduced  
+5. Complete checkout — discounted total is what customer pays via UPI  
+
+### Verify promo on an order (admin)
+
+Open the order in **WooCommerce → Orders**. You should see:
+
+- **Coupon:** code name and discount amount (e.g. `fest10` −₹80)  
+- **Order total** matching what the customer saw at checkout  
+
+Same discount appears on **Track Order** and **My Account → Orders** for the customer.
+
+### Promo troubleshooting
+
+| Problem | Fix |
+|---------|-----|
+| Only “Apply promo” button, no text box | Update theme to **v4.6.58+**; purge LiteSpeed cache; hard refresh (Ctrl+F5) |
+| New code not in yellow banner | Save coupon in admin; **LiteSpeed Cache → Purge All** |
+| “Invalid coupon” | Check spelling, expiry date, minimum spend, usage limit |
+| Discount missing on order | Customer must click **Apply promo** before **Place order** |
+| Code works on cart but not checkout | Ensure customer is logged in; complete checkout in same session |
+
+See also: [PROMO-CODES.md](PROMO-CODES.md)
+
+---
+
+## 10. Customer checkout flow
+
+How a typical purchase works on this store:
+
+| Step | What happens |
+|------|----------------|
+| 1. Browse | Shop, categories, or product pages |
+| 2. Add to cart | Header cart icon updates |
+| 3. Cart | Review items; optional promo code |
+| 4. Checkout | Redirects to login if not signed in (**My Account**) |
+| 5. Details | Billing address, optional order notes, promo code |
+| 6. Pay through UPI | Only payment method — place order first |
+| 7. Thank-you page | Order #, **exact amount** (after discount), UPI QR and UPI ID |
+| 8. Customer pays | UPI app — must enter **order number in payment remarks** |
+| 9. You verify | **WooCommerce → Orders** → Pending payment → Processing |
+
+Progress bar on checkout: **Cart → Details → Pay through UPI → Done**
+
+**WooCommerce → Settings → Accounts & Privacy:** guest checkout is **off**; customers must register or log in.
+
+Cart/checkout use **classic WooCommerce pages** (not blocks) so promo codes and UPI work reliably.
+
+---
+
+## 11. Other common tasks
 
 ### Store contact details (phone, WhatsApp, email)
 
@@ -317,13 +436,6 @@ Ensure emails are on: **WooCommerce → Settings → Emails**
 
 - Store phone, emails, WhatsApp number, address  
 - Click **Publish**
-
-### Promo codes
-
-**WooCommerce → Marketing → Coupons → Add coupon**
-
-Customers apply codes on the **Cart** page.  
-See also: [PROMO-CODES.md](PROMO-CODES.md)
 
 ### Hide a product without deleting
 
@@ -350,12 +462,21 @@ See: [UPI-SETTINGS.md](UPI-SETTINGS.md)
 
 ### Email delivery (SMTP)
 
-If customers don’t receive emails, configure **WP Mail SMTP**.  
+If customers or you don’t receive order emails:
+
+1. **WooCommerce → Settings → Emails** — ensure **New order**, **On hold order**, **Processing order** are enabled  
+2. Install and configure **WP Mail SMTP** (do not leave mailer on “Default”)  
+3. Send a test email from **WP Mail SMTP → Email Test**  
+
 See: [EMAIL-SETUP.md](EMAIL-SETUP.md)
+
+### View error logs (developer)
+
+**WooCommerce → Status → Logs** — check `fatal-errors-*` if the site sends a “technical issue” email.
 
 ---
 
-## 10. Troubleshooting
+## 12. Troubleshooting
 
 | Problem | Fix |
 |---------|-----|
@@ -364,12 +485,19 @@ See: [EMAIL-SETUP.md](EMAIL-SETUP.md)
 | Product page error | Contact developer — check theme version in page source footer comment |
 | Order stuck on Pending | Verify UPI in app; check customer used correct order # in remarks |
 | Images look cropped on desktop banner | Use **1920×720** widescreen images; or re-upload after theme v4.6.51+ |
-| Changes lost after deploy | Only **theme files** deploy — products/banners are in WordPress DB (safe) |
+| Changes lost after deploy | Only **theme files** deploy — products/banners/coupons are in WordPress DB (safe) |
 | Deploy doesn’t update banners | **Expected** — banners are not in deploy; update via Customizer |
+| Promo text box missing at checkout | Theme **v4.6.58+**; purge cache; Ctrl+F5 |
+| New promo not in yellow banner | Save coupon in admin; purge LiteSpeed cache |
+| “Invalid coupon” for customer | Check expiry, minimum spend, usage limits, spelling |
+| Order edit page critical error | Theme **v4.6.57+** — update theme; check **WooCommerce → Status → Logs** |
+| WordPress “technical issue” email | Use recovery link in email or contact developer; note order # and URL from email |
+| No order emails | Configure **WP Mail SMTP**; enable emails under WooCommerce → Settings → Emails |
+| Track order “not found” | Order ID and billing email must match checkout exactly |
 
 ---
 
-## 11. Daily checklist
+## 13. Daily checklist
 
 **Morning (15–30 min)**
 
@@ -390,6 +518,13 @@ See: [EMAIL-SETUP.md](EMAIL-SETUP.md)
 - [ ] Publish Customizer  
 - [ ] Purge cache and verify homepage  
 
+**When adding a promo**
+
+- [ ] Create coupon in **Marketing → Coupons**  
+- [ ] Set amount, expiry, minimum spend if needed  
+- [ ] Publish and check yellow banner on checkout (purge cache)  
+- [ ] Test apply on cart — confirm discount on order total  
+
 **Weekly**
 
 - [ ] Review low-stock products  
@@ -408,6 +543,10 @@ See: [EMAIL-SETUP.md](EMAIL-SETUP.md)
 | Banner slides | Appearance → Customize → Homepage Hero |
 | Product of the Day | Mark product **Featured** + Customize → Homepage Sections |
 | Coupons | WooCommerce → Marketing → Coupons |
+| Track Order (customer page) | https://www.rudrajewellery.co.in/track-order/ |
+| Store Setup (INR + sample promos) | Appearance → Store Setup |
+| Email / SMTP | WP Mail SMTP → Settings |
+| Error logs | WooCommerce → Status → Logs |
 | UPI settings | WooCommerce → Settings → Payments |
 | Media uploads | Media → Add New |
 
@@ -419,7 +558,9 @@ See: [EMAIL-SETUP.md](EMAIL-SETUP.md)
 - [UPI-SETTINGS.md](UPI-SETTINGS.md) — payment gateway setup  
 - [DEPLOY.md](DEPLOY.md) — theme deploy (does not sync WordPress content)  
 - [EMAIL-SETUP.md](EMAIL-SETUP.md) — SMTP configuration  
+- [PROMO-CODES.md](PROMO-CODES.md) — coupon setup and testing  
+- [ACCOUNTS-CHECKOUT.md](ACCOUNTS-CHECKOUT.md) — login and checkout settings  
 
 ---
 
-*Last updated: June 2026 — Rudra Jewellery theme v4.6.51*
+*Last updated: June 2026 — Rudra Jewellery theme v4.6.58*

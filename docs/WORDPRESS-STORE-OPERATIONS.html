@@ -214,9 +214,11 @@
 				<li><a href="#s6">Verify UPI orders (admin)</a></li>
 				<li><a href="#s7">Update order status &amp; shipping</a></li>
 				<li><a href="#s8">Track orders (customer &amp; admin)</a></li>
-				<li><a href="#s9">Other common tasks</a></li>
-				<li><a href="#s10">Troubleshooting</a></li>
-				<li><a href="#s11">Daily checklist</a></li>
+				<li><a href="#s9">Promo codes &amp; discounts</a></li>
+				<li><a href="#s10">Customer checkout flow</a></li>
+				<li><a href="#s11">Other common tasks</a></li>
+				<li><a href="#s12">Troubleshooting</a></li>
+				<li><a href="#s13">Daily checklist</a></li>
 				<li><a href="#quick">Quick links</a></li>
 			</ol>
 		</section>
@@ -229,6 +231,7 @@
 				</thead>
 				<tbody>
 					<tr><td>Products, prices, stock</td><td>Database</td><td><strong>No</strong></td></tr>
+					<tr><td>Promo codes (coupons)</td><td>Database</td><td><strong>No</strong></td></tr>
 					<tr><td>Banner slides (Customizer)</td><td>Database</td><td><strong>No</strong></td></tr>
 					<tr><td>Media Library uploads</td><td>Server uploads folder</td><td><strong>No</strong></td></tr>
 					<tr><td>Theme code (PHP/CSS)</td><td>Theme files on server</td><td><strong>Yes</strong> (deploy script)</td></tr>
@@ -237,7 +240,7 @@
 			<div class="callout">
 				<strong>Rule:</strong> The deploy script only uploads <strong>theme and plugin files</strong>. It does <strong>not</strong> copy your products, banners, or media. Those live in WordPress on Hostinger.
 			</div>
-			<p>After you change banners or products, click <strong>Publish / Update</strong> in wp-admin. If the live site looks old, purge cache (see <a href="#s10">§10 Troubleshooting</a>).</p>
+			<p>After you change banners or products, click <strong>Publish / Update</strong> in wp-admin. If the live site looks old, purge cache (see <a href="#s12">§12 Troubleshooting</a>).</p>
 		</section>
 
 		<section class="card" id="s2">
@@ -450,10 +453,14 @@
 
 			<h3>Customer — Track Order page</h3>
 			<p><strong>URL:</strong> <a href="https://www.rudrajewellery.co.in/track-order/">https://www.rudrajewellery.co.in/track-order/</a></p>
-			<p>Customer enters <strong>Order ID</strong> and <strong>billing email</strong> to see status.</p>
+			<p>Customer enters <strong>Order ID</strong> (e.g. 1242 from thank-you page or email) and <strong>billing email</strong> (must match checkout exactly).</p>
+			<p>After <strong>Track</strong>, they see products, subtotal, <strong>discount</strong> (if promo applied), total, status, and UPI payment details.</p>
 
 			<h3>Customer — My Account</h3>
 			<p><strong>My Account → Orders</strong> → click order number (login required).</p>
+
+			<h3>Customer — thank-you page</h3>
+			<p>Right after checkout: order number, total (with discount), UPI QR and UPI ID.</p>
 
 			<h3>Customer — email updates</h3>
 			<table>
@@ -464,9 +471,11 @@
 					<tr><td>Completed</td><td>When order marked completed / shipped</td></tr>
 				</tbody>
 			</table>
+			<p>Admin <strong>New order</strong> email → address in <strong>Settings → General</strong>. Use <strong>WP Mail SMTP</strong> if emails fail.</p>
 
 			<h3>Admin — find an order</h3>
-			<p><strong>WooCommerce → Orders</strong> — search by #, name, email, or phone; filter by status/date.</p>
+			<p><strong>WooCommerce → Orders</strong> — search by #, name, email, phone; open order to see coupon discount and UTR.</p>
+			<p>Delete test orders: open order → <strong>Move to Trash</strong>.</p>
 
 			<h3>Delivery timeline (customer-facing)</h3>
 			<ol class="steps">
@@ -477,20 +486,75 @@
 		</section>
 
 		<section class="card" id="s9">
-			<h2>9. Other common tasks</h2>
-			<ul class="bullets">
-				<li><strong>Store contact:</strong> Appearance → Customize → Store UI → Publish</li>
-				<li><strong>Promo codes:</strong> WooCommerce → Marketing → Coupons → Add coupon</li>
-				<li><strong>Hide product:</strong> Stock 0 / Out of stock, or set to Draft</li>
-				<li><strong>Best Sellers:</strong> Mark products <strong>Featured</strong></li>
-				<li><strong>Purge cache:</strong> LiteSpeed Cache → Purge All (after banner changes)</li>
-				<li><strong>UPI settings:</strong> WooCommerce → Settings → Payments → Manual UPI → Manage</li>
-				<li><strong>Email (SMTP):</strong> Install WP Mail SMTP if emails don’t arrive</li>
-			</ul>
+			<h2>9. Promo codes &amp; discounts</h2>
+			<p>Customers apply codes on <strong>Cart</strong> and <strong>Checkout</strong> — <strong>Promo code</strong> field + <strong>Apply promo</strong> button.</p>
+
+			<h3>Create or edit a coupon</h3>
+			<ol class="steps">
+				<li><strong>WooCommerce → Marketing → Coupons → Add coupon</strong></li>
+				<li>Set code (e.g. <code>FEST10</code>), discount type, amount, expiry, minimum spend</li>
+				<li><strong>Publish</strong> or <strong>Update</strong></li>
+			</ol>
+
+			<h3>Automatic yellow banner (theme v4.6.58+)</h3>
+			<p>Active coupons from wp-admin appear in the hint above the promo field. No theme edit needed. Purge LiteSpeed cache after adding a new code.</p>
+
+			<h3>Default sample codes (Store Setup)</h3>
+			<table>
+				<thead><tr><th>Code</th><th>Discount</th><th>Minimum</th></tr></thead>
+				<tbody>
+					<tr><td>WELCOME10</td><td>10% off</td><td>₹399</td></tr>
+					<tr><td>FLAT50</td><td>₹50 off</td><td>₹499</td></tr>
+					<tr><td>SALE15</td><td>15% off</td><td>₹999</td></tr>
+				</tbody>
+			</table>
+
+			<h3>Verify on order</h3>
+			<p>Open order in admin — see <strong>Coupon</strong> line and reduced total. Same on Track Order and My Account for customers.</p>
+
+			<h3>Promo troubleshooting</h3>
+			<table>
+				<thead><tr><th>Problem</th><th>Fix</th></tr></thead>
+				<tbody>
+					<tr><td>No text box, only button</td><td>Theme v4.6.58+; purge cache; Ctrl+F5</td></tr>
+					<tr><td>New code not in banner</td><td>Save coupon; Purge All cache</td></tr>
+					<tr><td>Invalid coupon</td><td>Check expiry, minimum spend, spelling</td></tr>
+					<tr><td>No discount on order</td><td>Customer must Apply promo before Place order</td></tr>
+				</tbody>
+			</table>
 		</section>
 
 		<section class="card" id="s10">
-			<h2>10. Troubleshooting</h2>
+			<h2>10. Customer checkout flow</h2>
+			<table>
+				<thead><tr><th>Step</th><th>What happens</th></tr></thead>
+				<tbody>
+					<tr><td>1</td><td>Browse shop → Add to cart</td></tr>
+					<tr><td>2</td><td>Cart — optional promo code</td></tr>
+					<tr><td>3</td><td>Checkout — login required if not signed in</td></tr>
+					<tr><td>4</td><td>Place order → thank-you page with UPI details</td></tr>
+					<tr><td>5</td><td>Customer pays UPI with <strong>order # in remarks</strong></td></tr>
+					<tr><td>6</td><td>You verify → <strong>Processing</strong></td></tr>
+				</tbody>
+			</table>
+			<p>Progress bar: Cart → Details → Pay through UPI → Done. Guest checkout is <strong>disabled</strong>.</p>
+		</section>
+
+		<section class="card" id="s11">
+			<h2>11. Other common tasks</h2>
+			<ul class="bullets">
+				<li><strong>Store contact:</strong> Appearance → Customize → Store UI → Publish</li>
+				<li><strong>Hide product:</strong> Stock 0 / Out of stock, or set to Draft</li>
+				<li><strong>Best Sellers:</strong> Mark products <strong>Featured</strong></li>
+				<li><strong>Purge cache:</strong> LiteSpeed Cache → Purge All (after banner or promo changes)</li>
+				<li><strong>UPI settings:</strong> WooCommerce → Settings → Payments → Manual UPI → Manage</li>
+				<li><strong>Email (SMTP):</strong> WP Mail SMTP — not “Default”; send test email</li>
+				<li><strong>Error logs:</strong> WooCommerce → Status → Logs</li>
+			</ul>
+		</section>
+
+		<section class="card" id="s12">
+			<h2>12. Troubleshooting</h2>
 			<table>
 				<thead><tr><th>Problem</th><th>Fix</th></tr></thead>
 				<tbody>
@@ -499,12 +563,17 @@
 					<tr><td>Order stuck on Pending</td><td>Verify UPI; check order # in payment remarks</td></tr>
 					<tr><td>Banner cropped on desktop</td><td>Use 1920×720 images; theme v4.6.51+</td></tr>
 					<tr><td>Deploy doesn’t update banners</td><td>Expected — use Customizer, not deploy</td></tr>
+					<tr><td>Promo text box missing</td><td>Theme v4.6.58+; purge cache; Ctrl+F5</td></tr>
+					<tr><td>New promo not in banner</td><td>Save coupon; Purge All cache</td></tr>
+					<tr><td>Order edit critical error</td><td>Theme v4.6.57+; check WooCommerce → Status → Logs</td></tr>
+					<tr><td>No order emails</td><td>WP Mail SMTP + enable WooCommerce emails</td></tr>
+					<tr><td>Track order not found</td><td>Order ID + billing email must match checkout</td></tr>
 				</tbody>
 			</table>
 		</section>
 
-		<section class="card" id="s11">
-			<h2>11. Daily checklist</h2>
+		<section class="card" id="s13">
+			<h2>13. Daily checklist</h2>
 			<h3>Morning (15–30 min)</h3>
 			<ul class="checklist">
 				<li>WooCommerce → Orders → process <strong>Pending payment</strong></li>
@@ -523,6 +592,13 @@
 				<li>Customizer → Homepage Hero</li>
 				<li>Publish Customizer</li>
 				<li>Purge cache; verify homepage</li>
+			</ul>
+			<h3>When adding a promo</h3>
+			<ul class="checklist">
+				<li>Create coupon in <strong>Marketing → Coupons</strong></li>
+				<li>Set amount, expiry, minimum spend</li>
+				<li>Publish; check yellow banner on checkout (purge cache)</li>
+				<li>Test apply — confirm discount on order total</li>
 			</ul>
 			<h3>Weekly</h3>
 			<ul class="checklist">
@@ -543,13 +619,17 @@
 					<tr><td>Banner slides</td><td>Appearance → Customize → Homepage Hero</td></tr>
 					<tr><td>Product of the Day</td><td>Featured product + Customize → Homepage Sections</td></tr>
 					<tr><td>Coupons</td><td>WooCommerce → Marketing → Coupons</td></tr>
+					<tr><td>Track Order (customer)</td><td><a href="https://www.rudrajewellery.co.in/track-order/">rudrajewellery.co.in/track-order/</a></td></tr>
+					<tr><td>Store Setup</td><td>Appearance → Store Setup</td></tr>
+					<tr><td>Email / SMTP</td><td>WP Mail SMTP → Settings</td></tr>
+					<tr><td>Error logs</td><td>WooCommerce → Status → Logs</td></tr>
 					<tr><td>UPI settings</td><td>WooCommerce → Settings → Payments</td></tr>
 					<tr><td>Media uploads</td><td>Media → Add New</td></tr>
 				</tbody>
 			</table>
 		</section>
 
-		<p class="footer-note">Last updated: June 2026 — Rudra Jewellery theme v4.6.51</p>
+		<p class="footer-note">Last updated: June 2026 — Rudra Jewellery theme v4.6.58</p>
 	</div>
 </body>
 </html>
