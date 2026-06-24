@@ -58,12 +58,21 @@ function jwellery_mobile_icon_bar() {
 				<span><?php esc_html_e( 'Account', 'jwellery-jewelry' ); ?></span>
 			</a>
 		<?php endif; ?>
+		<?php if ( function_exists( 'is_account_page' ) && is_account_page() && function_exists( 'wc_get_cart_url' ) ) : ?>
+			<a class="jwellery-mobile-bar-item jwellery-mobile-bar-cart" href="<?php echo esc_url( wc_get_cart_url() ); ?>">
+				<span class="jwellery-mobile-bar-icon-wrap">
+					<?php echo jwellery_mobile_bar_cart_icon_wrap_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				</span>
+				<span><?php esc_html_e( 'Cart', 'jwellery-jewelry' ); ?></span>
+			</a>
+		<?php else : ?>
 		<button type="button" class="jwellery-mobile-bar-item jwellery-mobile-bar-cart jwellery-cart-toggle" aria-expanded="false" aria-controls="jwellery-cart-drawer" aria-label="<?php esc_attr_e( 'Cart', 'jwellery-jewelry' ); ?>">
 			<span class="jwellery-mobile-bar-icon-wrap">
 				<?php echo jwellery_mobile_bar_cart_icon_wrap_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 			</span>
 			<span><?php esc_html_e( 'Cart', 'jwellery-jewelry' ); ?></span>
 		</button>
+		<?php endif; ?>
 	</nav>
 	<?php
 }

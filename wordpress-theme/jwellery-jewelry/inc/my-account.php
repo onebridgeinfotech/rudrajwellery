@@ -498,6 +498,13 @@ function jwellery_uda_dashboard() {
 			'tone'  => 'gold',
 		),
 		array(
+			'icon'  => 'cart',
+			'title' => __( 'My cart', 'jwellery-jewelry' ),
+			'desc'  => __( 'Review items & checkout', 'jwellery-jewelry' ),
+			'url'   => function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : $shop,
+			'tone'  => 'cream',
+		),
+		array(
 			'icon'  => 'orders',
 			'title' => __( 'Order history', 'jwellery-jewelry' ),
 			'desc'  => __( 'Track all purchases', 'jwellery-jewelry' ),
