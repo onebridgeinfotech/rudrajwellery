@@ -1456,6 +1456,11 @@ ul.products.jwellery-product-grid::after {
 		padding-right: max(20px, calc(env(safe-area-inset-right, 0px) + 16px));
 	}
 
+	/* Floating FABs must not block checkout form fields (state dropdown, etc.) */
+	body.woocommerce-checkout .jwellery-floating-stack {
+		display: none !important;
+	}
+
 	.woocommerce-cart .jwellery-promo-hint,
 	.woocommerce-checkout .jwellery-promo-hint {
 		padding: 14px 16px;
