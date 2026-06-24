@@ -54,38 +54,137 @@ class JUS_Checkout_Reliability {
 	}
 
 	/**
-	 * Return a minimal update_order_review response instantly.
+	 * Fast update_order_review with real HTML fragments (runs before WC default).
 	 *
-	 * Runs before WooCommerce's own handler (priority 1). Bypasses the slow
-	 * shipping/gateway recalculation that causes checkout to hang on shared hosting.
-	 *
-	 * We deliberately skip nonce verification here. update_order_review is a
-	 * read-only display refresh — it modifies no cart or order state, so there
-	 * is nothing to protect. Verifying the nonce would permanently block the
-	 * checkout form whenever the page is served from LiteSpeed cache (stale nonce
-	 * causes WC's own handler to return "-1"; WC JS can't parse it and never fires
-	 * updated_checkout, leaving the order-review and payment sections blocked forever).
-	 * The actual order placement uses its own independent nonce on ?wc-ajax=checkout.
+	 * Mirrors WC_AJAX::update_order_review but skips nonce verification so a
+	 * LiteSpeed-cached checkout page never gets "-1" and stuck blockUI overlays.
+	 * Shipping is already disabled store-wide; calculate_shipping() is cheap here.
 	 */
 	public static function fast_update_order_review() {
-		// Return the cart hash so WC JS does not trigger a reload.
-		// An empty string is safe: WC JS only reloads when cart_hash is truthy AND differs.
-		$cart_hash = '';
-		if ( function_exists( 'WC' ) ) {
-			if ( WC()->cart ) {
-				$cart_hash = WC()->cart->get_cart_hash();
-			} elseif ( WC()->session ) {
-				$cart_hash = (string) WC()->session->get( 'cart_hash', '' );
+		if ( ! function_exists( 'WC' ) ) {
+			wp_send_json( array( 'result' => 'failure' ) );
+		}
+
+		if ( null === WC()->cart ) {
+			wc_load_cart();
+		}
+
+		wc_maybe_define_constant( 'WOOCOMMERCE_CHECKOUT', true );
+
+		if ( WC()->cart->is_empty() && ! is_customize_preview() && apply_filters( 'woocommerce_checkout_update_order_review_expired', true ) ) {
+			wp_send_json(
+				array(
+					'fragments' => apply_filters(
+						'woocommerce_update_order_review_fragments',
+						array(
+							'form.woocommerce-checkout' => wc_print_notice(
+								esc_html__( 'Sorry, your session has expired.', 'woocommerce' ) . ' <a href="' . esc_url( wc_get_page_permalink( 'shop' ) ) . '" class="wc-backward">' . esc_html__( 'Return to shop', 'woocommerce' ) . '</a>',
+								'error',
+								array(),
+								true
+							),
+						)
+					),
+				)
+			);
+		}
+
+		// phpcs:disable WordPress.Security.NonceVerification.Missing
+		do_action( 'woocommerce_checkout_update_order_review', isset( $_POST['post_data'] ) ? wp_unslash( $_POST['post_data'] ) : '' );
+
+		$chosen_shipping_methods = WC()->session->get( 'chosen_shipping_methods' );
+		$posted_shipping_methods = isset( $_POST['shipping_method'] ) ? wc_clean( wp_unslash( $_POST['shipping_method'] ) ) : array();
+
+		if ( is_array( $posted_shipping_methods ) ) {
+			foreach ( $posted_shipping_methods as $i => $value ) {
+				if ( ! is_string( $value ) ) {
+					continue;
+				}
+				$chosen_shipping_methods[ $i ] = $value;
 			}
 		}
 
-		// Empty fragments object = no DOM replacements; WooCommerce JS unblocks the form.
-		// Must be stdClass so it JSON-encodes as {} (object), not [] (array).
-		wp_send_json( array(
-			'result'    => 'success',
-			'fragments' => new stdClass(),
-			'cart_hash' => $cart_hash,
-		) );
+		WC()->session->set( 'chosen_shipping_methods', $chosen_shipping_methods );
+		WC()->session->set( 'chosen_payment_method', empty( $_POST['payment_method'] ) ? '' : wc_clean( wp_unslash( $_POST['payment_method'] ) ) );
+		WC()->customer->set_props(
+			array(
+				'billing_country'   => isset( $_POST['country'] ) ? wc_clean( wp_unslash( $_POST['country'] ) ) : null,
+				'billing_state'     => isset( $_POST['state'] ) ? wc_clean( wp_unslash( $_POST['state'] ) ) : null,
+				'billing_postcode'  => isset( $_POST['postcode'] ) ? wc_clean( wp_unslash( $_POST['postcode'] ) ) : null,
+				'billing_city'      => isset( $_POST['city'] ) ? wc_clean( wp_unslash( $_POST['city'] ) ) : null,
+				'billing_address_1' => isset( $_POST['address'] ) ? wc_clean( wp_unslash( $_POST['address'] ) ) : null,
+				'billing_address_2' => isset( $_POST['address_2'] ) ? wc_clean( wp_unslash( $_POST['address_2'] ) ) : null,
+			)
+		);
+
+		if ( wc_ship_to_billing_address_only() ) {
+			WC()->customer->set_props(
+				array(
+					'shipping_country'   => isset( $_POST['country'] ) ? wc_clean( wp_unslash( $_POST['country'] ) ) : null,
+					'shipping_state'     => isset( $_POST['state'] ) ? wc_clean( wp_unslash( $_POST['state'] ) ) : null,
+					'shipping_postcode'  => isset( $_POST['postcode'] ) ? wc_clean( wp_unslash( $_POST['postcode'] ) ) : null,
+					'shipping_city'      => isset( $_POST['city'] ) ? wc_clean( wp_unslash( $_POST['city'] ) ) : null,
+					'shipping_address_1' => isset( $_POST['address'] ) ? wc_clean( wp_unslash( $_POST['address'] ) ) : null,
+					'shipping_address_2' => isset( $_POST['address_2'] ) ? wc_clean( wp_unslash( $_POST['address_2'] ) ) : null,
+				)
+			);
+		} else {
+			WC()->customer->set_props(
+				array(
+					'shipping_country'   => isset( $_POST['s_country'] ) ? wc_clean( wp_unslash( $_POST['s_country'] ) ) : null,
+					'shipping_state'     => isset( $_POST['s_state'] ) ? wc_clean( wp_unslash( $_POST['s_state'] ) ) : null,
+					'shipping_postcode'  => isset( $_POST['s_postcode'] ) ? wc_clean( wp_unslash( $_POST['s_postcode'] ) ) : null,
+					'shipping_city'      => isset( $_POST['s_city'] ) ? wc_clean( wp_unslash( $_POST['s_city'] ) ) : null,
+					'shipping_address_1' => isset( $_POST['s_address'] ) ? wc_clean( wp_unslash( $_POST['s_address'] ) ) : null,
+					'shipping_address_2' => isset( $_POST['s_address_2'] ) ? wc_clean( wp_unslash( $_POST['s_address_2'] ) ) : null,
+				)
+			);
+		}
+
+		if ( isset( $_POST['has_full_address'] ) && wc_string_to_bool( wc_clean( wp_unslash( $_POST['has_full_address'] ) ) ) ) {
+			WC()->customer->set_calculated_shipping( true );
+		} else {
+			WC()->customer->set_calculated_shipping( false );
+		}
+
+		WC()->customer->save();
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+		WC()->cart->calculate_shipping();
+		WC()->cart->calculate_totals();
+
+		ob_start();
+		woocommerce_order_review();
+		$woocommerce_order_review = ob_get_clean();
+
+		ob_start();
+		woocommerce_checkout_payment();
+		$woocommerce_checkout_payment = ob_get_clean();
+
+		$reload_checkout = isset( WC()->session->reload_checkout );
+		if ( ! $reload_checkout ) {
+			$messages = wc_print_notices( true );
+		} else {
+			$messages = '';
+		}
+
+		unset( WC()->session->refresh_totals, WC()->session->reload_checkout );
+
+		wp_send_json(
+			array(
+				'result'    => empty( $messages ) ? 'success' : 'failure',
+				'messages'  => $messages,
+				'reload'    => $reload_checkout,
+				'fragments' => apply_filters(
+					'woocommerce_update_order_review_fragments',
+					array(
+						'.woocommerce-checkout-review-order-table' => $woocommerce_order_review,
+						'.woocommerce-checkout-payment'            => $woocommerce_checkout_payment,
+					)
+				),
+				'cart_hash' => WC()->cart->get_cart_hash(),
+			)
+		);
 	}
 
 	/**
@@ -155,33 +254,38 @@ class JUS_Checkout_Reliability {
 		var $pay = $( '#payment, .woocommerce-checkout-payment' );
 		var $btn = $( '#place_order' );
 
-		if ( $tbl.length ) { $tbl.unblock(); }
-		if ( $pay.length ) { $pay.unblock(); }
-		if ( $btn.length ) { $btn.prop( 'disabled', false ).css( 'opacity', '' ); }
+		[ $tbl, $pay ].forEach( function ( $el ) {
+			if ( ! $el.length ) { return; }
+			try { $el.unblock(); } catch ( e ) {}
+			$el.removeClass( 'blockUI' );
+			$el.find( '.blockUI' ).remove();
+		} );
+
+		if ( $btn.length ) {
+			$btn.prop( 'disabled', false ).css( { opacity: '', visibility: '', display: '' } );
+		}
 
 		/* Also unblock the outer form in case WC or a plugin blocked it too */
 		var $form = $( 'form.woocommerce-checkout' );
 		if ( $form.length ) {
 			$form.removeClass( 'processing' );
-			try { $form.unblock(); } catch(e) {}
+			try { $form.unblock(); } catch ( e ) {}
+			$form.find( '.blockUI' ).remove();
 		}
 	}
 
 	/* ── Rolling watchdog for update_order_review AJAX ── */
-	/* WC fires update_checkout, blocks the table+payment, then fires update_order_review.
-	   Our plugins_loaded fast-path responds in microseconds so updated_checkout fires
-	   quickly. But if the AJAX still hangs (cached stale response, network hiccup)
-	   this timer fires 2s after the last update_checkout and force-unblocks. */
 	var _watchdogTimer = null;
 	function armWatchdog() {
 		clearTimeout( _watchdogTimer );
 		_watchdogTimer = setTimeout( jusForceUnblock, 2000 );
 	}
 	$( document.body ).on( 'update_checkout', armWatchdog );
-	/* When WC finishes successfully or with an error, cancel watchdog (WC unblocks itself). */
+	/* Always force-unblock after WC finishes — empty/cached fragments can leave spinners. */
 	$( document.body ).on( 'updated_checkout checkout_error', function () {
 		clearTimeout( _watchdogTimer );
 		_watchdogTimer = null;
+		setTimeout( jusForceUnblock, 0 );
 	} );
 
 	/* ── Hard safety net: 3 s after DOMContentLoaded, force-unblock unconditionally ── */
