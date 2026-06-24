@@ -439,7 +439,7 @@ a.jwellery-btn-viewall:hover {
 	color: #fff !important;
 }
 
-.woocommerce-checkout form.checkout_coupon > p:first-child,
+.woocommerce-checkout form.checkout_coupon > p:not(.form-row-first):not(.form-row-last),
 .woocommerce-cart .coupon > label {
 	position: absolute;
 	width: 1px;
@@ -493,11 +493,6 @@ a.jwellery-btn-viewall:hover {
 
 .woocommerce form .form-row .select2-container .select2-selection--single .select2-selection__arrow {
 	height: var(--jwellery-input-h);
-}
-
-/* Duplicate label row hidden — promo hint + placeholder cover a11y */
-.woocommerce-checkout form.checkout_coupon > p.form-row-first {
-	display: none;
 }
 
 /* ——— Newsletter, track order, page CTAs ——— */

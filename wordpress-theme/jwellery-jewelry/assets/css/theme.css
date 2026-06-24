@@ -1413,6 +1413,18 @@ ul.products.jwellery-product-grid::after {
 	border-radius: 6px;
 }
 
+.woocommerce-checkout form.checkout_coupon > p.form-row-first,
+.woocommerce-checkout form.checkout_coupon > p.form-row-last {
+	display: block !important;
+	flex: 1 1 auto;
+	margin: 0;
+}
+
+.woocommerce-checkout form.checkout_coupon > p.form-row-first {
+	flex: 1 1 200px;
+	min-width: 0;
+}
+
 .woocommerce-cart .coupon,
 .woocommerce-checkout .checkout_coupon,
 .wc-block-components-totals-coupon,

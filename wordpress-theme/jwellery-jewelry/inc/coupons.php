@@ -161,6 +161,127 @@ function jwellery_bootstrap_promo_codes() {
 add_action( 'woocommerce_init', 'jwellery_bootstrap_promo_codes', 5 );
 
 /**
+ * Human-readable label for a coupon (e.g. FEST10 (10% off)).
+ *
+ * @param WC_Coupon $coupon Coupon.
+ * @return string
+ */
+function jwellery_format_coupon_hint_label( $coupon ) {
+	if ( ! $coupon instanceof WC_Coupon ) {
+		return '';
+	}
+
+	$code   = $coupon->get_code();
+	$type   = $coupon->get_discount_type();
+	$amount = (float) $coupon->get_amount();
+
+	if ( 'percent' === $type || 'percent_product' === $type ) {
+		/* translators: 1: coupon code, 2: percent amount */
+		return sprintf( __( '%1$s (%2$s%% off)', 'jwellery-jewelry' ), $code, wc_format_decimal( $amount, 0 ) );
+	}
+
+	if ( 'fixed_cart' === $type ) {
+		/* translators: 1: coupon code, 2: discount amount */
+		return sprintf( __( '%1$s (₹%2$s off)', 'jwellery-jewelry' ), $code, wc_format_decimal( $amount, 0 ) );
+	}
+
+	if ( 'fixed_product' === $type ) {
+		/* translators: 1: coupon code, 2: discount amount */
+		return sprintf( __( '%1$s (₹%2$s off per item)', 'jwellery-jewelry' ), $code, wc_format_decimal( $amount, 0 ) );
+	}
+
+	return $code;
+}
+
+/**
+ * Published, non-expired coupons for cart/checkout hints.
+ *
+ * @return WC_Coupon[]
+ */
+function jwellery_get_active_public_coupons() {
+	if ( ! class_exists( 'WC_Coupon' ) ) {
+		return array();
+	}
+
+	$posts = get_posts(
+		array(
+			'post_type'      => 'shop_coupon',
+			'post_status'    => 'publish',
+			'posts_per_page' => 8,
+			'orderby'        => 'modified',
+			'order'          => 'DESC',
+			'fields'         => 'ids',
+		)
+	);
+
+	$coupons = array();
+	$now     = time();
+
+	foreach ( $posts as $post_id ) {
+		$coupon = new WC_Coupon( (int) $post_id );
+		if ( ! $coupon->get_id() ) {
+			continue;
+		}
+
+		$expires = $coupon->get_date_expires();
+		if ( $expires && $expires->getTimestamp() < $now ) {
+			continue;
+		}
+
+		$coupons[] = $coupon;
+	}
+
+	return $coupons;
+}
+
+/**
+ * Promo hint text built from WooCommerce coupons in admin.
+ *
+ * @return string
+ */
+function jwellery_get_promo_hint_text() {
+	$cache_key = 'jwellery_promo_hint_text';
+	$cached    = get_transient( $cache_key );
+	if ( is_string( $cached ) && '' !== $cached ) {
+		return $cached;
+	}
+
+	$labels = array();
+	foreach ( jwellery_get_active_public_coupons() as $coupon ) {
+		$label = jwellery_format_coupon_hint_label( $coupon );
+		if ( $label ) {
+			$labels[] = $label;
+		}
+	}
+
+	if ( empty( $labels ) ) {
+		$text = __( 'Enter your promo code below.', 'jwellery-jewelry' );
+	} else {
+		/* translators: %s: comma-separated coupon labels */
+		$text = sprintf( __( 'Try %s.', 'jwellery-jewelry' ), implode( ', ', $labels ) );
+	}
+
+	set_transient( $cache_key, $text, HOUR_IN_SECONDS );
+	return $text;
+}
+
+/**
+ * Clear promo hint cache when coupons change in admin.
+ *
+ * @param int $post_id Post ID.
+ */
+function jwellery_clear_promo_hint_cache( $post_id = 0 ) {
+	if ( $post_id && 'shop_coupon' !== get_post_type( $post_id ) ) {
+		return;
+	}
+	delete_transient( 'jwellery_promo_hint_text' );
+}
+add_action( 'save_post_shop_coupon', 'jwellery_clear_promo_hint_cache' );
+add_action( 'deleted_post', 'jwellery_clear_promo_hint_cache' );
+add_action( 'trashed_post', 'jwellery_clear_promo_hint_cache' );
+add_action( 'untrashed_post', 'jwellery_clear_promo_hint_cache' );
+
+/**
  * Hint above coupon fields on cart and checkout.
  */
 function jwellery_promo_code_hint() {
@@ -173,7 +294,7 @@ function jwellery_promo_code_hint() {
 
 	echo '<div class="jwellery-promo-hint">';
 	echo '<strong>' . esc_html__( 'Promo code', 'jwellery-jewelry' ) . '</strong> — ';
-	echo esc_html__( 'Try WELCOME10 (10% off), FLAT50 (₹50 off), or SALE15 (15% off).', 'jwellery-jewelry' );
+	echo esc_html( jwellery_get_promo_hint_text() );
 	echo '</div>';
 }
 add_action( 'woocommerce_before_cart', 'jwellery_promo_code_hint', 5 );
@@ -192,7 +313,7 @@ function jwellery_promo_checkout_script() {
 
 	wp_add_inline_script(
 		'jwellery-theme',
-		"(function(){function showPromo(){var t=document.querySelector('.woocommerce-form-coupon-toggle');var f=document.querySelector('form.checkout_coupon');if(t){t.style.display='none';}if(f){f.style.display='block';}}if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',showPromo);}else{showPromo();}})();"
+		"(function(){function showPromo(){var t=document.querySelector('.woocommerce-form-coupon-toggle');var f=document.querySelector('form.checkout_coupon');if(t){t.style.display='none';}if(f){f.style.display='flex';f.querySelectorAll('p.form-row-first,p.form-row-last').forEach(function(row){row.style.display='';});var input=f.querySelector('input[name=\"coupon_code\"]');if(input){input.style.display='';input.removeAttribute('hidden');}}}if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',showPromo);}else{showPromo();}})();"
 	);
 }
 add_action( 'wp_enqueue_scripts', 'jwellery_promo_checkout_script', 30 );
