@@ -1461,6 +1461,11 @@ ul.products.jwellery-product-grid::after {
 		display: none !important;
 	}
 
+	body.jwellery-has-mobile-bar.woocommerce-checkout #customer_details .form-row,
+	body.jwellery-has-mobile-bar.woocommerce-checkout #order_review {
+		scroll-margin-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+	}
+
 	.woocommerce-cart .jwellery-promo-hint,
 	.woocommerce-checkout .jwellery-promo-hint {
 		padding: 14px 16px;
